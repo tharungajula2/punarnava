@@ -1,6 +1,6 @@
 /**
  * Open research questions, each with a ready-to-paste prompt for ChatGPT deep research.
- * Shown in /admin/assumptions. Tick one off by deleting it once its answer is in /research
+ * Shown in /admin/assumptions and /lab/research-gaps. Tick one off by deleting it once its answer is in /research
  * and assumptions.ts has been updated.
  */
 export type ResearchGap = {
@@ -140,5 +140,45 @@ Task: Funding structure for a first recycling plant needing ~₹2.8–3.5 crore 
 2. Named Indian investors or programmes that fund recycling plants this small (ticket ₹0.5–5 crore): impact funds, angel networks, CSR, brand-backed financing. Give fund, typical ticket, recent comparable deals.
 3. What evidence they ask for at this stage (offtake LoIs, supplier agreements, trial yields, consents).
 4. Typical equity dilution for such a round.`,
+  },
+  {
+    id: "rhdpe-market-size",
+    title: "How big is the recycled HDPE market in South India, by grade?",
+    why: "Market figures cover all recycled plastics nationally. Nothing sizes demand for the one product we would sell.",
+    affects: ["india_recycled_plastics_market_2026", "karnataka_recycled_market_2026", "india_recycled_market_cagr"],
+    prompt: `${CONTEXT}
+
+Task: Size demand for non-food recycled HDPE pellets in Karnataka, Tamil Nadu, Andhra Pradesh and Telangana.
+1. Tonnes/year of recycled HDPE consumed by end use (pipes, drums, crates, blow-moulded containers, film, other), with sources.
+2. Split by grade: natural/light vs coloured vs black, and typical price premium of natural over black.
+3. How much of the Category I rigid recycled-content obligation (30% → 60%) falls on HDPE packaging in tonnes/year, and how much of it can legally use non-food-grade rHDPE.
+4. Growth outlook to 2031 for rHDPE specifically, compared with IMARC's all-plastics 4.45% CAGR.`,
+  },
+  {
+    id: "competitor-verification",
+    title: "Check the competitor scale figures against filings",
+    why: "Every competitor tonnage in the lab is a company claim or an annualised capacity, so all are low-confidence.",
+    affects: ["comp_banyan_tpa", "comp_banyan_blr_tpa", "comp_lucro_tpa", "comp_srichakra_tpa", "comp_ganesha_tpa", "comp_nepra_tpa", "comp_saahas_tpa"],
+    prompt: `${CONTEXT}
+
+Task: For Banyan Nation, Lucro Plastecycle, Srichakra Polyplast, Ganesha Ecosphere, revalyu, Shakti Plastic Industries, Re Sustainability, NEPRA, Saahas Zero Waste and Hasiru Dala Innovations:
+1. Actual tonnes processed in the latest year from audited accounts, annual reports, MCA filings, CPCB PWP registration data or investor disclosures — separately from stated capacity.
+2. Latest revenue and EBITDA if public (MCA/Tofler/annual report).
+3. Polymers and grades actually sold, and whether they buy feedstock in Karnataka.
+4. Any public PWP registration number and registered processing capacity on the CPCB/Common EPR portal.
+Output a table: company | figure | type (actual/capacity/claim) | year | URL.`,
+  },
+  {
+    id: "seed-investors",
+    title: "Who writes a first cheque for a ₹2–3 crore recycling plant",
+    why: "R3's investor list is for ₹20–50 crore rounds. Our raise is roughly a tenth of that, so the data room must target different investors.",
+    affects: ["raise_amount"],
+    prompt: `${CONTEXT}
+
+Task: List investors who have made seed or pre-Series A investments of ₹0.5–5 crore in Indian waste, recycling or circular-economy companies since 2023.
+1. For each: investor name, type (angel network, impact fund, climate VC, family office, CSR programme, government scheme), ticket range, 2–3 named portfolio deals with dates and amounts.
+2. What each one publicly says it looks for (traction, impact metrics, founder profile).
+3. Non-dilutive options: grants, accelerators and competitions open to a pre-revenue recycler in Karnataka in 2026–27, with deadlines.
+4. Which documents they typically request in a data room at this stage.`,
   },
 ];

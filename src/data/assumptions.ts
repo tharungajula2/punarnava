@@ -30,6 +30,7 @@ export type Category =
   | "funding"
   | "simulation"
   | "operations"
+  | "competitors"
   | "alternatives";
 
 export type Assumption = {
@@ -574,6 +575,29 @@ export const assumptions = [
   { id: "lic_pwp_audit_days", label: "PWP physical audit after registration (within)", value: 30, unit: "days", category: "operations", source: `${R1} (CPCB SOP)`, confidence: "medium", status: "researched" },
   { id: "lic_pwp_valid_years", label: "PWP fresh registration validity", value: 1, unit: "years", category: "operations", source: `${R1} (CPCB SOP)`, confidence: "medium", status: "researched", notes: "Renewal is for three years." },
   { id: "lic_hazwaste_days", label: "Hazardous-waste authorisation (maximum, if applicable)", value: 120, unit: "days", category: "operations", source: `${R1} (Hazardous Waste Rules)`, confidence: "medium", status: "researched" },
+
+  // ── R&D lab (Phase 8): market trend, price ranges, competitor scale ────────
+  { id: "india_recycled_market_cagr", label: "India recycled-plastics market growth (IMARC CAGR)", value: 4.45, unit: "%/yr", category: "market", source: `IMARC, via ${R1}`, confidence: "medium", status: "researched", notes: "R1 uses it to project 2026 → 2031; MarketsandMarkets' stated CAGR does not match its own endpoints." },
+  { id: "mixed_plastic_scrap_low", label: "Mixed plastic scrap, public collection quote (low)", value: 12, unit: "₹/kg", category: "prices", source: R3, confidence: "low", status: "researched", notes: "Unsorted material; sorted single-polymer streams trade much higher." },
+  { id: "mixed_plastic_scrap_high", label: "Mixed plastic scrap, public collection quote (high)", value: 14, unit: "₹/kg", category: "prices", source: R3, confidence: "low", status: "researched" },
+  { id: "hdpe_feed_working_low", label: "Sorted HDPE container feed, Bengaluru working range (low)", value: 35, unit: "₹/kg", category: "prices", source: R1, confidence: "medium", status: "researched", notes: "R1 working range from Bengaluru listings (₹35–60/kg asking)." },
+  { id: "hdpe_feed_working_high", label: "Sorted HDPE container feed, Bengaluru working range (high)", value: 50, unit: "₹/kg", category: "prices", source: R1, confidence: "medium", status: "researched" },
+  { id: "rhdpe_pellet_working_low", label: "Recycled HDPE pellet, R1 working range (low)", value: 75, unit: "₹/kg", category: "prices", source: R1, confidence: "medium", status: "researched", notes: "Natural, high-quality grades can sell materially higher." },
+  { id: "rhdpe_pellet_working_high", label: "Recycled HDPE pellet, R1 working range (high)", value: 95, unit: "₹/kg", category: "prices", source: R1, confidence: "medium", status: "researched" },
+  { id: "epr_cert_only_low", label: "EPR certificate-only quote, 2025 intermediary (low)", value: 1.05, unit: "₹/kg", category: "prices", source: R3, confidence: "low", status: "researched", notes: "Certificate-only; not comparable with managed-compliance packages." },
+  { id: "epr_cert_only_high", label: "EPR certificate-only quote, 2025 intermediary (high)", value: 1.5, unit: "₹/kg", category: "prices", source: R3, confidence: "low", status: "researched" },
+  { id: "pcr_sanity_low", label: "Recycled-plastic sale price, CPCB enforcement sanity band (low)", value: 50, unit: "₹/kg", category: "prices", source: R3, confidence: "low", status: "researched", notes: "A fraud-check band across all grades, not a price quote." },
+  { id: "pcr_sanity_high", label: "Recycled-plastic sale price, CPCB enforcement sanity band (high)", value: 150, unit: "₹/kg", category: "prices", source: R3, confidence: "low", status: "researched" },
+  { id: "comp_banyan_tpa", label: "Banyan Nation — Hyderabad plant", value: 10000, unit: "t/yr", category: "competitors", source: R3, confidence: "low", status: "researched", notes: "Company profile figure, not audited." },
+  { id: "comp_banyan_blr_tpa", label: "Banyan Nation — Bengaluru expansion (reported, under construction)", value: 48000, unit: "t/yr", category: "competitors", source: R3, confidence: "low", status: "researched", notes: "Stated capacity of a plant not yet operating." },
+  { id: "comp_lucro_tpa", label: "Lucro Plastecycle — recycling", value: 30000, unit: "t/yr", category: "competitors", source: R3, confidence: "low", status: "researched", notes: "Reported as '>30,000 TPA'." },
+  { id: "comp_srichakra_tpa", label: "Srichakra Polyplast — post-consumer plastic processed FY2024-25", value: 23632, unit: "t/yr", category: "competitors", source: R3, confidence: "medium", status: "researched", notes: "Actual processed tonnage; PET capacity is 42,000 TPA." },
+  { id: "comp_ganesha_tpa", label: "Ganesha Ecosphere — PET waste recycled", value: 150000, unit: "t/yr", category: "competitors", source: R3, confidence: "medium", status: "researched", notes: "Listed company; capacity 206,940 MTPA (FY2026 annual report)." },
+  { id: "comp_revalyu_tpa", label: "revalyu Recycling India — annualised nameplate", value: 102200, unit: "t/yr", category: "competitors", source: R3, confidence: "low", status: "researched", notes: "280 t/day stated capacity × 365; not throughput." },
+  { id: "comp_nepra_tpa", label: "NEPRA — dry waste handled (annualised)", value: 182500, unit: "t/yr", category: "competitors", source: R3, confidence: "low", status: "researched", notes: "'>500 t/day' × 365; total dry waste, not plastic recycled." },
+  { id: "comp_saahas_tpa", label: "Saahas Zero Waste — waste handled (annualised)", value: 36500, unit: "t/yr", category: "competitors", source: R3, confidence: "low", status: "researched", notes: "'100+ t/day' × 365; total municipal solid waste, not plastic." },
+  { id: "comp_shakti_tpa", label: "Shakti Plastic Industries — stated capacity", value: 100000, unit: "t/yr", category: "competitors", source: R3, confidence: "low", status: "researched", notes: "'Up to 100,000 TPA' in company presentation." },
+  { id: "comp_re_tpa", label: "Re Sustainability — plastics stated capacity", value: 16000, unit: "t/yr", category: "competitors", source: R3, confidence: "low", status: "researched", notes: "6,000 installed + 10,000 food-grade under development." },
 ] as const satisfies readonly Assumption[];
 
 export type AssumptionId = (typeof assumptions)[number]["id"];
@@ -618,6 +642,7 @@ export const categoryLabels: Record<Category, string> = {
   funding: "Funding",
   simulation: "Simulation model",
   operations: "Operating plan (OS)",
+  competitors: "Competitors (R&D lab)",
   alternatives: "Alternatives (owner only)",
 };
 

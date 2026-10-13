@@ -10,7 +10,7 @@ import { requireRole } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Assumptions" };
 
-const order: Category[] = ["market", "regulation", "prices", "plant", "capex", "funding", "economics", "roadmap", "operations", "simulation", "alternatives"];
+const order: Category[] = ["market", "regulation", "prices", "plant", "capex", "funding", "economics", "roadmap", "operations", "simulation", "competitors", "alternatives"];
 
 export default function AssumptionsPage() {
   return (

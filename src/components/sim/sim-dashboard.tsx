@@ -51,13 +51,28 @@ function useSimLoop() {
 
 const Charts = memo(SimCharts);
 
-export function SimDashboard({ params, statuses, placeholderCount }: { params: SimParams; statuses: Record<keyof Scenario, Status>; placeholderCount: number }) {
+export function SimDashboard({
+  params,
+  statuses,
+  placeholderCount,
+  initialScenario,
+}: {
+  params: SimParams;
+  statuses: Record<keyof Scenario, Status>;
+  placeholderCount: number;
+  /** Slider values to start from, e.g. a /lab scenario (/sim?scenario=worst). */
+  initialScenario?: Partial<Scenario>;
+}) {
   const init = useSimStore((s) => s.init);
+  const setScenario = useSimStore((s) => s.setScenario);
   const ready = useSimStore((s) => s.sim !== null);
   const view = useSimStore((s) => s.view);
   const can3d = useCan3D();
   const show3d = can3d && view === "3d";
-  useEffect(() => init(params), [init, params]);
+  useEffect(() => {
+    init(params);
+    if (initialScenario) setScenario(initialScenario);
+  }, [init, setScenario, params, initialScenario]);
   useSimLoop();
 
   if (!ready) return <div className="h-96 animate-pulse rounded-2xl bg-muted/50" aria-label="Loading simulation" />;

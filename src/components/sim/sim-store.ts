@@ -9,7 +9,7 @@ export const SPEEDS = [1, 10, 60, 250, 1000] as const;
  * Thin client wrapper around the engine. The engine owns all numbers; this
  * store only holds UI state (playing, speed, selection) and a `version` that
  * bumps whenever the engine advanced, so React knows to re-read it.
- * The Phase 6 3D layer will subscribe to the same store.
+ * The 3D layer reads the same engine every frame via getState().
  */
 interface SimStore {
   sim: PlantSim | null;
@@ -20,6 +20,7 @@ interface SimStore {
   version: number;
   chartVersion: number;
   selected: string | null;
+  view: "3d" | "2d";
   init: (params: SimParams) => void;
   reset: (seed?: number) => void;
   setPlaying: (playing: boolean) => void;
@@ -28,6 +29,7 @@ interface SimStore {
   trigger: (event: SimEvent) => void;
   advance: (minutes: number) => void;
   select: (id: string | null) => void;
+  setView: (view: "3d" | "2d") => void;
 }
 
 export const useSimStore = create<SimStore>((set, get) => ({
@@ -39,6 +41,7 @@ export const useSimStore = create<SimStore>((set, get) => ({
   version: 0,
   chartVersion: 0,
   selected: null,
+  view: "3d",
   init: (params) => {
     if (get().sim && get().params === params) return;
     set({ params, sim: new PlantSim(params, get().seed), version: 0, chartVersion: 0 });
@@ -64,10 +67,16 @@ export const useSimStore = create<SimStore>((set, get) => ({
     set((s) => ({ version: s.version + 1, chartVersion: s.chartVersion + 1 }));
   },
   select: (id) => set({ selected: id }),
+  setView: (view) => set({ view }),
 }));
 
 /** Re-renders the caller whenever the engine advanced; returns the live engine. */
 export function useSim(): PlantSim | null {
   useSimStore((s) => s.version);
   return useSimStore((s) => s.sim);
+}
+
+// Dev-only handle for poking the store from the browser console (never in production builds).
+if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
+  (window as unknown as { __simStore: typeof useSimStore }).__simStore = useSimStore;
 }

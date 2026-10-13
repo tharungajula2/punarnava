@@ -7,6 +7,7 @@ import { KpiCards } from "./kpi-cards";
 import { LotTimeline } from "./lot-timeline";
 import { NetworkMap } from "./network-map";
 import { Schematic, nodeDetails, nodeLabel } from "./schematic";
+import { Sim3DView, ViewToggle, useCan3D } from "./sim-3d";
 import { SimCharts } from "./sim-charts";
 import { useSim, useSimStore } from "./sim-store";
 
@@ -53,6 +54,9 @@ const Charts = memo(SimCharts);
 export function SimDashboard({ params, statuses, placeholderCount }: { params: SimParams; statuses: Record<keyof Scenario, Status>; placeholderCount: number }) {
   const init = useSimStore((s) => s.init);
   const ready = useSimStore((s) => s.sim !== null);
+  const view = useSimStore((s) => s.view);
+  const can3d = useCan3D();
+  const show3d = can3d && view === "3d";
   useEffect(() => init(params), [init, params]);
   useSimLoop();
 
@@ -60,25 +64,38 @@ export function SimDashboard({ params, statuses, placeholderCount }: { params: S
 
   return (
     <div className="space-y-6">
-      <div className="glass z-30 p-3 sm:p-4 md:sticky md:top-16">
+      <div className={`glass z-30 p-3 sm:p-4 ${show3d ? "" : "md:sticky md:top-16"}`}>
         <PlaybackControls />
       </div>
 
-      <KpiCards />
+      <section aria-labelledby="plant-title" className="min-w-0 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 id="plant-title" className="font-sans text-base font-medium">
+            {show3d ? "The plant — live 3D" : "Plant flow — live"}
+          </h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-xs text-muted-foreground">Status lights: green running · grey idle · amber planned stop · red down.</p>
+            {can3d ? <ViewToggle /> : <p className="text-xs text-muted-foreground">3D view needs a larger screen.</p>}
+          </div>
+        </div>
+        {show3d && <Sim3DView />}
+      </section>
+
+      {!show3d && <KpiCards />}
 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <section aria-labelledby="schematic-title" className="min-w-0 space-y-3">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 id="schematic-title" className="font-sans text-base font-medium">
-              Plant flow — live
-            </h2>
-            <p className="text-xs text-muted-foreground">Click any stage for details. Green running · grey idle · amber planned stop · red down.</p>
-          </div>
-          <div className="overflow-x-auto rounded-2xl">
-            <Schematic />
-          </div>
-          <Details />
-        </section>
+        {show3d ? (
+          <Panel title="Feedstock network (stylised Bengaluru)">
+            <NetworkMap />
+          </Panel>
+        ) : (
+          <section aria-label="Plant schematic" className="min-w-0 space-y-3">
+            <div className="overflow-x-auto rounded-2xl">
+              <Schematic />
+            </div>
+            <Details />
+          </section>
+        )}
 
         <aside className="space-y-6">
           <Panel title="Scenario">
@@ -91,10 +108,12 @@ export function SimDashboard({ params, statuses, placeholderCount }: { params: S
       </div>
 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-        <Panel title="Feedstock network (stylised Bengaluru)">
-          <NetworkMap />
-        </Panel>
-        <Panel title="Batch tracking">
+        {!show3d && (
+          <Panel title="Feedstock network (stylised Bengaluru)">
+            <NetworkMap />
+          </Panel>
+        )}
+        <Panel title="Batch tracking" className={show3d ? "xl:col-span-2" : undefined}>
           <LotTimeline />
           <h3 className="mt-6 mb-2 font-sans text-sm font-medium">Event log</h3>
           <EventLog />
@@ -112,9 +131,9 @@ export function SimDashboard({ params, statuses, placeholderCount }: { params: S
   );
 }
 
-function Panel({ title, children }: { title: string; children: React.ReactNode }) {
+function Panel({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+    <section className={`rounded-2xl border border-border bg-card p-4 sm:p-5 ${className ?? ""}`}>
       <h2 className="mb-4 font-sans text-base font-medium">{title}</h2>
       {children}
     </section>

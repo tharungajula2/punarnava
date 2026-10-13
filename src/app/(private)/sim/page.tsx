@@ -12,7 +12,7 @@ export default function SimPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Simulation · 2D schematic"
+        eyebrow="Simulation · 3D + 2D"
         title="A digital twin of the plant"
         description="Follow plastic from collection points to pellets and buyers, minute by minute. Change prices, shifts and feedstock quality, or throw in a breakdown, and watch the numbers move."
       />

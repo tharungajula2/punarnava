@@ -1,6 +1,6 @@
 "use client";
 
-import { SUNRISE_HOUR, SUNSET_HOUR, bufferKg, clock, unitLabel, type BufferId, type SimState, type UnitId } from "@/sim";
+import { SUNRISE_HOUR, SUNSET_HOUR, UNIT_DEFS, bufferKg, clock, placeById, unitLabel, type BufferId, type SimState, type Truck, type UnitId } from "@/sim";
 import { fmt, reasonLabel, statusColor, statusLabel } from "./format";
 import { useSim, useSimStore } from "./sim-store";
 
@@ -40,10 +40,52 @@ export const NODE_LABELS: Record<string, string> = {
   baleYard: "Bale yard",
   finishedGoods: "Finished goods",
   dock: "Outbound dock",
+  sorted: "Sorted-plastic bin",
+  flakes: "Flake bin",
+  washed: "Washed-flake bin",
+  silo: "Dry-flake silo",
+  melt: "Strand buffer",
+  "out-1": "Outbound truck",
 };
 
 export function nodeLabel(id: string) {
+  if (/^in-\d+$/.test(id)) return `Collection truck ${id.slice(3)}`;
   return NODE_LABELS[id] ?? unitLabel(id as UnitId);
+}
+
+const place = (id: string | null) => (id ? placeById(id).name.replace(" (sample)", "") : "—");
+
+/** Plain-English truck activity. */
+export function truckActivity(t: Truck): string {
+  switch (t.phase) {
+    case "parked":
+      return t.kind === "inbound" ? "Parked at plant" : "At dock — waiting for a full load";
+    case "to-point":
+      return `Driving to ${place(t.target)}`;
+    case "loading":
+      return t.kind === "inbound" ? `Loading at ${place(t.target)}` : "Loading pellets at dock";
+    case "to-plant":
+      return `Bringing feedstock from ${place(t.target)}`;
+    case "queued":
+      return "Waiting for weighbridge";
+    case "to-buyer":
+      return `Delivering to ${place(t.target)}`;
+    case "unloading":
+      return t.kind === "inbound" ? "On weighbridge, unloading" : `Unloading at ${place(t.target)}`;
+    case "returning":
+      return "Returning to plant";
+    default:
+      return t.phase;
+  }
+}
+
+/** The lot at the head of a unit's input queue (FIFO), i.e. the batch it is working on. */
+export function currentBatch(s: SimState, id: UnitId): string {
+  const def = UNIT_DEFS.find((d) => d.id === id);
+  const head = def ? s.buffers[def.input][0] : undefined;
+  if (!head) return "none";
+  const lot = s.lots.find((l) => l.id === head.lot);
+  return `#${head.lot}${lot ? ` · ${place(lot.pointId)}` : ""}`;
 }
 
 function daylight(hour: number) {
@@ -221,8 +263,18 @@ export function nodeDetails(s: SimState, id: string): [string, string][] {
       ["Processed", fmt.t(u.processedKg)],
       ["Utilisation", sched ? `${fmt.n((u.runningMin / sched) * 100)}% of productive time` : "—"],
       ["Energy", `${fmt.n(u.energyKwh)} kWh`],
+      ["Current batch", currentBatch(s, id as UnitId)],
       ["Breakdowns", String(u.breakdowns)],
       ...(u.repairLeft > 0 ? ([["Repair left", `${fmt.n(u.repairLeft)} min`]] as [string, string][]) : []),
+    ];
+  }
+  const truck = s.trucks.find((t) => t.id === id);
+  if (truck) {
+    return [
+      ["Doing", truckActivity(truck)],
+      ["Cargo", truck.cargoKg > 0 ? fmt.t(truck.cargoKg, 2) : "empty"],
+      ["Trips completed", String(truck.trips)],
+      ...(truck.timer > 0 ? ([["Phase time left", `${fmt.n(truck.timer)} min`]] as [string, string][]) : []),
     ];
   }
   if (id === "weighbridge") {
@@ -235,7 +287,7 @@ export function nodeDetails(s: SimState, id: string): [string, string][] {
   if (id === "dock") {
     const t = s.trucks.find((x) => x.kind === "outbound")!;
     return [
-      ["Truck", t.phase],
+      ["Truck", truckActivity(t)],
       ["Trips completed", String(t.trips)],
       ["Dispatched", fmt.t(s.mass.dispatched)],
     ];

@@ -1,9 +1,19 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { isOpenMode } from "@/lib/auth/mode";
 import { SESSION_COOKIE, verifySession } from "@/lib/auth/token";
 
 // Runs before every request to the private areas (and /login).
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
+
+  // AUTH_MODE=open: no login barrier. The locked-mode code below is untouched.
+  if (isOpenMode()) {
+    if (pathname === "/login") return NextResponse.redirect(new URL("/os", request.url));
+    const res = NextResponse.next();
+    res.headers.set("X-Robots-Tag", "noindex, nofollow");
+    return res;
+  }
+
   const session = await verifySession(request.cookies.get(SESSION_COOKIE)?.value);
 
   if (pathname === "/login") {

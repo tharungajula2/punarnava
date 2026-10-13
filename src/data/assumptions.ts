@@ -29,6 +29,7 @@ export type Category =
   | "roadmap"
   | "funding"
   | "simulation"
+  | "operations"
   | "alternatives";
 
 export type Assumption = {
@@ -534,6 +535,45 @@ export const assumptions = [
   { id: "sim_energy_dryer_pct", label: "Electricity share — dryer", value: 12, unit: "% of plant kWh", category: "simulation", source: `Rough split from motor loads in ${R2} vendor listings`, confidence: "low", status: "placeholder" },
   { id: "sim_energy_extruder_pct", label: "Electricity share — extruder", value: 35, unit: "% of plant kWh", category: "simulation", source: `Rough split from motor loads in ${R2} vendor listings`, confidence: "low", status: "placeholder" },
   { id: "sim_energy_pelletizer_pct", label: "Electricity share — pelletizer", value: 8, unit: "% of plant kWh", category: "simulation", source: `Rough split from motor loads in ${R2} vendor listings`, confidence: "low", status: "placeholder" },
+  // ── Operating plan (Phase 7, /os) ─────────────────────────────────────────
+  // Inputs the OS modules need beyond the investor model: R2's staffing roster
+  // and working-capital days, R1's licence timelines, and a few labelled
+  // modelling choices. Not shown in the landing sources table.
+  { id: "hire_sorters_count", label: "Sorters / helpers / loaders", value: 10, unit: "FTE", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "hire_sorters_cost", label: "Loaded cost — sorter / helper / loader", value: 23, unit: "₹ thousand/month per FTE", category: "operations", source: R2, confidence: "medium", status: "researched", notes: "Above the Karnataka plastic-industry minimum-wage floor (₹560-768/day) per R2." },
+  { id: "hire_operators_count", label: "Machine operators", value: 6, unit: "FTE", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "hire_operators_cost", label: "Loaded cost — machine operator", value: 32, unit: "₹ thousand/month per FTE", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "hire_supervisors_count", label: "Shift supervisors", value: 2, unit: "FTE", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "hire_supervisors_cost", label: "Loaded cost — shift supervisor", value: 42, unit: "₹ thousand/month per FTE", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "hire_maintenance_count", label: "Maintenance / electrical technician", value: 1, unit: "FTE", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "hire_maintenance_cost", label: "Loaded cost — maintenance technician", value: 38, unit: "₹ thousand/month per FTE", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "hire_qa_count", label: "Quality assurance", value: 1, unit: "FTE", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "hire_qa_cost", label: "Loaded cost — QA", value: 35, unit: "₹ thousand/month per FTE", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "hire_admin_count", label: "Store / admin", value: 1, unit: "FTE", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "hire_admin_cost", label: "Loaded cost — store / admin", value: 35, unit: "₹ thousand/month per FTE", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "hire_manager_cost", label: "Loaded cost — plant manager (10 t/day roster only)", value: 60, unit: "₹ thousand/month per FTE", category: "operations", source: R2, confidence: "medium", status: "researched", notes: "R2's 5 t/day roster has no plant manager; one is added at 10 t/day." },
+  { id: "employees_expansion", label: "Plant team at 10 t/day", value: 37, unit: "FTE", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "hire_lead_core_months", label: "Core team hired before production (supervisors, maintenance, QA, store)", value: 3, unit: "months", category: "operations", source: "Modelling choice (they join for installation and the wet commissioning trial)", confidence: "low", status: "placeholder" },
+  { id: "hire_lead_line_months", label: "Line crew hired before production (operators, sorters)", value: 1, unit: "months", category: "operations", source: "Modelling choice (training + commissioning trial on own material)", confidence: "low", status: "placeholder" },
+  { id: "wc_raw_stock_days", label: "Raw-stock inventory held", value: 15, unit: "days", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "wc_finished_days", label: "Finished-pellet inventory held", value: 5, unit: "days", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "wc_cash_buffer_days", label: "Operating cash buffer", value: 7, unit: "days of fixed cost", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "maint_fixed_share_pct", label: "Share of maintenance treated as fixed (break-even split)", value: 50, unit: "%", category: "operations", source: R2, confidence: "medium", status: "researched" },
+  { id: "depreciation_month", label: "Illustrative depreciation", value: 1.5, unit: "₹ lakh/month", category: "operations", source: R2, confidence: "low", status: "researched", notes: "R2 calls this illustrative. No tax or interest is modelled." },
+  { id: "lic_land_months_low", label: "Industrial land / lease diligence (low)", value: 2, unit: "months", category: "operations", source: `${R1} (planning estimate, not a statutory SLA)`, confidence: "low", status: "researched" },
+  { id: "lic_land_months_high", label: "Industrial land / lease diligence (high)", value: 6, unit: "months", category: "operations", source: `${R1} (planning estimate, not a statutory SLA)`, confidence: "low", status: "researched" },
+  { id: "lic_cfe_days_low", label: "KSPCB Consent for Establishment (low)", value: 45, unit: "days", category: "operations", source: `${R1} (budget until classification is confirmed)`, confidence: "low", status: "researched", notes: "High end = kspcb_consent_days." },
+  { id: "lic_factory_plan_days_low", label: "Factory building / layout approval (low)", value: 30, unit: "days", category: "operations", source: `${R1} (project allowance)`, confidence: "low", status: "researched" },
+  { id: "lic_factory_plan_days_high", label: "Factory building / layout approval (high)", value: 60, unit: "days", category: "operations", source: `${R1} (project allowance)`, confidence: "low", status: "researched" },
+  { id: "lic_fire_days_low", label: "Building / fire approvals (low)", value: 30, unit: "days", category: "operations", source: `${R1} (site-specific)`, confidence: "low", status: "researched" },
+  { id: "lic_fire_days_high", label: "Building / fire approvals (high)", value: 60, unit: "days", category: "operations", source: `${R1} (site-specific)`, confidence: "low", status: "researched" },
+  { id: "lic_cfo_days_low", label: "KSPCB Consent for Operation (low)", value: 45, unit: "days", category: "operations", source: `${R1} (budget pending exact category/SLA)`, confidence: "low", status: "researched" },
+  { id: "lic_cfo_days_high", label: "KSPCB Consent for Operation (high)", value: 90, unit: "days", category: "operations", source: `${R1} (budget pending exact category/SLA)`, confidence: "low", status: "researched" },
+  { id: "lic_factory_licence_days", label: "Factory registration & licence (published maximum)", value: 60, unit: "working days", category: "operations", source: `${R1} (published service document)`, confidence: "medium", status: "researched" },
+  { id: "lic_pwp_processing_days", label: "Plastic Waste Processor registration — processing target", value: 15, unit: "days", category: "operations", source: `${R1} (CPCB SOP)`, confidence: "medium", status: "researched" },
+  { id: "lic_pwp_audit_days", label: "PWP physical audit after registration (within)", value: 30, unit: "days", category: "operations", source: `${R1} (CPCB SOP)`, confidence: "medium", status: "researched" },
+  { id: "lic_pwp_valid_years", label: "PWP fresh registration validity", value: 1, unit: "years", category: "operations", source: `${R1} (CPCB SOP)`, confidence: "medium", status: "researched", notes: "Renewal is for three years." },
+  { id: "lic_hazwaste_days", label: "Hazardous-waste authorisation (maximum, if applicable)", value: 120, unit: "days", category: "operations", source: `${R1} (Hazardous Waste Rules)`, confidence: "medium", status: "researched" },
 ] as const satisfies readonly Assumption[];
 
 export type AssumptionId = (typeof assumptions)[number]["id"];
@@ -577,6 +617,7 @@ export const categoryLabels: Record<Category, string> = {
   roadmap: "Roadmap & gates",
   funding: "Funding",
   simulation: "Simulation model",
+  operations: "Operating plan (OS)",
   alternatives: "Alternatives (owner only)",
 };
 

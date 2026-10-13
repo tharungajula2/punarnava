@@ -36,7 +36,7 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
       </header>
 
       <div className="flex flex-1">
-        <aside className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-60 shrink-0 border-r border-border/60 p-3 md:block">
+        <aside className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-60 shrink-0 overflow-y-auto border-r border-border/60 p-3 md:block">
           <Suspense fallback={<PrivateNav />}>
             <RoleNav />
           </Suspense>

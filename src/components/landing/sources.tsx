@@ -11,7 +11,7 @@ const statusLabel: Record<Status, string> = {
 /** Collapsed list of every public assumption with its source — honesty by default. */
 export function Sources() {
   // Simulation-model parameters live on /admin/assumptions; the landing table lists only pitch figures.
-  const rows = publicAssumptions().filter((a) => a.category !== "simulation");
+  const rows = publicAssumptions().filter((a) => a.category !== "simulation" && a.category !== "operations");
   return (
     <section aria-label="Sources and assumptions" className="border-t border-border/60 py-10">
       <Container>

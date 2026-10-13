@@ -204,3 +204,13 @@
     scroll-behavior: auto !important;
   }
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Landing "How it works" flow track — moves exactly one 28px pellet spacing per loop × 10 */
+@keyframes flow {
+  from { transform: translateX(-280px); }
+  to { transform: translateX(0); }
+}

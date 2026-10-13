@@ -25,7 +25,13 @@ export const metadata: Metadata = {
     template: "%s · Punarnava",
   },
   description:
-    "Punarnava is a plastic recycling venture in Bangalore turning post-consumer plastic into high-quality recycled pellets.",
+    "Punarnava is a plastic recycling venture in Bengaluru turning post-consumer rigid plastic into traceable recycled pellets.",
+  openGraph: {
+    title: "Punarnava — plastic that becomes new again",
+    description: "Traceable recycled pellets from Bengaluru's post-consumer plastic.",
+    type: "website",
+    locale: "en_IN",
+  },
 };
 
 export const viewport: Viewport = {

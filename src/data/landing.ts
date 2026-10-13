@@ -18,12 +18,12 @@ export const hero = {
   eyebrow: "Plastic recycling · Bengaluru",
   title: "Plastic that becomes",
   titleEmphasis: "new again.",
-  promise: `Punarnava turns Bengaluru's post-consumer rigid plastic into traceable recycled pellets — the material India's brands are now required to use.`,
+  promise: `Punarnava is building a Bengaluru plant to turn post-consumer rigid plastic into traceable recycled HDPE pellets — the recycled content brands must now use in rigid (Category I) packaging.`,
   primaryCta: { href: "#contact", label: "Talk to the founder" },
   secondaryCta: { href: "#economics", label: "See the economics" },
   facts: [
-    { value: `${num(v("plant_input_tpd"))} t/day`, label: "first plant, rigid HDPE" },
-    { value: `${num(v("epr_cat1_recycled_content_fy29"))}%`, label: "recycled content mandated by FY29" },
+    { value: `${num(v("plant_input_tpd"))} t/day`, label: "planned first plant, rigid HDPE" },
+    { value: `${num(v("epr_cat1_recycled_content_fy29"))}%`, label: "recycled content required in rigid (Category I) packaging from FY2028-29" },
     { value: `₹${num(v("raise_amount"))} cr`, label: "seed raise (target)" },
   ],
   loopStages: ["Collect", "Sort", "Wash", "Extrude", "Pellet", "Supply"],
@@ -37,7 +37,7 @@ export const problem = {
     {
       value: `${num(v("bengaluru_plastic_waste_low"))}–${num(v("bengaluru_plastic_waste_high"))}`,
       unit: "t/day",
-      label: "plastic waste generated in Bengaluru, by official estimates",
+      label: "plastic waste generated in Bengaluru, per two official estimates (not an audited study)",
     },
     {
       value: num(v("india_plastic_waste_fy23")),
@@ -52,7 +52,7 @@ export const problem = {
     {
       value: `~${num(v("flexible_share_consumer_packaging"))}%`,
       unit: "",
-      label: "of consumer packaging is flexible — hard to recycle, so rigid plastic is where clean value lies",
+      label: "of consumer packaging is flexible, which is harder to collect and recycle — we start with rigid plastic",
     },
   ],
 };
@@ -60,8 +60,8 @@ export const problem = {
 export const whyNow = {
   kicker: "Why now",
   title: "Regulation has turned recycled plastic from optional to mandatory.",
-  body: `India's Extended Producer Responsibility (EPR) rules make brands responsible for their plastic packaging. Since FY2025-26 they must also put recycled plastic back into new rigid packaging — and the share rises every year.`,
-  chartTitle: "Mandatory recycled content in rigid (Category I) packaging",
+  body: `India's Extended Producer Responsibility (EPR) rules make brands responsible for their plastic packaging. Since FY2025-26 they must also use recycled plastic in new packaging — for rigid (Category I) packaging the required share rises from ${num(v("epr_cat1_recycled_content_fy26"))}% to ${num(v("epr_cat1_recycled_content_fy29"))}%. Food-contact packaging has conditional exemptions, so our target is non-food-grade resin.`,
+  chartTitle: "Required recycled content in new rigid (Category I) packaging, by financial year",
   chart: [
     { year: "FY26", value: v("epr_cat1_recycled_content_fy26") },
     { year: "FY27", value: v("epr_cat1_recycled_content_fy27") },
@@ -71,15 +71,15 @@ export const whyNow = {
   points: [
     {
       title: "Demand is written into law",
-      body: `${num(v("registered_pibos"))} producers, importers and brand owners are registered with obligations — served by only ${num(v("registered_pwps"))} registered processors.`,
+      body: `${num(v("registered_pibos"))} producers, importers and brand owners are registered with recycling and recycled-content obligations (Aug 2026). ${num(v("registered_pwps"))} plastic waste processors are registered to supply certificates.`,
     },
     {
       title: "Traceability now decides who wins",
-      body: "The March 2026 rule amendment and the new Common EPR Portal (June 2026) tie certificates to verified processing, GST records and audits. Clean, documented supply is scarce.",
+      body: "CPCB links certificates to verified processing, GST-linked sales records and audits, now on the Common EPR Portal (June 2026); the March 2026 amendment adds audit and verification requirements. Documented, traceable supply is the differentiator.",
     },
     {
       title: "Recycling is a must, not a choice",
-      body: `In FY2026-27 at least ${num(v("epr_cat1_min_recycling_fy27"))}% of a brand's rigid-plastic obligation must be met by actual recycling.`,
+      body: `In FY2026-27 at least ${num(v("epr_cat1_min_recycling_fy27"))}% of a brand's rigid (Category I) EPR target must be met through recycling — a separate rule from the recycled-content share above.`,
     },
   ],
 };
@@ -87,12 +87,12 @@ export const whyNow = {
 export const how = {
   kicker: "How Punarnava works",
   title: "One loop, from kerbside to pellet.",
-  body: "We buy sorted plastic from the people already collecting it, process it in one plant with closed-loop water, and track every batch from supplier to buyer.",
+  body: "The plan: buy sorted plastic from the people already collecting it, process it in one plant with closed-loop water, and track every batch from supplier to buyer.",
   steps: [
     { icon: "truck", title: "Collect", body: "Buy from waste-picker collectives, dry-waste centres, kabadiwalas and bulk generators — digital weighing, same-day pay." },
     { icon: "scan", title: "Sort", body: "Weigh, inspect and separate rigid HDPE by colour; reject metal and foreign polymers." },
     { icon: "scissors", title: "Shred", body: "Granulate bottles and containers into uniform flakes." },
-    { icon: "droplets", title: "Wash", body: `Friction, float-sink and hot wash, with a ${num(v("etp_capacity_kld"))} KLD treatment plant recycling the water.` },
+    { icon: "droplets", title: "Wash", body: `Friction, float-sink and hot wash, with a planned ${num(v("etp_capacity_kld"))} KLD treatment plant recycling the water.` },
     { icon: "wind", title: "Dry", body: "Centrifugal dewatering and hot-air drying into buffer silos." },
     { icon: "flame", title: "Extrude", body: "Melt, degas and filter for a clean, consistent melt." },
     { icon: "circle-dot", title: "Pelletise", body: "Cut, cool, sieve, test and bag pellets to a technical data sheet." },
@@ -115,8 +115,8 @@ export const model = {
       name: "EPR certificates",
       tag: "Upside",
       price: `₹${money(v("epr_credit_price"))}/kg`,
-      priceNote: `modelled — the 2026 market quotes ₹${num(v("epr_market_low"))}–${num(v("epr_market_high"))}/kg`,
-      body: "As a registered processor, every verified kilogram we recycle earns a certificate that brands buy to meet their obligations.",
+      priceNote: `modelled — 2026 intermediary quotes range ₹${num(v("epr_market_low"))}–${num(v("epr_market_high"))}/kg and may bundle services; there is no exchange price`,
+      body: "Once registered as a plastic waste processor and audited, eligible packaging plastic we process and document can earn certificates that brands buy to meet their obligations. Certificates cannot exceed our registered capacity.",
     },
   ],
   principle: {
@@ -141,7 +141,7 @@ const revenuePerKg = v("pellet_price") + v("epr_credit_price");
 
 export const economics = {
   kicker: "Unit economics",
-  title: "A small plant, built to survive bad months.",
+  title: "A small plant that survives any one shock — but not all three.",
   body: `Base case: one ${num(v("line_rate"))} kg/h line processing ${num(v("plant_input_tpd"))} tonnes a day, ${num(v("operating_days_month"))} days a month, at ${num(v("yield"))}% yield — about ${num(v("output_t_month"))} tonnes of pellets a month.`,
   kpis: [
     { value: `₹${num(v("annual_revenue"))} cr`, label: "annual revenue at steady state" },
@@ -165,7 +165,7 @@ export const economics = {
   },
   stress: {
     title: "We plan for the downside",
-    body: `If feedstock rises ${num(v("stress_feed_pct"))}%, yield drops ${num(v("stress_yield_pp"))} points and pellet prices fall ${num(v("stress_price_pct"))}% all at once, margin turns to −₹${money(Math.abs(v("stress_ebitda_kg")))}/kg. That is why we lock in supply and buyers before buying machines, and underwrite to a ${num(v("payback_practical"))}-year practical payback rather than the ${num(v("payback_steady_state"))}-year steady-state figure.`,
+    body: `Hit one at a time, margin stays positive: feedstock +${num(v("stress_feed_pct"))}% leaves ₹${money(v("stress_single_feed_kg"))}/kg, yield −${num(v("stress_yield_pp"))} points ₹${money(v("stress_single_yield_kg"))}/kg, pellet price −${num(v("stress_price_pct"))}% ₹${money(v("stress_single_price_kg"))}/kg. All three at once turn it to −₹${money(Math.abs(v("stress_ebitda_kg")))}/kg. That is why we lock in supply and buyers before buying machines, and plan on roughly a ${num(v("payback_practical"))}-year practical payback (a rule of thumb from the research) rather than the ${num(v("payback_steady_state"))}-year steady-state figure.`,
   },
 };
 
@@ -176,7 +176,7 @@ export const roadmap = {
     {
       tag: "Phase 1",
       name: "Prove",
-      when: "Months 0–6",
+      when: `Months 0–${num(v("prove_phase_months_high"))}`,
       body: `Live procurement trial across Bengaluru for ${num(v("procurement_trial_weeks"))} weeks. Bale audits, toll-recycling runs and pellet samples to ${num(v("sample_converters"))} converters.`,
       gate: `Gate: ≥${num(v("gate_feedstock_contracted"))}% of feedstock and ≥${num(v("gate_offtake_contracted"))}% of offtake in written agreements.`,
     },
@@ -184,14 +184,14 @@ export const roadmap = {
       tag: "Phase 2",
       name: "Build",
       when: `Up to ${num(v("time_to_production_months"))} months from site lock`,
-      body: "Lease an industrial shed in the Nelamangala–Dabaspete corridor. Pollution-control consents, install the wash-and-pellet line and effluent plant, register as a plastic waste processor.",
+      body: "Target a leased industrial shed in the Nelamangala–Dabaspete corridor (shortlist against others). Obtain pollution-control consents, install the wash-and-pellet line and effluent plant, register as a plastic waste processor.",
       gate: "Gate: consent to operate and processor registration in hand.",
     },
     {
       tag: "Phase 3",
       name: "Run",
-      when: "Year 1–2",
-      body: "Ramp to steady utilisation, qualify grades with converters, start issuing EPR certificates, build a batch-level traceability record.",
+      when: "Years 1–3",
+      body: `Ramp utilisation (${num(v("ramp_year1"))}% in year one, ${num(v("ramp_year2"))}% in year two, ${num(v("ramp_year3"))}% in year three in the model), qualify grades with converters, generate EPR certificates once audited, build a batch-level traceability record.`,
       gate: `Gate: ≥${num(v("expansion_yield_gate"))}% yield sustained and repeat customers.`,
     },
     {
@@ -206,10 +206,10 @@ export const roadmap = {
 
 export const team = {
   kicker: "Why us",
-  title: "Built like an operator, not a scrap trader.",
+  title: "Designed around discipline, not scrap trading.",
   principles: [
-    { title: "Feedstock first", body: "We organise the collectors already doing the work — fair, transparent prices and fast payment — instead of trying to replace them." },
-    { title: "Traceability as infrastructure", body: "Supplier KYC, weighbridge data, batch IDs and GST records reconciled daily. That is what makes our certificates and resin bankable." },
+    { title: "Feedstock first", body: "We plan to organise the collectors already doing the work — transparent prices and fast payment — instead of trying to replace them." },
+    { title: "Traceability as infrastructure", body: "Supplier KYC, weighbridge data, batch IDs and GST records reconciled daily — the design goal, because that is what makes certificates and resin bankable." },
     { title: "Downside-first finance", body: "Every decision is tested against a bad month, not a good one. Numbers on this page are labelled with their source." },
   ],
   // Fill in real people only. No invented bios, advisors or logos.
@@ -232,7 +232,7 @@ const fundsTotal = funds.reduce((s, f) => s + f.lakh, 0);
 export const ask = {
   kicker: "The ask",
   title: `Raising ₹${num(v("raise_amount"))} crore to build the first plant.`,
-  body: "The amount covers the full modelled funding envelope: the line, a compliant site and enough working capital to buy feedstock ahead of sales. Round structure (equity and debt mix) is being finalised.",
+  body: `The modelled funding need: the line, a compliant site and working capital to buy feedstock ahead of sales (CAPEX accuracy ±${num(v("capex_accuracy_pct"))}% before vendor quotes). It excludes land purchase, financing cost and early operating losses. Round size and structure (equity and debt mix) are not final.`,
   totalCrore: money(lakhToCrore(fundsTotal)),
   funds: funds.map((f) => ({
     label: f.label,
@@ -248,4 +248,4 @@ export const contact = {
 };
 
 export const disclaimer =
-  "Figures come from desk research (2026) and planning models, not audited results. Punarnava is pre-revenue and has no customers or partners yet.";
+  "Projections are based on stated assumptions from desk research (2026) and planning models, not audited results. Punarnava is pre-revenue and has no customers or partners yet.";

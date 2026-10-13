@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LogoMark } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
 
@@ -9,7 +10,12 @@ export function SiteFooter() {
           <LogoMark className="size-6" />
           <span>Punarnava · Bengaluru, India</span>
         </div>
-        <p>Projections based on stated assumptions.</p>
+        <div className="flex items-center gap-4">
+          <p>Projections based on stated assumptions.</p>
+          <Link href="/login" prefetch={false} className="underline-offset-4 hover:text-foreground hover:underline">
+            Team sign-in
+          </Link>
+        </div>
       </Container>
     </footer>
   );

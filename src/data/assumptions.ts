@@ -28,6 +28,7 @@ export type Category =
   | "economics"
   | "roadmap"
   | "funding"
+  | "simulation"
   | "alternatives";
 
 export type Assumption = {
@@ -486,6 +487,53 @@ export const assumptions = [
   { id: "alt_network_capex_high", label: "Feedstock-network-first investment, R3 (high)", value: 12, unit: "₹ crore", category: "alternatives", source: R3, confidence: "low", status: "researched", ownerOnly: true },
   { id: "alt_polyolefin_capex_low", label: "Premium polyolefin plant, 10-15 ktpa, R3 (low)", value: 30, unit: "₹ crore", category: "alternatives", source: R3, confidence: "low", status: "researched", ownerOnly: true, notes: "Roughly ten times the tonnage of the 5 t/day base case." },
   { id: "alt_polyolefin_capex_high", label: "Premium polyolefin plant, 10-15 ktpa, R3 (high)", value: 60, unit: "₹ crore", category: "alternatives", source: R3, confidence: "low", status: "researched", ownerOnly: true },
+
+  // ── Simulation model (Phase 5) ────────────────────────────────────────────
+  // Researched entries split R2's plant model into the pieces the /sim engine
+  // needs. Placeholders are modelling choices with no research behind them yet:
+  // they shape the simulation, not the investor numbers on the landing page.
+  { id: "sim_shifts", label: "Shift roster (base case)", value: 2, unit: "shifts/day", category: "simulation", source: R2, confidence: "medium", status: "researched", notes: "Labour cost in the sim scales with the number of shifts." },
+  { id: "sim_shift_hours", label: "Shift length", value: 8, unit: "h", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "sim_net_line_hours", label: "Net productive line-hours per day (two shifts)", value: 10, unit: "h/day", category: "simulation", source: R2, confidence: "medium", status: "researched", notes: "The rest of each shift is cleaning, changeovers, screen changes and preventive maintenance." },
+  { id: "sim_operating_days_week", label: "Operating days per week", value: 6, unit: "days", category: "simulation", source: `Derived from 26 operating days/month in ${R2}`, confidence: "medium", status: "researched" },
+  { id: "loss_sort_pct", label: "Sorting rejects (foreign polymer, labels, metal, dirt)", value: 11, unit: "% of input", category: "simulation", source: R2, confidence: "medium", status: "researched", notes: "The sim's contamination slider sets this value." },
+  { id: "loss_wash_pct", label: "Moisture / entrained dirt removed in washing", value: 4, unit: "% of input", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "loss_process_pct", label: "Fines, extrusion purge and screen-change loss", value: 5, unit: "% of input", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "cost_water_kg", label: "Water + ETP/RO running cost", value: 0.58, unit: "₹/kg output", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "cost_consumables_kg", label: "Wash/process consumables and bags", value: 1.3, unit: "₹/kg output", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "cost_maintenance_kg", label: "Maintenance", value: 0.51, unit: "₹/kg output", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "cost_outbound_kg", label: "Finished-product outbound logistics", value: 0.75, unit: "₹/kg output", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "labour_month", label: "Plant labour (two-shift roster)", value: 6.14, unit: "₹ lakh/month", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "rent_month", label: "Shed rent", value: 2.1, unit: "₹ lakh/month", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "overhead_month", label: "Overheads, compliance, QC, security", value: 2.5, unit: "₹ lakh/month", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "electricity_month", label: "Electricity bill incl. demand charge and duty", value: 4.28, unit: "₹ lakh/month", category: "simulation", source: R2, confidence: "medium", status: "researched", notes: "The sim treats (this − monthly kWh × energy charge) as the fixed part of the bill." },
+  { id: "electricity_kwh_month", label: "Monthly electricity consumption", value: 40300, unit: "kWh", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "receivable_days", label: "Customer payment terms (receivables)", value: 21, unit: "days", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "payable_days", label: "Feedstock supplier payment terms (payables)", value: 10, unit: "days", category: "simulation", source: R2, confidence: "medium", status: "researched" },
+  { id: "bag_kg", label: "Pellet bag size", value: 25, unit: "kg", category: "simulation", source: R2, confidence: "high", status: "researched" },
+  { id: "sim_inbound_trucks", label: "Inbound collection trucks", value: 2, unit: "trucks", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_inbound_payload", label: "Inbound truck payload (baled HDPE)", value: 2.5, unit: "t", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_min_load_pct", label: "Minimum stock at a point before a truck is sent", value: 50, unit: "% of payload", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_truck_speed_kmh", label: "Average city truck speed", value: 20, unit: "km/h", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_load_minutes", label: "Loading time at a collection point", value: 45, unit: "min", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_unload_minutes", label: "Weighing + unloading time at the plant", value: 30, unit: "min", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_inbound_start_hour", label: "Inbound trucks start", value: 7, unit: "h (clock)", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_inbound_end_hour", label: "Last inbound truck dispatched", value: 17, unit: "h (clock)", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_first_shift_hour", label: "First shift starts", value: 6, unit: "h (clock)", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_outbound_payload", label: "Outbound truck load to a buyer", value: 5, unit: "t", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_buffer_kg", label: "Surge buffer between machines", value: 1000, unit: "kg", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_qc_hold_hours", label: "QC hold before release (sampling + lab test)", value: 2, unit: "h", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_mtbf_hours", label: "Mean running time between breakdowns, per machine", value: 200, unit: "h", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder", notes: "Replace with vendor or plant data." },
+  { id: "sim_mttr_hours", label: "Mean repair time after a breakdown", value: 4, unit: "h", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_monsoon_dip_pct", label: "Monsoon supply dip (event)", value: 40, unit: "% less feedstock", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_monsoon_days", label: "Monsoon supply dip duration (event)", value: 14, unit: "days", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_price_shock_days", label: "Pellet price shock duration (event; size = stress-test price fall)", value: 30, unit: "days", category: "simulation", source: "Modelling choice", confidence: "low", status: "placeholder" },
+  { id: "sim_energy_sorting_pct", label: "Electricity share — sorting line", value: 5, unit: "% of plant kWh", category: "simulation", source: `Rough split from motor loads in ${R2} vendor listings`, confidence: "low", status: "placeholder" },
+  { id: "sim_energy_shredder_pct", label: "Electricity share — shredder", value: 15, unit: "% of plant kWh", category: "simulation", source: `Rough split from motor loads in ${R2} vendor listings`, confidence: "low", status: "placeholder" },
+  { id: "sim_energy_wash_pct", label: "Electricity share — wash line", value: 25, unit: "% of plant kWh", category: "simulation", source: `Rough split from motor loads in ${R2} vendor listings`, confidence: "low", status: "placeholder" },
+  { id: "sim_energy_dryer_pct", label: "Electricity share — dryer", value: 12, unit: "% of plant kWh", category: "simulation", source: `Rough split from motor loads in ${R2} vendor listings`, confidence: "low", status: "placeholder" },
+  { id: "sim_energy_extruder_pct", label: "Electricity share — extruder", value: 35, unit: "% of plant kWh", category: "simulation", source: `Rough split from motor loads in ${R2} vendor listings`, confidence: "low", status: "placeholder" },
+  { id: "sim_energy_pelletizer_pct", label: "Electricity share — pelletizer", value: 8, unit: "% of plant kWh", category: "simulation", source: `Rough split from motor loads in ${R2} vendor listings`, confidence: "low", status: "placeholder" },
 ] as const satisfies readonly Assumption[];
 
 export type AssumptionId = (typeof assumptions)[number]["id"];
@@ -528,6 +576,7 @@ export const categoryLabels: Record<Category, string> = {
   economics: "Unit economics",
   roadmap: "Roadmap & gates",
   funding: "Funding",
+  simulation: "Simulation model",
   alternatives: "Alternatives (owner only)",
 };
 

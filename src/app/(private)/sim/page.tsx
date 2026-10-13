@@ -1,6 +1,10 @@
-import { Box, Cpu, Map } from "lucide-react";
 import type { Metadata } from "next";
-import { ModuleCard, ModuleGrid, PageHeader } from "@/components/private/page-shell";
+import { Suspense } from "react";
+import { PageHeader } from "@/components/private/page-shell";
+import { SimDashboard } from "@/components/sim/sim-dashboard";
+import { assumptions } from "@/data/assumptions";
+import { requireRole } from "@/lib/auth/session";
+import { defaultParams, sliderStatuses } from "@/sim/params";
 
 export const metadata: Metadata = { title: "Simulation" };
 
@@ -8,15 +12,21 @@ export default function SimPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Simulation"
+        eyebrow="Simulation · 2D schematic"
         title="A digital twin of the plant"
-        description="Follow plastic from collection points to pellets and buyers, and test scenarios before spending a rupee."
+        description="Follow plastic from collection points to pellets and buyers, minute by minute. Change prices, shifts and feedstock quality, or throw in a breakdown, and watch the numbers move."
       />
-      <ModuleGrid>
-        <ModuleCard icon={Cpu} title="Simulation engine" description="Deterministic, seedable model of every stage and its costs." phase="Phase 5" />
-        <ModuleCard icon={Map} title="2D schematic view" description="Live flow diagram with KPIs and scenario controls." phase="Phase 5" />
-        <ModuleCard icon={Box} title="3D plant view" description="Isometric factory with trucks, machines and material flow." phase="Phase 6" />
-      </ModuleGrid>
+      <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-muted/50" aria-label="Loading simulation" />}>
+        <SimContent />
+      </Suspense>
     </>
   );
+}
+
+// Proxy already guards /sim; this re-checks on the server. Parameters are built
+// here (server-only) and passed down as plain numbers.
+async function SimContent() {
+  await requireRole();
+  const placeholderCount = assumptions.filter((a) => a.category === "simulation" && a.status === "placeholder").length;
+  return <SimDashboard params={defaultParams()} statuses={sliderStatuses()} placeholderCount={placeholderCount} />;
 }

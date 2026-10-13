@@ -214,3 +214,12 @@ html {
   from { transform: translateX(-280px); }
   to { transform: translateX(0); }
 }
+
+/* /sim schematic: material moving along a connector */
+@keyframes sim-dash {
+  to { stroke-dashoffset: -24; }
+}
+.sim-flow {
+  stroke-dasharray: 6 6;
+  animation: sim-dash 0.8s linear infinite;
+}

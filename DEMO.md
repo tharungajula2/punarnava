@@ -9,14 +9,15 @@ Every number below comes from `src/data/assumptions.ts` (base case = research fi
 
 ## Before you start (2 minutes, do it before the call)
 
-1. Open the site on a laptop (Chrome, full screen, light theme reads best on projectors/screen-share).
+1. Double-click `start-os.bat` (private pages run only on your laptop; Vercel shows `/` and `/sources` only).
+   Open the site on a laptop (Chrome, full screen, light theme reads best on projectors/screen-share).
 2. Open four tabs, in this order:
    1. `/` (landing)
    2. `/sim` (wait until the 3D plant has loaded, then press **Restart**)
    3. `/os/finance`
    4. `/lab/scenarios`
 3. Close other apps (the 3D view pauses when its tab is hidden, which is fine, but other tabs can slow it).
-4. If you're in `locked` mode, sign in with the **investor** password first so you see exactly what they'll see.
+4. The private tabs are local only. On a call, share your screen; investors can't open `/os` themselves.
 
 ---
 
@@ -97,7 +98,7 @@ Point at the footnote: *"Projections based on stated assumptions"*, and the **So
 | "Where do the numbers come from?" | Desk research (three reports) → one assumptions file. Each figure shows *Researched* / *Placeholder*; none are *Verified* yet. |
 | "Why HDPE, not PET?" | PET bottle-to-flake is crowded and price-competitive; rigid HDPE pellets fit the Category I mandate. PET stays a later option. *(Decision D-001 is still "Proposed". Confirm your answer.)* |
 | "What breaks the model?" | All three shocks at once. Also feedstock contracts. See `/lab/risks`. |
-| "Is this secure?" | Password-protected, read-only investor view. (It's password protection, not encryption.) |
+| "Is this secure?" | The working model runs only on my machine and is not deployed. Investors see the public page; I share the rest on screen or in the data room. |
 
 ---
 
@@ -105,22 +106,9 @@ Point at the footnote: *"Projections based on stated assumptions"*, and the **So
 
 Do these in order. Each one takes a minute or two.
 
-### 1. Lock the private areas
-1. Go to **vercel.com** → your **punarnava** project → **Settings** → **Environment Variables**.
-2. Set (for **Production**):
-   - `AUTH_MODE` = `locked`
-   - `OWNER_PASSWORD` = a long password only you know (16+ characters)
-   - `INVESTOR_PASSWORD` = a *different* password you'll give investors
-   - `SESSION_SECRET` = a random string of **at least 32 characters** (e.g. paste the output of `openssl rand -hex 32`, or use a password manager's generator)
-   - `NEXT_PUBLIC_CONTACT_EMAIL` = the address the contact form should open
-   - *(optional)* `NEXT_PUBLIC_SITE_URL` = your custom domain, e.g. `https://punarnava.in`, if you add one
-3. **Redeploy**: **Deployments** → latest → **⋯** → **Redeploy**. Env changes only apply after a redeploy.
-4. Test in a private/incognito window:
-   - `/os` → should send you to the sign-in page.
-   - Investor password → you see "Investor view · read-only", no **Admin** link.
-   - Owner password → you can open `/admin`.
-
-> To cut off all investors later: change `INVESTOR_PASSWORD` and redeploy. Every investor session ends.
+### 1. Check what is public
+1. In Vercel → **Settings** → **Environment Variables**, set (Production): `NEXT_PUBLIC_CONTACT_EMAIL` and, optionally, `NEXT_PUBLIC_SITE_URL`. Redeploy after changes.
+2. In a private window, open the live site: `/` and `/sources` load; `/os`, `/sim`, `/lab`, `/admin` all show "not found". There is no login: those routes are simply not deployed.
 
 ### 2. Fix or label placeholders
 Open `/admin/assumptions` → filter **Placeholder** (currently **30 of 198**). The ones an investor will see:
@@ -138,6 +126,6 @@ Also check:
 
 ### 3. Final look
 - [ ] Share the link in WhatsApp to yourself: you should see the Punarnava preview card (title, line, loop logo).
-- [ ] Open the site on your phone: landing + `/os` + `/sim` (phones get the 2D view; that's intended).
+- [ ] Open the live site on your phone: the landing page and `/sources`.
 - [ ] Contact form opens your email app with the right address.
-- [ ] Don't share the **owner** password, and don't send passwords in the same message as the link.
+- [ ] Share only the public link. Private pages stay on your laptop.

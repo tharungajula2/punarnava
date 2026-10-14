@@ -4,7 +4,6 @@ import { FigStat, SourceKey, SourceList, SourceText } from "@/components/lab/sou
 import { Chart, ChartCard } from "@/components/os/chart";
 import { Card, ContentSkeleton, Section, SimpleTable, StatGrid } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getMarket } from "@/lib/data/lab";
 import { fmtValue } from "@/lib/lab/format";
 
@@ -26,7 +25,6 @@ export default function MarketPage() {
 }
 
 async function MarketContent() {
-  await requireRole();
   const m = await getMarket();
   const [india, karnataka, blrHigh, mkt, kaMkt, pibos, pwps, flex] = m.headline;
 

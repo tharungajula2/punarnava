@@ -4,7 +4,6 @@ import { Chart, ChartCard } from "@/components/os/chart";
 import { DataTable } from "@/components/os/data-table";
 import { Card, ContentSkeleton, Progress, SampleNotice, Section, SimLink, SimpleTable, Stat, StatGrid, StatusBadge } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getSales } from "@/lib/data";
 import { inr, int, lakh, pct, tonnes } from "@/lib/format";
 import type { Status } from "@/data/assumptions";
@@ -29,7 +28,6 @@ export default function SalesPage() {
 }
 
 async function SalesContent() {
-  await requireRole();
   const s = await getSales();
   const m = s.summary;
   const dispatchedKg = s.dispatches.reduce((a, d) => a + d.kg, 0);

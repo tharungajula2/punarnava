@@ -4,7 +4,6 @@ import { RangeChart, type RangeRow } from "@/components/lab/range-chart";
 import { SourceKey, SourceText } from "@/components/lab/source";
 import { Card, ContentSkeleton, LinkButton, Section, SimpleTable, Stat, StatGrid, StatusBadge } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getPricing } from "@/lib/data/lab";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +35,6 @@ export default function PricingPage() {
 }
 
 async function PricingContent() {
-  await requireRole();
   const p = await getPricing();
   const toRow = (b: (typeof p.bands)[number]): RangeRow => ({ key: b.key, label: b.label, kind: b.kind, low: b.low, high: b.high, base: b.base, tone: tone[b.group] });
   const materials = p.bands.filter((b) => b.group !== "EPR certificate").map(toRow);

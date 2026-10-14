@@ -4,7 +4,6 @@ import { SourceKey, SourceList } from "@/components/lab/source";
 import { UnitModelTool } from "@/components/lab/unit-model-tool";
 import { Card, ContentSkeleton, LinkButton, Section } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getUnitModel } from "@/lib/data/lab";
 
 export const metadata: Metadata = { title: "Unit-economics model" };
@@ -27,7 +26,6 @@ export default function UnitEconomicsPage() {
 }
 
 async function UnitContent() {
-  await requireRole();
   const u = await getUnitModel();
   return (
     <>

@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { ModuleCard, ModuleGrid, PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Admin" };
 
@@ -17,7 +16,6 @@ export default function AdminPage() {
 
 // Proxy already blocks non-owners; this re-checks on the server before rendering.
 async function AdminContent() {
-  await requireRole("owner");
   return (
     <>
       <PageHeader

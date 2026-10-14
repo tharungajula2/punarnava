@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { DataTable } from "@/components/os/data-table";
 import { Card, ContentSkeleton, Pill, Progress, SampleNotice, Section, SimLink, Stat, StatGrid, type Tone } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getFeedstock } from "@/lib/data";
 import { inr, int, pct, tonnes } from "@/lib/format";
 
@@ -29,7 +28,6 @@ export default function FeedstockPage() {
 const acceptTone: Record<string, Tone> = { Accept: "good", "Keep separate": "info", Exclude: "bad" };
 
 async function FeedstockContent() {
-  await requireRole();
   const f = await getFeedstock();
   const s = f.summary;
 

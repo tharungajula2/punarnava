@@ -19,32 +19,23 @@ One web app = investor pitch + founder's private operating system. Four tracks:
 
 | Track | Route | Access |
 |---|---|---|
-| Landing page (investor pitch) | `/` | Public |
-| OS (operating system) | `/os/*` | Private |
-| Simulation (factory digital twin) | `/sim` | Private |
-| R&D wing (business research only — no science/patents) | `/lab/*` | Private |
-| Admin | `/admin` | Owner only |
-| Login | `/login` | Public |
+| Landing page (investor pitch) | `/` | Public (Vercel) |
+| OS (operating system) | `/os/*` | Local only |
+| Simulation (factory digital twin) | `/sim` | Local only |
+| R&D wing (business research only — no science/patents) | `/lab/*` | Local only |
+| Admin | `/admin` | Local only |
+| Sources | `/sources` | Public (Vercel) |
 
-## 4. Access control (no database for now)
-- **`AUTH_MODE` env var (`"open"` | `"locked"`, default `"open"`; code in `src/lib/auth/mode.ts`).**
-  - `open`: `/os`, `/sim`, `/lab`, `/admin` are reachable without login, everyone gets the full owner view, login link/sign-out/role badge are hidden, `/login` redirects to `/os`.
-  - `locked`: the password protection described below works exactly as before.
-  - **Do NOT re-add login barriers or delete the auth code** — it is kept intact for switching back to `locked`. All new private features must work in `open` mode without login and still call `getSession()`/`requireRole()` (they return an owner session in open mode).
-  - Both modes: private routes send `noindex` (robots meta via the `(private)` layout + `X-Robots-Tag` header from `src/proxy.ts`).
-  - Changing `AUTH_MODE` in Vercel needs a redeploy (the footer is statically built).
-- The rest of this section describes `locked` mode:
-- Next.js `middleware.ts` protects `/os`, `/sim`, `/lab`, `/admin`.
-- Two roles via passwords in environment variables:
-  - `OWNER_PASSWORD` → role `owner`: everything incl. `/admin` and private notes.
-  - `INVESTOR_PASSWORD` → role `investor`: read-only view of `/os`, `/sim`, `/lab`. No `/admin`, no items marked `ownerOnly`.
-- On login, set an httpOnly, secure, sameSite=lax cookie containing a signed token (HMAC via `jose`, secret `SESSION_SECRET`), 7-day expiry. Logout clears it.
-- Changing `INVESTOR_PASSWORD` in Vercel revokes all investor access.
-- Basic login throttling (delay after failed attempts). Generic error messages.
-- Private content and owner-only data live in server-only modules (`import "server-only"`), rendered by Server Components, so they are never shipped to public pages.
-- Secrets only in `.env.local` (gitignored) and Vercel env vars. Never in code, commits or chat. Provide `.env.example` with empty values.
-- Show a subtle "Investor view" badge when role = investor.
-- This is password protection, not encryption. Don't describe it as encryption.
+## 4. Public vs private (NO login system — do not add one)
+- **Public (deployed on Vercel):** only `/` (landing) and `/sources`. Nothing else is built or shipped there.
+- **Private (local only):** `/os/*`, `/sim`, `/lab/*`, `/admin` live in the route group `src/app/(private)`. They run only on the founder's machine via `npm run dev` (or double-click `start-os.bat`, which opens http://localhost:3000/os). No password, no roles, no investor view — local means owner access.
+- **How Vercel is kept public-only:** `npm run build` runs `scripts/prune-private.mjs` first. When the `VERCEL` env var is set it deletes `src/app/(private)` before `next build`, so those routes are not built, not reachable and not in the build output. Locally (no `VERCEL`) it does nothing. Check with `VERCEL=1 npm run build` in a throwaway copy or reset afterwards (`git checkout -- "src/app/(private)"`).
+- **Rules for every future session:**
+  - Do NOT add login, passwords, sessions, cookies, middleware/proxy guards, roles, "investor view" or auth env vars. Privacy comes from the private routes not being deployed, not from a login.
+  - New private features go under `src/app/(private)` only. Public pages must never import from private routes.
+  - Anything that must be visible publicly goes in `/` or `/sources` and must come from `src/data/assumptions.ts` entries that are fine to publish (not `ownerOnly`).
+  - Private-only data (investor notes, alternatives) stays out of public pages; keep `import "server-only"` on server data modules.
+- Secrets only in `.env.local` (gitignored) and Vercel env vars; `.env.example` has empty values. Only env vars now: `NEXT_PUBLIC_CONTACT_EMAIL`, `NEXT_PUBLIC_SITE_URL`.
 
 ## 5. Tech stack
 - Next.js (App Router) + TypeScript (strict), deployed on Vercel from GitHub.
@@ -112,7 +103,7 @@ Content comes from `/research/*.md` and `assumptions.ts`. Show sources.
 ## 13. Build phases (update the checklist as you go)
 - [x] Phase 1 — Setup: Next.js app, design system, layout, logo, Git + GitHub connected
 - [x] Phase 2 — Landing page (complete, polished, responsive) + deploy to Vercel *(Vercel build fixed via vercel.json in Phase 3)*
-- [x] Phase 3 — Login, roles, middleware protection, private layouts (OS/Sim/Lab/Admin shells)
+- [x] Phase 3 — Private layouts (OS/Sim/Lab/Admin shells) *(login/roles built here were later removed; see Restructure entry)*
 - [x] Phase 4 — Assumptions system + Admin assumptions viewer
 - [x] Phase 5 — Simulation engine + tests + 2D schematic view
 - [x] Phase 6 — 3D simulation visual layer
@@ -137,3 +128,4 @@ Content comes from `/research/*.md` and `assumptions.ts`. Show sources.
 - 2026-10-14 · Phase 8 · **R&D lab** at `/lab` (hub) + `/lab/{market,competitors,pricing,unit-economics,scenarios,risks,data-room,decisions,research-gaps}`. Desktop sidebar nests lab sections like the OS (`components/lab/modules.ts`, `private-nav.tsx` generalised); phones get the chip bar (`ModuleChips` in `os-subnav.tsx`, reused by `lab-subnav.tsx`). Data: typed files in `src/data/lab/` (market, competitors, pricing, decisions, data-room — server-only for owner notes); pages call only `src/lib/data/lab.ts` getters. Provenance UI in `components/lab/source.tsx` (`FigStat`, `SourceList`, source key R1/R2/R3) — every figure shows status + source. **Unit model**: `src/lib/lab/unit-model.ts` is pure (no assumptions import, so it runs in the browser); `unit-inputs.ts` (server-only) builds base inputs from assumptions. Tests (+4) prove it reproduces OS finance and R2 exactly: ₹14.9/kg, ₹13.8 no-EPR, break-even ~45%, payback 1.5 yrs, all four R2 stress cases within ₹0.25/kg. **Scenarios** (`src/lib/lab/scenarios.ts`): worst = R2 combined stress (feed +20%, yield −5pp, price −10%), best = the mirror (our construction, flagged), each shown via the model and a 28-day sim run (seed 7; model vs sim agree within ~₹1/kg). `/sim?scenario=best|worst` now preloads those slider values (`SimDashboard.initialScenario`). Competitor map: 12 companies from R3, positioning chart (log t/yr × value-chain row — the row is our classification, labelled), table; round sizes left out until verified. Risk register reuses `data/os/risks.ts` with a 4×4 matrix. Data room = index of 23 docs (9 available, honest "Not started" for LOIs, quotes, trial yields, cap table). Decision log = 10 real decisions (D-001 base case still "Proposed"). Research gaps page reuses `research-gaps.ts` (+3 prompts: rHDPE market size, competitor verification, seed investors) and lists placeholders, conflicts, low-confidence figures. **assumptions.ts** gained 21 entries: market CAGR, 10 price-band ends, and a `competitors` category (10 scale figures, all low/medium confidence, excluded from the landing sources table). Checked all lab pages at 375 px (no overflow) and desktop via the `prod` preview. Next: Phase 9 (polish, performance, security review, demo script).
 - 2026-10-14 · Phase 9 · **Visual QA**: all 28 routes checked at 360/768/1440 px (no horizontal overflow) and contrast-scanned in light + dark (no WCAG AA failures). Stat tiles (`components/os/ui.tsx`) use a container query so the badge sits above the label on narrow tiles. **Performance** (Lighthouse, local prod build): mobile 78 → 91, desktop 100; a11y / best-practices / SEO 100. **Live Vercel URL, mobile: 77–82** (was 82–86): LCP improved 3.4–4.2 s → 2.7–2.9 s, but Total Blocking Time is ~470–720 ms. The same React hydration work (~250 ms tasks) now lands after the earlier first paint, so it counts as blocking. Tried per-section Suspense boundaries to split hydration: no clear gain, reverted. Next lever if needed: fewer client components / smaller RSC payload on `/`, then re-check with PageSpeed Insights (pagespeed.web.dev). Fixes: `motion` removed from the public bundle (`Reveal` is now CSS + a tiny `RevealObserver`; the package stays installed); hero loop pellets moved to their own composited SVG layer (an SVG-internal transform repainted the whole graphic every frame); Fraunces `SOFT` axis dropped; Geist Mono not preloaded; a `"Rupee"` @font-face draws ₹ from a system font, because ₹ pulled ~180 KB of latin-ext web fonts onto every page; the 100-row sources table moved off the landing page to a new public `/sources` page (cards on phones). Header section links are now `/#…` plain anchors so they work from `/sources`. three.js / Recharts / Zustand confirmed absent from the landing bundle; 3D stays lazy-loaded (fps not re-measured: the preview pane was hidden, Phase 6 measured 84 fps). **Security**: git history and tree scanned, no secrets ever committed (only `.env.example`). Locked mode tested with throwaway passwords: logged-out redirects on every private route incl. RSC/prefetch requests and forged cookies, generic error, investor badge, no /admin, owner notes absent from investor HTML, httpOnly cookie, sign-out; owner sees /admin + notes. Open mode: no login, noindex meta + `X-Robots-Tag`. Added security headers in `next.config.ts` (nosniff, X-Frame-Options DENY, Referrer-Policy, Permissions-Policy, HSTS, no `X-Powered-By`). **SEO/sharing**: `metadataBase` from `src/lib/site.ts` (`NEXT_PUBLIC_SITE_URL` → Vercel production URL → localhost), Twitter card, canonical on `/` and `/sources`, `robots.ts` (disallows private paths), `sitemap.ts`, `opengraph-image.tsx` (1200×630, brand fonts fetched from Google Fonts at build, falls back to the bundled sans), `apple-icon.tsx`. **DEMO.md**: 7-minute click-by-click script + pre-sharing checklist. Remaining placeholders: raise amount, subsidy %, signed feedstock/offtake %, KSPCB consent days, 2 hiring lead times, 23 sim modelling choices; 0 figures verified; no source URLs. Open-mode prerendered private pages contain owner data, so switching to `locked` needs a redeploy (already documented).
 - 2026-10-14 · Perf follow-up · Landing mobile performance. (1) `experimental.inlineCss` in `next.config.ts`: the render-blocking stylesheet is gone (PSI estimated 1.5 s saved; compressed HTML grows ~17 KB). (2) The hero graphic's entrance is now a GPU-only `.hero-in` keyframe in `globals.css`. tw-animate's version also animated `filter`, which ran on the main thread. (3) Base UI and class-merging JS are off public pages: `buttonVariants` now lives in `components/ui/button-variants.ts`; the theme toggle (`theme-toggle.tsx` server + `theme-toggle-button.tsx` client), contact form and root `error.tsx` use plain `<button>`s with identical classes. Landing JS is down about 15 KB (brotli). Results: Lighthouse CLI against the live URL scores 91–95. PageSpeed Insights mobile varies a lot because of Google's machine load: runs on the new code gave 98, 86 and 76. Its main-thread time ranged from 0.7 s to 3.4 s between runs, so three ≥90 runs in a row is not guaranteed yet. Remaining cost is mostly layout: about 0.9 s at 4× CPU, about half in the hero, plus relayouts as web fonts arrive. The next things to try (each changes the look slightly): drop or preload Geist Mono, trim the `Rupee` local() font list, use `content-visibility` on lower sections.
+- 2026-10-14 · Restructure · **Login system removed completely** (`/login`, `src/lib/auth`, `src/proxy.ts`, role checks, investor badge, `jose`, all auth env vars). **Vercel ships only `/` and `/sources`**: `npm run build` runs `scripts/prune-private.mjs`, which deletes `src/app/(private)` when `VERCEL` is set (proved with a `VERCEL=1` build: route list has no /os, /sim, /lab, /admin). Locally `npm run dev` shows everything; `start-os.bat` starts the server and opens `/os`. Section 4 rewritten; do not re-add auth. Earlier log entries mentioning login/AUTH_MODE are historical.

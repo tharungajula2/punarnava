@@ -6,7 +6,6 @@ import { SourceKey, SourceList } from "@/components/lab/source";
 import { Chart, ChartCard } from "@/components/os/chart";
 import { Card, ContentSkeleton, Pill, Section, SimpleTable } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getScenarios } from "@/lib/data/lab";
 import { crore, int, lakh, pct } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -32,7 +31,6 @@ export default function ScenariosPage() {
 }
 
 async function ScenarioContent() {
-  await requireRole();
   const s = await getScenarios();
   const tone = { best: "border-status-verified/40", base: "border-primary/40", worst: "border-destructive/40" } as const;
 

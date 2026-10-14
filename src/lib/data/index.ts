@@ -12,26 +12,22 @@ import { checkpoints, lossBudget, pelletSpec } from "@/data/os/quality";
 import { gates, nextActions, phaseProgress, phases, taskStatusLabel, visibleTasks } from "@/data/os/roadmap";
 import { levelLabel, risks, riskScore, topRisks } from "@/data/os/risks";
 import { contractTypes, priceRefs, salesSummary, sampleProspects, segments } from "@/data/os/sales";
-import type { Role } from "@/lib/auth/token";
 import { simSample } from "./sim-sample";
 
 /**
  * Data layer for /os. Pages call only these async getters, so the typed files
  * in src/data/os can later be swapped for Supabase queries without touching UI.
- * Everything returned is plain, serialisable data that respects the role
- * (owner-only records never reach an investor).
+ * Everything returned is plain, serialisable data.
  */
 
-const isOwner = (role: Role) => role === "owner";
-
-export async function getDashboard(role: Role) {
+export async function getDashboard() {
   const f = financeData();
   const lic = licenceRows();
   return {
     stats: assumptionStats(),
     gates: gates(),
-    progress: phaseProgress(isOwner(role)),
-    nextActions: nextActions(isOwner(role)),
+    progress: phaseProgress(true),
+    nextActions: nextActions(true),
     risks: topRisks(5).map((r) => ({ ...r, likelihood: levelLabel[r.likelihood], impact: levelLabel[r.impact] })),
     finance: {
       envelope: f.capex.envelope,
@@ -106,12 +102,12 @@ export async function getHiring() {
   return hiringPlan();
 }
 
-export async function getRoadmap(role: Role) {
+export async function getRoadmap() {
   return {
     phases,
-    progress: phaseProgress(isOwner(role)),
+    progress: phaseProgress(true),
     gates: gates(),
-    tasks: visibleTasks(isOwner(role)).map((t) => ({ ...t, statusLabel: taskStatusLabel[t.status], phaseLabel: `Phase ${t.phase} · ${phases[t.phase - 1].name}` })),
+    tasks: visibleTasks(true).map((t) => ({ ...t, statusLabel: taskStatusLabel[t.status], phaseLabel: `Phase ${t.phase} · ${phases[t.phase - 1].name}` })),
   };
 }
 

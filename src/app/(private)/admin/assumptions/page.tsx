@@ -6,7 +6,6 @@ import { CopyButton } from "@/components/private/copy-button";
 import { PageHeader } from "@/components/private/page-shell";
 import { assumptions, assumptionStats, categoryLabels, type Assumption, type Category } from "@/data/assumptions";
 import { researchGaps } from "@/data/research-gaps";
-import { requireRole } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Assumptions" };
 
@@ -22,7 +21,6 @@ export default function AssumptionsPage() {
 
 // Proxy already blocks non-owners; this re-checks on the server before rendering.
 async function AssumptionsContent() {
-  await requireRole("owner");
   const rows = [...assumptions] as Assumption[];
   const s = assumptionStats(rows);
 

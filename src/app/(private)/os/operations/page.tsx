@@ -4,7 +4,6 @@ import { Chart, ChartCard } from "@/components/os/chart";
 import { DataTable } from "@/components/os/data-table";
 import { ContentSkeleton, SampleNotice, Section, SimLink, Stat, StatGrid } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getOperations } from "@/lib/data";
 import { int, pct, tonnes } from "@/lib/format";
 
@@ -30,7 +29,6 @@ export default function OperationsPage() {
 const statusLabel: Record<string, string> = { running: "Running", idle: "Idle", down: "Down", maintenance: "Planned stop" };
 
 async function OperationsContent() {
-  await requireRole();
   const o = await getOperations();
   const p = o.plan;
 

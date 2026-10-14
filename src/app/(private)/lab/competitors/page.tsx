@@ -6,7 +6,6 @@ import { ChartCard } from "@/components/os/chart";
 import { DataTable } from "@/components/os/data-table";
 import { Card, ContentSkeleton, Pill, Section, Stat, StatGrid } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getCompetitors } from "@/lib/data/lab";
 import { fmtValue, shortSource } from "@/lib/lab/format";
 
@@ -28,7 +27,6 @@ export default function CompetitorsPage() {
 }
 
 async function CompetitorsContent() {
-  await requireRole();
   const c = await getCompetitors();
   const points: Point[] = [
     ...c.rows

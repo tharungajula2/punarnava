@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { Chart, ChartCard } from "@/components/os/chart";
 import { Card, ContentSkeleton, SampleNotice, Section, SimLink, SimpleTable, Stat, StatGrid, StatusBadge } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getEpr } from "@/lib/data";
 import { inr, int, lakh, pct, tonnes } from "@/lib/format";
 
@@ -27,7 +26,6 @@ export default function EprPage() {
 }
 
 async function EprContent() {
-  await requireRole();
   const e = await getEpr();
   const s = e.summary;
 

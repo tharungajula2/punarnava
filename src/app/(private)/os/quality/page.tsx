@@ -4,7 +4,6 @@ import { Chart, ChartCard } from "@/components/os/chart";
 import { DataTable } from "@/components/os/data-table";
 import { Card, ContentSkeleton, SampleNotice, Section, SimLink, SimpleTable, Stat, StatGrid, StatusBadge } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getQuality } from "@/lib/data";
 import { int, pct } from "@/lib/format";
 
@@ -28,7 +27,6 @@ export default function QualityPage() {
 }
 
 async function QualityContent() {
-  await requireRole();
   const q = await getQuality();
   const b = q.budget;
   const released = q.lots.filter((l) => l.yieldPct !== null);

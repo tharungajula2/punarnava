@@ -7,16 +7,13 @@ import { buyerSegments, caveats, contractStructures, focusNote, headlineIds, man
 import { bandRows, pricingNotes, spreads, waterfall } from "@/data/lab/pricing";
 import { levelLabel, risks, riskScore } from "@/data/os/risks";
 import { researchGaps } from "@/data/research-gaps";
-import type { Role } from "@/lib/auth/token";
 import { scenarioPlanner } from "@/lib/lab/scenarios";
 import { baseInputs, fixedSources, researchChecks, sliderMeta } from "@/lib/lab/unit-inputs";
 
 /**
  * Data layer for /lab (same idea as ./index.ts for /os): pages call only these
- * async getters and get plain, serialisable, role-filtered data back.
+ * async getters and get plain, serialisable, plain, serialisable data back.
  */
-
-const isOwner = (role: Role) => role === "owner";
 
 /** One figure with its provenance, for "every figure shows its source". */
 export function fig(id: AssumptionId) {
@@ -67,16 +64,16 @@ export async function getRiskRegister() {
     .map((r) => ({ ...r, score: riskScore(r), likelihoodLabel: levelLabel[r.likelihood], impactLabel: levelLabel[r.impact] }));
 }
 
-export async function getDataRoom(role: Role) {
-  return dataRoom.map(({ ownerNote, ...d }) => ({ ...d, ownerNote: isOwner(role) ? (ownerNote ?? null) : null }));
+export async function getDataRoom() {
+  return dataRoom.map(({ ownerNote, ...d }) => ({ ...d, ownerNote: ownerNote ?? null }));
 }
 
 export async function getDecisions() {
   return decisions();
 }
 
-export async function getResearchGaps(role: Role) {
-  const list = (assumptions as readonly Assumption[]).filter((a) => isOwner(role) || !a.ownerOnly);
+export async function getResearchGaps() {
+  const list = (assumptions as readonly Assumption[]);
   const pick = (a: Assumption) => ({ id: a.id, label: a.label, value: a.value, unit: a.unit, source: a.source, category: a.category, confidence: a.confidence });
   return {
     gaps: researchGaps,

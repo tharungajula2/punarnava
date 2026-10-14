@@ -4,7 +4,6 @@ import { Chart, ChartCard } from "@/components/os/chart";
 import { DataTable } from "@/components/os/data-table";
 import { Card, ContentSkeleton, Section, Stat, StatGrid } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getHiring } from "@/lib/data";
 import { inr, int, lakh } from "@/lib/format";
 
@@ -26,7 +25,6 @@ export default function HiringPage() {
 }
 
 async function HiringContent() {
-  await requireRole();
   const h = await getHiring();
   const matches = Math.round(h.payroll) === Math.round(h.checks.labourMonth);
 

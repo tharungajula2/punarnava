@@ -4,7 +4,6 @@ import { Chart, ChartCard } from "@/components/os/chart";
 import { DataTable } from "@/components/os/data-table";
 import { Card, ContentSkeleton, SampleNotice, Section, SimLink, Stat, StatGrid } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getLogistics } from "@/lib/data";
 import { inr, int, lakh, tonnes } from "@/lib/format";
 
@@ -28,7 +27,6 @@ export default function LogisticsPage() {
 }
 
 async function LogisticsContent() {
-  await requireRole();
   const l = await getLogistics();
   const totalKg = l.trips.reduce((a, t) => a + t.kg, 0);
   const byPoint = Object.entries(

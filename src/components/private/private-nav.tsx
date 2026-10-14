@@ -21,9 +21,9 @@ const nested = {
 
 const adminItem = { href: "/admin", label: "Admin", short: "Admin", icon: ShieldCheck } as const;
 
-export function PrivateNav({ showAdmin = false, compact = false }: { showAdmin?: boolean; compact?: boolean }) {
+export function PrivateNav({ compact = false }: { compact?: boolean }) {
   const pathname = usePathname();
-  const list = showAdmin ? [...items, adminItem] : items;
+  const list = [...items, adminItem];
 
   return (
     <nav aria-label="Workspace" className={cn("flex gap-1", compact ? "flex-row" : "flex-col")}>

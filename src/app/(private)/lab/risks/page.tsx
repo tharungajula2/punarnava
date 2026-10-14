@@ -6,7 +6,6 @@ import { SourceKey } from "@/components/lab/source";
 import { ContentSkeleton, Pill, Section, SimpleTable, type Tone } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
 import type { Level } from "@/data/os/risks";
-import { requireRole } from "@/lib/auth/session";
 import { getRiskRegister } from "@/lib/data/lab";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +35,6 @@ export default function RisksPage() {
 }
 
 async function RiskContent() {
-  await requireRole();
   const risks = await getRiskRegister();
   const num = new Map(risks.map((r, i) => [r.id, i + 1]));
 

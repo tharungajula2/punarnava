@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { DataTable } from "@/components/os/data-table";
 import { Card, ContentSkeleton, Progress, Section, Stat, StatGrid, StatusBadge } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getRoadmap } from "@/lib/data";
 import { pct } from "@/lib/format";
 
@@ -25,8 +24,7 @@ export default function RoadmapPage() {
 }
 
 async function RoadmapContent() {
-  const { role } = await requireRole();
-  const r = await getRoadmap(role);
+  const r = await getRoadmap();
   const open = r.tasks.filter((t) => t.status !== "done");
   const current = r.progress.find((p) => p.pct < 100);
 

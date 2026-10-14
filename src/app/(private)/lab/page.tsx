@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import { labModules } from "@/components/lab/modules";
 import { ContentSkeleton, Stat, StatGrid } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getLabOverview } from "@/lib/data/lab";
 
 export const metadata: Metadata = { title: "R&D lab" };
@@ -26,7 +25,6 @@ export default function LabPage() {
 }
 
 async function LabOverview() {
-  await requireRole();
   const o = await getLabOverview();
   return (
     <>

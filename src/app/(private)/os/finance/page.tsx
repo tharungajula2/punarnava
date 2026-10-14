@@ -4,7 +4,6 @@ import { Chart, ChartCard } from "@/components/os/chart";
 import { DataTable } from "@/components/os/data-table";
 import { Card, ContentSkeleton, LinkButton, Section, SimLink, SimpleTable, Stat, StatGrid, StatusBadge } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getFinance } from "@/lib/data";
 import { inr, int, lakh, pct } from "@/lib/format";
 import { ShieldCheck } from "lucide-react";
@@ -29,7 +28,6 @@ export default function FinancePage() {
 }
 
 async function FinanceContent() {
-  const { role } = await requireRole();
   const f = await getFinance();
   const steady = f.pnl.years[3];
   const sm = f.pnl.steadyMonth;
@@ -204,12 +202,10 @@ async function FinanceContent() {
         />
       </Section>
 
-      {role === "owner" ? (
-        <Card className="mt-12 flex flex-wrap items-center justify-between gap-3">
+      <Card className="mt-12 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-muted-foreground">Change any input in src/data/assumptions.ts — every table on this page recalculates.</p>
           <LinkButton href="/admin/assumptions" label="View assumptions" icon={ShieldCheck} />
         </Card>
-      ) : null}
     </>
   );
 }

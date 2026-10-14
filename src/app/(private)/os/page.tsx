@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import { osModules } from "@/components/os/modules";
 import { Card, ContentSkeleton, Pill, Progress, Section, SimLink, Stat, StatGrid } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getDashboard } from "@/lib/data";
 import { crore, int, lakh, pct } from "@/lib/format";
 
@@ -31,8 +30,7 @@ export default function OsDashboardPage() {
 const levelTone = (l: string) => (l === "Very high" ? "bad" : l === "High" ? "warn" : "neutral") as "bad" | "warn" | "neutral";
 
 async function DashboardContent() {
-  const { role } = await requireRole();
-  const d = await getDashboard(role);
+  const d = await getDashboard();
 
   return (
     <>

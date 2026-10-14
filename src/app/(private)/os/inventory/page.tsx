@@ -4,7 +4,6 @@ import { Chart, ChartCard } from "@/components/os/chart";
 import { DataTable } from "@/components/os/data-table";
 import { Card, ContentSkeleton, Progress, SampleNotice, Section, SimLink, Stat, StatGrid } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getInventory } from "@/lib/data";
 import { int, tonnes } from "@/lib/format";
 
@@ -28,7 +27,6 @@ export default function InventoryPage() {
 }
 
 async function InventoryContent() {
-  await requireRole();
   const d = await getInventory();
   const p = d.policy;
   const sum = (g: string) => d.stock.filter((s) => s.group === g).reduce((a, s) => a + s.kg, 0);

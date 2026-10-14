@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { DataTable } from "@/components/os/data-table";
 import { ContentSkeleton, Stat, StatGrid } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getDecisions } from "@/lib/data/lab";
 
 export const metadata: Metadata = { title: "Decision log" };
@@ -24,7 +23,6 @@ export default function DecisionsPage() {
 }
 
 async function DecisionsContent() {
-  await requireRole();
   const d = await getDecisions();
   const count = (s: string) => d.filter((x) => x.status === s).length;
   return (

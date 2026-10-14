@@ -4,7 +4,6 @@ import { CopyButton } from "@/components/private/copy-button";
 import { ContentSkeleton, LinkButton, Pill, Section, SimpleTable, Stat, StatGrid } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
 import { categoryLabels } from "@/data/assumptions";
-import { requireRole } from "@/lib/auth/session";
 import { getResearchGaps } from "@/lib/data/lab";
 import { fmtValue, shortSource } from "@/lib/lab/format";
 
@@ -28,8 +27,7 @@ export default function ResearchGapsPage() {
 }
 
 async function GapsContent() {
-  const { role } = await requireRole();
-  const g = await getResearchGaps(role);
+  const g = await getResearchGaps();
 
   return (
     <>

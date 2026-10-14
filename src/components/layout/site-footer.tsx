@@ -1,7 +1,5 @@
-import Link from "next/link";
 import { LogoMark } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
-import { isOpenMode } from "@/lib/auth/mode";
 
 export function SiteFooter() {
   return (
@@ -13,11 +11,6 @@ export function SiteFooter() {
         </div>
         <div className="flex items-center gap-4">
           <p>Projections based on stated assumptions.</p>
-          {!isOpenMode() && (
-            <Link href="/login" prefetch={false} className="underline-offset-4 hover:text-foreground hover:underline">
-              Team sign-in
-            </Link>
-          )}
         </div>
       </Container>
     </footer>

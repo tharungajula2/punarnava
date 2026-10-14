@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import { DataTable } from "@/components/os/data-table";
 import { Card, ContentSkeleton, Section, Stat, StatGrid } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getCompliance } from "@/lib/data";
 import { int } from "@/lib/format";
 
@@ -26,7 +25,6 @@ export default function CompliancePage() {
 }
 
 async function ComplianceContent() {
-  await requireRole();
   const c = await getCompliance();
   const byStatus = (s: string) => c.licences.filter((l) => l.status === s).length;
 

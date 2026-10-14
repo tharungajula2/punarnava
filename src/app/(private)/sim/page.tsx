@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/private/page-shell";
 import { SimDashboard } from "@/components/sim/sim-dashboard";
 import { assumptions } from "@/data/assumptions";
-import { requireRole } from "@/lib/auth/session";
 import { SCENARIO_KEYS, simPatch, type ScenarioKey } from "@/lib/lab/scenarios";
 import { defaultParams, sliderStatuses } from "@/sim/params";
 
@@ -29,7 +28,6 @@ export default function SimPage({ searchParams }: Props) {
 // Proxy already guards /sim; this re-checks on the server. Parameters are built
 // here (server-only) and passed down as plain numbers.
 async function SimContent({ searchParams }: Props) {
-  await requireRole();
   const placeholderCount = assumptions.filter((a) => a.category === "simulation" && a.status === "placeholder").length;
   // /sim?scenario=best|worst (from /lab/scenarios) starts the sliders at that case.
   const raw = (await searchParams).scenario;

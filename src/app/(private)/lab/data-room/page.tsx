@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { ContentSkeleton, Pill, Progress, Section, Stat, StatGrid, type Tone } from "@/components/os/ui";
 import { PageHeader } from "@/components/private/page-shell";
-import { requireRole } from "@/lib/auth/session";
 import { getDataRoom } from "@/lib/data/lab";
 
 export const metadata: Metadata = { title: "Investor data room" };
@@ -27,8 +26,7 @@ export default function DataRoomPage() {
 }
 
 async function DataRoomContent() {
-  const { role } = await requireRole();
-  const docs = await getDataRoom(role);
+  const docs = await getDataRoom();
   const count = (s: string) => docs.filter((d) => d.status === s).length;
   const sections = [...new Set(docs.map((d) => d.section))];
 

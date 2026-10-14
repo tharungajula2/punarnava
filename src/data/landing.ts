@@ -15,19 +15,20 @@ export const nav = [
   { href: "/#how", label: "How it works" },
   { href: "/#economics", label: "Economics" },
   { href: "/#roadmap", label: "Roadmap" },
+  { href: "/case-study", label: "Case study" },
 ] as const;
 
 export const hero = {
   eyebrow: "Plastic recycling · Bengaluru",
   title: "Plastic that becomes",
   titleEmphasis: "new again.",
-  promise: `Punarnava is building a Bengaluru plant to turn post-consumer rigid plastic into traceable recycled HDPE pellets — the recycled content brands must now use in rigid (Category I) packaging.`,
-  primaryCta: { href: "#contact", label: "Talk to the founder" },
+  promise: `A concept study for a Bengaluru plant to turn post-consumer rigid plastic into traceable recycled HDPE pellets — the recycled content brands must now use in rigid (Category I) packaging.`,
+  primaryCta: { href: "/os", label: "Explore the OS" },
   secondaryCta: { href: "#economics", label: "See the economics" },
   facts: [
     { value: `${num(v("plant_input_tpd"))} t/day`, label: "planned first plant, rigid HDPE" },
     { value: `${num(v("epr_cat1_recycled_content_fy29"))}%`, label: "recycled content required in rigid (Category I) packaging from FY2028-29" },
-    { value: `₹${num(v("raise_amount"))} cr`, label: "seed raise (target)" },
+    { value: "7 sections", label: "operating system with a 3D factory digital twin" },
   ],
   loopStages: ["Collect", "Sort", "Wash", "Extrude", "Pellet", "Supply"],
 };
@@ -344,9 +345,9 @@ const funds = [
 const fundsTotal = funds.reduce((s, f) => s + f.lakh, 0);
 
 export const ask = {
-  kicker: "The ask",
-  title: `Raising ₹${num(v("raise_amount"))} crore to build the first plant.`,
-  body: `The modelled funding need: the line, a compliant site and working capital to buy feedstock ahead of sales (CAPEX accuracy ±${num(v("capex_accuracy_pct"))}% before vendor quotes). It excludes land purchase, financing cost and early operating losses. Round size and structure (equity and debt mix) are not final.`,
+  kicker: "Capital plan",
+  title: `If this were built: a phased capital plan of ₹${num(v("raise_amount"))} crore.`,
+  body: `This is a concept study, not a fundraise. The modelled funding need: the line, a compliant site and working capital to buy feedstock ahead of sales (CAPEX accuracy ±${num(v("capex_accuracy_pct"))}% before vendor quotes). It excludes land purchase, financing cost and early operating losses. Round size and structure (equity and debt mix) are not final.`,
   totalCrore: money(lakhToCrore(fundsTotal)),
   funds: funds.map((f) => ({
     label: f.label,
@@ -368,10 +369,14 @@ export const ask = {
 } as const;
 
 export const contact = {
-  kicker: "Contact",
-  title: "Let's talk.",
-  body: "Investors, collectors, converters and brands — write to us. The form opens your email app; nothing is stored on this site.",
+  kicker: "About the builder",
+  title: "Built by Tharun Gajula.",
+  body: "[Short bio — to be added.] Designer and builder exploring circular-economy ideas with AI tools. Open to work enquiries.",
+  links: [
+    { label: "GitHub", href: "https://github.com/tharungajula2" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/your-profile" },
+  ],
 };
 
 export const disclaimer =
-  "Projections are based on stated assumptions from desk research (2026) and planning models, not audited results. Punarnava is pre-revenue and has no customers or partners yet.";
+  "Projections are based on stated assumptions from desk research (2026) and planning models, not audited results. Punarnava is a concept study: not an operating company, with no revenue, customers or partners.";

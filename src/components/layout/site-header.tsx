@@ -34,9 +34,9 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-1">
           <ThemeToggle />
-          <a href="/#contact" className={cn(buttonVariants(), "ml-1 hidden h-9 rounded-xl px-4 sm:inline-flex")}>
-            Contact
-          </a>
+          <Link href="/os" className={cn(buttonVariants(), "ml-1 hidden h-9 rounded-xl px-4 sm:inline-flex")}>
+            Explore the OS
+          </Link>
           {/* Mobile menu — native <details>, no JavaScript needed */}
           <details className="group relative md:hidden">
             <summary
@@ -49,7 +49,7 @@ export function SiteHeader() {
               aria-label="Sections"
               className="glass absolute top-11 right-0 flex w-56 flex-col p-2"
             >
-              {[...nav, { href: "/#contact", label: "Contact" }].map((item) => (
+              {[...nav, { href: "/os", label: "Explore the OS" }, { href: "/#contact", label: "About" }].map((item) => (
                 <a key={item.href} href={item.href} className="rounded-lg px-3 py-2.5 text-sm hover:bg-muted">
                   {item.label}
                 </a>

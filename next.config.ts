@@ -19,10 +19,8 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Old private routes → Punarnava OS. Local only: on Vercel the private routes
-  // are not built, so no redirects are published there.
+  // Old routes → Punarnava OS.
   async redirects() {
-    if (process.env.VERCEL) return [];
     const map: [string, string][] = [
       ["/sim", "/os/factory"],
       ["/admin", "/os/vault/assumptions"],

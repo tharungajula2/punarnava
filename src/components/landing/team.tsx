@@ -42,7 +42,7 @@ export function Team() {
         </div>
         <div>
           <h3 className="flex items-center gap-2 font-sans text-sm font-medium text-muted-foreground">
-            <Users className="size-4" aria-hidden /> Hiring first
+            <Users className="size-4" aria-hidden /> Planned first hires
           </h3>
           <ul className="mt-4 flex flex-wrap gap-2">
             {team.hiring.map((role) => (

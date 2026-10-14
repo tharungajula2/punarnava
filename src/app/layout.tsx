@@ -24,7 +24,7 @@ const geistMono = Geist_Mono({
 
 const TITLE = "Punarnava — plastic that becomes new again";
 const DESCRIPTION =
-  "Punarnava is a pre-revenue plastic recycling venture planning a Bengaluru plant that turns post-consumer rigid plastic into traceable recycled HDPE pellets.";
+  "A concept case study: a plastic recycling venture concept, with a 7-section operating system and a 3D factory digital twin. Designed and built by Tharun Gajula with AI.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -62,6 +62,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${fraunces.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        <div className="os-chrome border-b border-border/60 bg-teal-deep px-4 py-1.5 text-center text-xs text-paper/90">
+          Concept study · Designed &amp; built by Tharun Gajula with AI · Not an operating company
+        </div>
         <Providers>{children}</Providers>
       </body>
     </html>

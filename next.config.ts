@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
     ];
   },
   partialPrefetching: true,
+  experimental: {
+    // Inline the (small, Tailwind) stylesheet into the HTML so first paint
+    // doesn't wait for a render-blocking CSS request. Biggest mobile Lighthouse win.
+    inlineCss: true,
+  },
   turbopack: {
     rules: {
       "*.css": {

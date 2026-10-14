@@ -16,6 +16,12 @@ export const HALL = { minX: -64, maxX: 20, minZ: -26, maxZ: -6 };
 export const BALE_YARD = { minX: 14, maxX: 30, minZ: 0, maxZ: 18 };
 export const FG_STORE = { minX: -32, maxX: -10, minZ: 0, maxZ: 14 };
 export const PARKING = { minX: 46, maxX: 64, minZ: -32, maxZ: 0 };
+/** Staff car park between the office and the front fence. */
+export const CAR_PARK = { minX: 45, maxX: 58, minZ: 21.5, maxZ: 28.5 };
+/** Effluent treatment plant east of the hall (piped from the wash line). */
+export const ETP = { minX: 23, maxX: 45, minZ: -41, maxZ: -22 };
+/** Truck lane beside the bale yard where collection trucks unload. */
+export const UNLOAD_STOP: V2 = [33, 6];
 
 export const ROADS = {
   main: { z: 38, width: 9 }, // two lanes: eastbound z=36, westbound z=40
@@ -29,6 +35,8 @@ export const LINE_Z = -16;
 /** Where every clickable thing sits, plus the radius of its selection ring. */
 export const SPOTS: Record<string, { x: number; z: number; r: number; y?: number }> = {
   weighbridge: { x: 38, z: 10, r: 6 },
+  unloadBay: { x: 33, z: 6, r: 5 },
+  etp: { x: 34, z: -31.5, r: 11 },
   baleYard: { x: 22, z: 9, r: 9 },
   sorting: { x: 12, z: LINE_Z, r: 7.5 },
   shredder: { x: 0, z: LINE_Z, r: 3.5 },
@@ -72,7 +80,7 @@ export const CONVEYORS: Conveyor[] = [
 
 /** Forklift shuttles: a → b carrying a load, b → a empty. */
 export const FORKLIFTS: { id: string; a: V2; b: V2; load: "bale" | "bags" }[] = [
-  { id: "fl-yard", a: [33.8, 10], b: [28.5, 6], load: "bale" }, // truck on weighbridge → bale yard
+  { id: "fl-yard", a: [30.4, 7.6], b: [26.2, 6.2], load: "bale" }, // truck in the unload bay → bale yard
   { id: "fl-feed", a: [20, 1], b: [20, -12], load: "bale" }, // bale yard → sorting infeed
   { id: "fl-pack", a: [-37, 9.5], b: [-29, 9], load: "bags" }, // packing → finished goods
   { id: "fl-dock", a: [-15, 10], b: [-16.5, 16.5], load: "bags" }, // finished goods → outbound truck
@@ -82,13 +90,13 @@ export const FORKLIFTS: { id: string; a: V2; b: V2; load: "bale" | "bags" }[] = 
 
 export interface Route {
   pts: V2[];
-  /** Segments with index ≥ rev are driven in reverse (truck faces backwards). */
-  rev: number;
+  /** Indexes of segments driven in reverse (truck faces backwards). */
+  rev: number[];
   cum: number[];
   len: number;
 }
 
-export function route(pts: V2[], rev = Infinity): Route {
+export function route(pts: V2[], rev: number[] = []): Route {
   const cum = [0];
   for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
   return { pts, rev, cum, len: cum[cum.length - 1] };
@@ -103,7 +111,7 @@ export function sample(r: Route, s: number): { x: number; z: number; heading: nu
   const [bx, bz] = r.pts[i];
   const seg = r.cum[i] - r.cum[i - 1] || 1;
   const f = (d - r.cum[i - 1]) / seg;
-  const heading = Math.atan2(-(bz - az), bx - ax) + (i - 1 >= r.rev ? Math.PI : 0);
+  const heading = Math.atan2(-(bz - az), bx - ax) + (r.rev.includes(i - 1) ? Math.PI : 0);
   return { x: ax + (bx - ax) * f, z: az + (bz - az) * f, heading };
 }
 
@@ -124,10 +132,12 @@ export function parkingSlot(i: number): V2 {
   return [52, PARK_Z[i % PARK_Z.length]];
 }
 
-/** Collection trucks: in from the east (the city), over the weighbridge, into a parking bay. */
-export function inboundArrive(i: number): Route {
+/** Collection trucks: in from the east (the city), over the weighbridge, then reverse into the unload bay at the bale yard. */
+export const INBOUND_ARRIVE: Route = route([EAST_IN, [38, 40], WEIGHBRIDGE_STOP, [38, -1.5], [33, -1.5], UNLOAD_STOP], [4]);
+/** Empty truck: from the unload bay to its parking bay. */
+export function inboundPark(i: number): Route {
   const [px, pz] = parkingSlot(i);
-  return route([EAST_IN, [38, 40], WEIGHBRIDGE_STOP, [38, pz], [px, pz]]);
+  return route([UNLOAD_STOP, [33, -1.5], [47, -1.5], [47, pz], [px, pz]]);
 }
 export function inboundDepart(i: number): Route {
   const [px, pz] = parkingSlot(i);
@@ -136,8 +146,8 @@ export function inboundDepart(i: number): Route {
 /** Outbound truck: drives past the dock road, then reverses up to the dock. */
 export function outboundArrive(side: "east" | "west"): Route {
   return side === "east"
-    ? route([EAST_IN, [-32, 40], [-20, 32], DOCK_STOP], 1)
-    : route([WEST_IN, [-8, 36], [-20, 30], DOCK_STOP], 1);
+    ? route([EAST_IN, [-32, 40], [-20, 32], DOCK_STOP], [1, 2])
+    : route([WEST_IN, [-8, 36], [-20, 30], DOCK_STOP], [1, 2]);
 }
 export function outboundDepart(side: "east" | "west"): Route {
   return side === "east" ? route([DOCK_STOP, [-20, 36], EAST_OUT]) : route([DOCK_STOP, [-20, 40], WEST_OUT]);
@@ -171,5 +181,11 @@ export const TREES: { x: number; z: number; s: number }[] = (() => {
 
 /** Street lamps along the internal roads. */
 export const LAMPS: V2[] = [
-  [34, 26], [34, 4], [34, -18], [-25, 26], [-15, 30], [10, 26], [44, -30], [60, -6], [-60, 26], [-80, 34], [80, 34],
+  [35, 25], [30.5, -3], [44.5, -18], [-26, 26], [-12, 27], [8, 26], [44, -30], [60, -6], [-48, 26], [-80, 34], [80, 34], [-38, 34], [20, 34], [60, 20],
+  [21.5, -33],
+];
+
+/** Parked staff cars (decoration). */
+export const CARS: { x: number; z: number; c: number }[] = [
+  { x: 47, z: 25, c: 0 }, { x: 50, z: 25, c: 1 }, { x: 56, z: 25, c: 2 }, { x: 53, z: 25, c: 3 },
 ];

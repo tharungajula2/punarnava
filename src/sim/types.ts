@@ -195,6 +195,8 @@ export interface HourSample {
   finishedT: number;
   cash: number;
   marginPerKg: number | null;
+  eprKg: number;
+  yieldPct: number | null;
 }
 
 export interface SimState {

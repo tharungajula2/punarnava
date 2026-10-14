@@ -16,11 +16,12 @@ import {
   FORKLIFTS,
   OFF_TILE_X,
   QUEUE_GAP,
+  INBOUND_ARRIVE,
   SPOTS,
   WEIGHBRIDGE_STOP,
   distanceTo,
-  inboundArrive,
   inboundDepart,
+  inboundPark,
   outboundArrive,
   outboundDepart,
   sample,
@@ -33,6 +34,18 @@ const VISUAL_BALE_KG = 250;
 const VISUAL_PALLET_KG = 1000;
 /** Sim-minutes before arrival at which an incoming truck appears on the tile. */
 const ENTRY_MIN = 8;
+/** Share of the engine's unloading phase drawn on the weighbridge; the rest is in the unload bay. */
+const WEIGH_SHARE = 0.22;
+
+/** 0 → 1 through the truck's current engine phase. */
+function phaseProgress(t: Truck) {
+  return t.phaseMinutes > 0 ? 1 - t.timer / t.phaseMinutes : 1;
+}
+
+/** True while a collection truck is in the unload bay and bales come off. */
+export function unloadingInBay(sim: PlantSim) {
+  return sim.state.trucks.some((t) => t.kind === "inbound" && t.phase === "unloading" && phaseProgress(t) > WEIGH_SHARE + 0.06);
+}
 
 function getSim(): PlantSim | null {
   return useSimStore.getState().sim;
@@ -41,7 +54,7 @@ function getSim(): PlantSim | null {
 // ── Trucks ───────────────────────────────────────────────────────────────────
 
 const ROUTES = {
-  inArrive: [0, 1, 2, 3].map(inboundArrive),
+  inPark: [0, 1, 2, 3].map(inboundPark),
   inDepart: [0, 1, 2, 3].map(inboundDepart),
   outArrive: { east: outboundArrive("east"), west: outboundArrive("west") },
   outDepart: { east: outboundDepart("east"), west: outboundDepart("west") },
@@ -58,8 +71,9 @@ function buyerSide(id: string | null, fallback: "east" | "west"): "east" | "west
 /** Where the engine says this truck should be, as a point along one of the site routes. */
 function truckTarget(truck: Truck, index: number, sim: PlantSim, side: "east" | "west"): Target {
   if (truck.kind === "inbound") {
-    const i = index % ROUTES.inArrive.length;
-    const arrive = ROUTES.inArrive[i];
+    const i = index % ROUTES.inDepart.length;
+    const arrive = INBOUND_ARRIVE;
+    const park = ROUTES.inPark[i];
     const depart = ROUTES.inDepart[i];
     const wb = distanceTo(arrive, WEIGHBRIDGE_STOP);
     switch (truck.phase) {
@@ -67,15 +81,16 @@ function truckTarget(truck: Truck, index: number, sim: PlantSim, side: "east" | 
       case "loading":
         return { key: `id${i}`, route: depart, s: depart.len };
       case "to-plant":
-        return { key: `ia${i}`, route: arrive, s: truck.timer > ENTRY_MIN ? 0 : (1 - truck.timer / ENTRY_MIN) * (wb - QUEUE_GAP) };
+        return { key: "ia", route: arrive, s: truck.timer > ENTRY_MIN ? 0 : (1 - truck.timer / ENTRY_MIN) * (wb - QUEUE_GAP) };
       case "queued": {
         const q = sim.state.trucks.filter((t) => t.phase === "queued");
-        return { key: `ia${i}`, route: arrive, s: wb - QUEUE_GAP * (q.indexOf(truck) + 1) };
+        return { key: "ia", route: arrive, s: wb - QUEUE_GAP * (q.indexOf(truck) + 1) };
       }
       case "unloading":
-        return { key: `ia${i}`, route: arrive, s: wb };
+        // Weighed first, then reversed into the bay beside the bale yard.
+        return { key: "ia", route: arrive, s: phaseProgress(truck) < WEIGH_SHARE ? wb : arrive.len };
       default:
-        return { key: `ia${i}`, route: arrive, s: arrive.len };
+        return { key: `ip${i}`, route: park, s: park.len };
     }
   }
   const arrive = ROUTES.outArrive[side];
@@ -188,10 +203,11 @@ function TruckActor({ id, index, kind }: { id: string; index: number; kind: "inb
     truckSpots.set(id, { x: p.x, z: p.z, visible: g.visible });
 
     // Cargo: bales on collection trucks, pallets of pellet bags on the outbound truck.
-    const progress = truck.phaseMinutes > 0 ? 1 - truck.timer / truck.phaseMinutes : 1;
+    const progress = phaseProgress(truck);
     let units = 0;
     if (kind === "inbound") {
-      const kg = truck.phase === "unloading" ? truck.cargoKg * (1 - progress) : truck.cargoKg;
+      const off = Math.max(0, (progress - WEIGH_SHARE - 0.06) / (1 - WEIGH_SHARE - 0.06));
+      const kg = truck.phase === "unloading" ? truck.cargoKg * (1 - off) : truck.cargoKg;
       units = Math.ceil(kg / VISUAL_BALE_KG - 0.01);
     } else {
       const kg = truck.phase === "loading" ? sim.params.outboundPayloadKg * progress : truck.phase === "to-buyer" ? truck.cargoKg : 0;
@@ -227,7 +243,7 @@ export function Trucks() {
 // ── Forklifts ────────────────────────────────────────────────────────────────
 
 const FORKLIFT_ACTIVE: Record<string, (sim: PlantSim) => boolean> = {
-  "fl-yard": (sim) => sim.state.weighbridge.truckId !== null,
+  "fl-yard": unloadingInBay,
   "fl-feed": (sim) => sim.state.units.sorting.status === "running",
   "fl-pack": (sim) => sim.state.units.packing.status === "running",
   "fl-dock": (sim) => sim.state.trucks.some((t) => t.kind === "outbound" && t.phase === "loading"),
@@ -560,8 +576,10 @@ function HoverLabel({ id }: { id: string }) {
 export function Selection() {
   const selected = useSimStore((s) => s.selected);
   const hovered = useSceneStore((s) => s.hovered);
+  const spotlight = useSceneStore((s) => s.spotlight);
   return (
     <>
+      {spotlight && spotlight !== selected && <Ring key={`t-${spotlight}`} id={spotlight} strong />}
       {selected && <Ring key={`s-${selected}`} id={selected} strong />}
       {hovered && hovered !== selected && <Ring key={`h-${hovered}`} id={hovered} strong={false} />}
       {hovered && <HoverLabel key={`l-${hovered}`} id={hovered} />}
@@ -576,7 +594,10 @@ const smooth = (a: number, b: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
-const SKY = { day: new THREE.Color("#e3ece8"), dusk: new THREE.Color("#f0dccb"), night: new THREE.Color("#25344a") };
+const SKY = { day: new THREE.Color("#e6eeeb"), dusk: new THREE.Color("#f2dcc8"), night: new THREE.Color("#22314a") };
+const WHITE = new THREE.Color("#ffffff");
+const INK = new THREE.Color("#0b1a1f");
+const skyTmp = new THREE.Color();
 const SUN = { day: new THREE.Color("#fff6ea"), dusk: new THREE.Color("#ffc59a"), moon: new THREE.Color("#b4c6ee") };
 const HEMI = { skyDay: new THREE.Color("#f2f7f5"), skyNight: new THREE.Color("#7f94c4"), groundDay: new THREE.Color("#c9d6c2"), groundNight: new THREE.Color("#4a5670") };
 
@@ -585,7 +606,8 @@ export function DayNight() {
   const sun = useRef<THREE.DirectionalLight>(null);
   const hemi = useRef<THREE.HemisphereLight>(null);
   const bg = useMemo(() => new THREE.Color(), []);
-  useFrame(({ scene }) => {
+  const lastSky = useRef("");
+  useFrame(({ scene, gl }) => {
     const sim = getSim();
     if (!sim || !sun.current || !hemi.current) return;
     const h = clock(sim.state.t).hourFloat;
@@ -605,7 +627,18 @@ export function DayNight() {
     hemi.current.groundColor.copy(HEMI.groundNight).lerp(HEMI.groundDay, day);
 
     bg.copy(SKY.night).lerp(SKY.day, day).lerp(SKY.dusk, dusk * 0.8);
-    scene.background = bg;
+    // The canvas is transparent: the stage paints a soft gradient sky from this colour (see .sim-stage in globals.css).
+    scene.background = null;
+    const sky = `#${bg.getHexString()}`;
+    if (sky !== lastSky.current) {
+      lastSky.current = sky;
+      const stage = gl.domElement.closest(".sim-stage") as HTMLElement | null;
+      if (stage) {
+        stage.style.setProperty("--sky", sky);
+        stage.style.setProperty("--sky-hi", `#${skyTmp.copy(bg).lerp(WHITE, 0.32).getHexString()}`);
+        stage.style.setProperty("--sky-lo", `#${skyTmp.copy(bg).lerp(INK, 0.12).getHexString()}`);
+      }
+    }
     GLOW.window.emissiveIntensity = (1 - day) * 1.1;
     GLOW.lamp.emissiveIntensity = (1 - day) * 2.2;
   });

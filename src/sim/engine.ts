@@ -678,6 +678,8 @@ function sampleHour(s: SimState) {
     finishedT: bufferKg(s, "finishedGoods") / 1000,
     cash: s.money.cash,
     marginPerKg: trailingUnitEconomics(s).marginPerKg,
+    eprKg: s.eprCreditsKg,
+    yieldPct: yieldPct(s),
   });
   if (s.hourly.length > HOURLY_CAP) s.hourly.shift();
   s.hour = { inKg: 0, outKg: 0, lineKg: 0 };
@@ -719,6 +721,18 @@ export function clock(t: number) {
   };
 }
 
+/** Saleable pellets ÷ feedstock, %: from finished lots once any exist, else from losses so far. */
+export function yieldPct(s: SimState): number | null {
+  const lossesKg = s.mass.losses.sortRejects + s.mass.losses.washLoss + s.mass.losses.processLoss;
+  const y =
+    s.lotYield.kgIn > 0
+      ? s.lotYield.kgPacked / s.lotYield.kgIn
+      : s.mass.packed + lossesKg > 0
+        ? s.mass.packed / (s.mass.packed + lossesKg)
+        : null;
+  return y === null ? null : y * 100;
+}
+
 export function getKpis(s: SimState, p: SimParams) {
   const inv = inventoryKg(s);
   const plantInventory = Object.values(inv).reduce((a, b) => a + b, 0);
@@ -728,13 +742,6 @@ export function getKpis(s: SimState, p: SimParams) {
   const line = LINE_UNITS.map((id) => s.units[id]);
   const scheduled = line.reduce((a, u) => a + u.scheduledMin + u.downScheduledMin, 0);
   const down = line.reduce((a, u) => a + u.downScheduledMin, 0);
-  const lossesKg = s.mass.losses.sortRejects + s.mass.losses.washLoss + s.mass.losses.processLoss;
-  const yieldNow =
-    s.lotYield.kgIn > 0
-      ? s.lotYield.kgPacked / s.lotYield.kgIn
-      : s.mass.packed + lossesKg > 0
-        ? s.mass.packed / (s.mass.packed + lossesKg)
-        : null;
   const ue = trailingUnitEconomics(s);
   const receivables = s.money.receivables.reduce((a, d) => a + d.amount, 0);
   const payables = s.money.payables.reduce((a, d) => a + d.amount, 0);
@@ -742,7 +749,7 @@ export function getKpis(s: SimState, p: SimParams) {
     tonnesIn: s.mass.weighedIn / 1000,
     tonnesProduced: s.mass.packed / 1000,
     tonnesOut: s.mass.dispatched / 1000,
-    yieldPct: yieldNow === null ? null : yieldNow * 100,
+    yieldPct: yieldPct(s),
     energyKwhPerT: sortedKg > 0 ? s.energyKwh / (sortedKg / 1000) : null,
     waterM3: s.waterM3,
     waterM3PerT: sortedKg > 0 ? s.waterM3 / (sortedKg / 1000) : null,

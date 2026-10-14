@@ -181,6 +181,8 @@ export function ThemeButton() {
       type="button"
       onClick={() => setTheme(dark ? "light" : "dark")}
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      // The server can't know the stored theme, so the label may differ on first paint.
+      suppressHydrationWarning
       className="flex size-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
     >
       <Sun className="hidden size-4 dark:block" aria-hidden />

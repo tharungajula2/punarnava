@@ -10,7 +10,7 @@ export const fmt = {
 
 export const statusColor: Record<UnitStatus, string> = {
   running: "var(--status-verified)",
-  idle: "var(--muted-foreground)",
+  idle: "var(--status-placeholder)",
   down: "var(--destructive)",
   maintenance: "var(--status-placeholder)",
 };

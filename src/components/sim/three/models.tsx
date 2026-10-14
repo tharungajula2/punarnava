@@ -6,8 +6,8 @@ import * as THREE from "three";
 import type { UnitId } from "@/sim";
 import { useSimStore } from "../sim-store";
 import { useSceneStore } from "./camera-store";
-import { Blob, Block, Box, C, Cyl, GEO, GLOW, animDt, mat } from "./prims";
-import { BALE_YARD, FENCE, FG_STORE, HALL, LAMPS, LINE_Z, PARKING, ROADS, SPOTS, TILE, TREES } from "./site";
+import { Blob, Block, Box, C, Cyl, GEO, GLOW, animDt, mat, poolTexture } from "./prims";
+import { BALE_YARD, CARS, CAR_PARK, ETP, FENCE, FG_STORE, HALL, LAMPS, LINE_Z, PARKING, ROADS, SPOTS, TILE, TREES, UNLOAD_STOP } from "./site";
 
 // ── Interaction ──────────────────────────────────────────────────────────────
 
@@ -92,10 +92,21 @@ export function Ground() {
       {/* Bale-yard push walls */}
       <Block p={[BALE_YARD.minX - 0.3, 9]} s={[0.6, 1.4, 18]} c={C.sandDark} />
       <Block p={[22, BALE_YARD.maxZ + 0.3]} s={[16.6, 1.4, 0.6]} c={C.sandDark} />
-      {/* Parking bay lines */}
+      {/* Lawns: front verge, around the office, behind the hall */}
+      <Box p={[-26, 0.02, 26.6]} s={[94, 0.05, 5.6]} c={C.lawn} shadow={false} />
+      <Box p={[-68, 0.02, -6]} s={[10, 0.05, 66]} c={C.lawn} shadow={false} />
+      <Box p={[-26, 0.02, -35.5]} s={[92, 0.05, 11]} c={C.lawn} shadow={false} />
+      {/* Truck parking bays */}
       {[0, -8, -16, -24, -32].map((z) => (
         <Box key={z} p={[52, 0.12, z]} s={[10, 0.02, 0.25]} c={C.marking} shadow={false} />
       ))}
+      {/* Unload bay beside the bale yard */}
+      <Box p={[UNLOAD_STOP[0], 0.09, 4]} s={[4.2, 0.05, 12]} c={C.asphalt} shadow={false} />
+      {[-2, 2].map((dx) => (
+        <Box key={dx} p={[UNLOAD_STOP[0] + dx, 0.13, 4]} s={[0.18, 0.02, 12]} c={C.forklift} shadow={false} />
+      ))}
+      <Box p={[38, 0.09, -1.5]} s={[10, 0.05, 4.2]} c={C.asphalt} shadow={false} />
+      <CarPark />
       <Roads />
       <Fence />
       <Trees />
@@ -120,6 +131,15 @@ function Roads() {
     <group>
       <Box p={[0, 0.04, main.z]} s={[TILE.maxX - TILE.minX, 0.06, main.width]} c={C.asphalt} shadow={false} />
       <Box p={[0, 0.03, main.z - main.width / 2 - 0.7]} s={[TILE.maxX - TILE.minX, 0.05, 1.4]} c={C.verge} shadow={false} />
+      <Box p={[0, 0.03, main.z + main.width / 2 + 0.7]} s={[TILE.maxX - TILE.minX, 0.05, 1.4]} c={C.verge} shadow={false} />
+      {/* Road edge lines */}
+      {[-1, 1].map((k) => (
+        <Box key={k} p={[0, 0.09, main.z + k * (main.width / 2 - 0.5)]} s={[TILE.maxX - TILE.minX, 0.02, 0.16]} c={C.marking} shadow={false} />
+      ))}
+      {/* Zebra crossing at the gate */}
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <Box key={`z${i}`} p={[28 - i * 1.3, 0.1, main.z]} s={[0.7, 0.02, main.width - 1.4]} c={C.marking} shadow={false} />
+      ))}
       <instancedMesh ref={dashes} args={[GEO.box, mat(C.marking), count]} />
       {[gate, exit].map((r, i) => (
         <Box key={i} p={[r.x, 0.06, (r.fromZ + r.toZ) / 2]} s={[r.width, 0.06, r.toZ - r.fromZ]} c={C.asphalt} shadow={false} />
@@ -129,10 +149,14 @@ function Roads() {
       {/* Internal yard road in front of the hall */}
       <Box p={[-5, 0.06, 22]} s={[90, 0.06, 6]} c={C.asphalt} shadow={false} />
       <Box p={[-5, 0.08, 22]} s={[90, 0.02, 0.2]} c={C.marking} shadow={false} />
-      {/* Gate: posts + boom */}
+      {/* Gate: posts, booms, guard cabin and a brand totem */}
       <Block p={[34, 30]} s={[0.6, 2.4, 0.6]} c={C.tealDeep} />
       <Box p={[37.5, 2, 30]} s={[7, 0.18, 0.18]} c={C.forklift} />
       <Block p={[46, 30]} s={[0.6, 2.4, 0.6]} c={C.tealDeep} />
+      <Block p={[59, 30]} s={[0.6, 2.4, 0.6]} c={C.tealDeep} />
+      <Box p={[61.6, 2, 30]} s={[5, 0.18, 0.18]} c={C.forklift} />
+      <GuardCabin />
+      <Totem />
     </group>
   );
 }
@@ -189,13 +213,14 @@ function Trees() {
     const q = new THREE.Quaternion();
     const light = new THREE.Color(C.leaf);
     const dark = new THREE.Color(C.leafDark);
+    const pale = new THREE.Color(C.leafLight);
     TREES.forEach((t, i) => {
       m.compose(new THREE.Vector3(t.x, 0.9 * t.s, t.z), q, new THREE.Vector3(0.28 * t.s, 1.8 * t.s, 0.28 * t.s));
       trunks.current!.setMatrixAt(i, m);
       q.setFromEuler(new THREE.Euler(0, i * 1.7, 0));
-      m.compose(new THREE.Vector3(t.x, 3 * t.s, t.z), q, new THREE.Vector3(1.9 * t.s, 2.1 * t.s, 1.9 * t.s));
+      m.compose(new THREE.Vector3(t.x, 2.9 * t.s, t.z), q, new THREE.Vector3(1.75 * t.s, 1.9 * t.s, 1.75 * t.s));
       crowns.current!.setMatrixAt(i, m);
-      crowns.current!.setColorAt(i, i % 3 === 0 ? dark : light);
+      crowns.current!.setColorAt(i, i % 3 === 0 ? dark : i % 3 === 1 ? light : pale);
       q.identity();
     });
     trunks.current!.instanceMatrix.needsUpdate = true;
@@ -205,10 +230,13 @@ function Trees() {
   return (
     <group>
       <instancedMesh ref={trunks} args={[GEO.cylLow, mat(C.trunk), TREES.length]} castShadow />
-      <instancedMesh ref={crowns} args={[GEO.ico, mat("#ffffff"), TREES.length]} castShadow receiveShadow />
+      <instancedMesh ref={crowns} args={[GEO.round, mat("#ffffff"), TREES.length]} castShadow receiveShadow />
     </group>
   );
 }
+
+const planeGeo = new THREE.PlaneGeometry(1, 1);
+const noRaycast = () => null;
 
 function Lamps() {
   const posts = useRef<THREE.InstancedMesh>(null);
@@ -224,10 +252,23 @@ function Lamps() {
     posts.current!.instanceMatrix.needsUpdate = true;
     heads.current!.instanceMatrix.needsUpdate = true;
   }, []);
+  const pools = useRef<THREE.InstancedMesh>(null);
+  useLayoutEffect(() => {
+    GLOW.pool.map = poolTexture();
+    GLOW.pool.needsUpdate = true;
+    const m = new THREE.Matrix4();
+    const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+    LAMPS.forEach(([x, z], i) => {
+      m.compose(new THREE.Vector3(x, 0.15, z), q, new THREE.Vector3(13, 13, 1));
+      pools.current!.setMatrixAt(i, m);
+    });
+    pools.current!.instanceMatrix.needsUpdate = true;
+  }, []);
   return (
     <group>
       <instancedMesh ref={posts} args={[GEO.cylLow, mat(C.steelDark), LAMPS.length]} castShadow />
       <instancedMesh ref={heads} args={[GEO.box, GLOW.lamp, LAMPS.length]} />
+      <instancedMesh ref={pools} args={[planeGeo, GLOW.pool, LAMPS.length]} renderOrder={3} raycast={noRaycast} />
     </group>
   );
 }
@@ -253,12 +294,18 @@ export function Hall() {
       <Block p={[(minX + maxX) / 2, minZ - 0.3]} s={[maxX - minX + 1.2, 0.5, 1]} base={H} c={C.teal} />
       {cols.map((x) => (
         <group key={x}>
-          <Block p={[x, maxZ]} s={[0.45, H, 0.45]} c={C.tealDeep} />
-          <Block p={[x, minZ + 0.4]} s={[0.45, H, 0.45]} c={C.tealDeep} />
-          <Box p={[x, H + 0.2, (minZ + maxZ) / 2]} s={[0.3, 0.4, maxZ - minZ]} c={C.tealDeep} />
+          <Block p={[x, maxZ]} s={[0.34, H, 0.34]} c={C.teal} bevel={0.06} />
+          <Block p={[x, minZ + 0.4]} s={[0.34, H, 0.34]} c={C.teal} bevel={0.06} />
+          {/* Slim, light trusses so the line inside reads clearly from above */}
+          <Box p={[x, H + 0.25, (minZ + maxZ) / 2]} s={[0.16, 0.2, maxZ - minZ]} c={C.steel} shadow={false} raycast={noRaycast} />
         </group>
       ))}
-      <Box p={[(minX + maxX) / 2, H + 0.2, maxZ]} s={[maxX - minX, 0.4, 0.3]} c={C.tealDeep} />
+      <Box p={[(minX + maxX) / 2, H + 0.25, maxZ]} s={[maxX - minX, 0.32, 0.26]} c={C.teal} />
+      {/* Warm work lights under the trusses (glow at night) */}
+      {cols.slice(0, -1).map((x) => (
+        <Box key={`l${x}`} p={[x + 3.5, H - 0.3, LINE_Z]} s={[2.4, 0.12, 0.35]} m={GLOW.lamp} shadow={false} />
+      ))}
+      <HallRoof H={H} />
       {/* Floor walkway markings */}
       <Box p={[(minX + maxX) / 2, 0.12, -10.5]} s={[maxX - minX - 4, 0.02, 0.18]} c={C.forklift} shadow={false} />
       <Box p={[(minX + maxX) / 2, 0.12, -21.5]} s={[maxX - minX - 4, 0.02, 0.18]} c={C.forklift} shadow={false} />
@@ -565,12 +612,194 @@ function DockZone() {
   );
 }
 
+// ── Roof, solar, site extras ────────────────────────────────────────────────
+
+const glassRoof = new THREE.MeshStandardMaterial({ color: C.glass, transparent: true, opacity: 0.17, roughness: 0.12, metalness: 0.15, depthWrite: false });
+const ROOF_STRIP = 4.6; // solid back strip of the hall roof that carries the solar panels
+
+/** Solar panel positions (hall back strip + office roof), tilted to face south. */
+const SOLAR: [number, number, number][] = (() => {
+  const out: [number, number, number][] = [];
+  for (let x = HALL.minX + 1.4; x <= HALL.maxX - 1.2; x += 1.95) {
+    if (Math.abs(x - SPOTS.silo.x) < 3.2) continue;
+    for (const dz of [1.25, 3.3]) out.push([x, 8.3, HALL.minZ + dz]);
+  }
+  for (let x = 48; x <= 58.1; x += 1.95) for (const z of [13.2, 15.6]) out.push([x, 6.8, z]);
+  return out;
+})();
+
+function SolarPanels() {
+  const panels = useRef<THREE.InstancedMesh>(null);
+  const frames = useRef<THREE.InstancedMesh>(null);
+  useLayoutEffect(() => {
+    const m = new THREE.Matrix4();
+    const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.22, 0, 0));
+    SOLAR.forEach(([x, y, z], i) => {
+      m.compose(new THREE.Vector3(x, y, z), q, new THREE.Vector3(1.72, 0.07, 1.62));
+      panels.current!.setMatrixAt(i, m);
+      m.compose(new THREE.Vector3(x, y - 0.05, z), q, new THREE.Vector3(1.84, 0.06, 1.74));
+      frames.current!.setMatrixAt(i, m);
+    });
+    panels.current!.instanceMatrix.needsUpdate = true;
+    frames.current!.instanceMatrix.needsUpdate = true;
+  }, []);
+  return (
+    <group>
+      <instancedMesh ref={frames} args={[GEO.box, mat(C.solarFrame), SOLAR.length]} receiveShadow />
+      <instancedMesh ref={panels} args={[GEO.box, mat(C.solar, { rough: 0.32, metal: 0.35 }), SOLAR.length]} castShadow />
+    </group>
+  );
+}
+
+/** Cutaway roof: a solid back strip carrying solar panels, frosted glass over the line so every machine stays visible. */
+function HallRoof({ H }: { H: number }) {
+  const { minX, maxX, minZ, maxZ } = HALL;
+  const cx = (minX + maxX) / 2;
+  const g0 = minZ + ROOF_STRIP;
+
+  return (
+    <group>
+      <Box p={[cx, H + 0.55, minZ + ROOF_STRIP / 2 - 0.3]} s={[maxX - minX + 1.2, 0.3, ROOF_STRIP + 0.6]} c={C.wallShade} bevel={0.1} />
+      <mesh geometry={GEO.box} material={glassRoof} position={[cx, H + 0.5, (g0 + maxZ) / 2]} scale={[maxX - minX, 0.06, maxZ - g0]} raycast={noRaycast} renderOrder={4} />
+
+      <SolarPanels />
+    </group>
+  );
+}
+
+function GuardCabin() {
+  return (
+    <group>
+      <Blob p={[31.5, 26]} w={5} d={5} o={0.4} />
+      <Block p={[31.5, 26]} s={[2.8, 2.6, 2.6]} c={C.wall} />
+      <Block p={[31.5, 26]} s={[3.4, 0.3, 3.2]} base={2.6} c={C.teal} />
+      <Windows p={[31.5, 1.7, 27.35]} w={2} h={0.9} />
+      <Windows p={[32.95, 1.7, 26]} w={1.6} h={0.9} along="z" />
+    </group>
+  );
+}
+
+/** Brand totem at the gate: deep-teal slab with the mint loop mark (no words). */
+function Totem() {
+  return (
+    <group>
+      <Block p={[29.5, 32.2]} s={[1.4, 4.4, 0.5]} c={C.tealDeep} />
+      <mesh position={[29.5, 3.3, 32.5]}>
+        <torusGeometry args={[0.42, 0.11, 8, 24]} />
+        <meshStandardMaterial color={C.mint} flatShading emissive={C.mint} emissiveIntensity={0.15} />
+      </mesh>
+    </group>
+  );
+}
+
+function Car({ x, z, c }: { x: number; z: number; c: string }) {
+  return (
+    <group position={[x, 0, z]} rotation={[0, Math.PI / 2, 0]}>
+      <Blob p={[0, 0]} w={5} d={3} o={0.45} />
+      <Box p={[0, 0.62, 0]} s={[3.7, 0.75, 1.7]} c={c} bevel={0.28} />
+      <Box p={[-0.2, 1.22, 0]} s={[2, 0.62, 1.48]} c="#d9e9ee" bevel={0.22} />
+      {[1.15, -1.15].flatMap((wx) => [-0.78, 0.78].map((wz) => <Cyl key={`${wx}${wz}`} p={[wx, 0.34, wz]} rad={0.34} h={0.24} c={C.ink} rot={[Math.PI / 2, 0, 0]} low shadow={false} />))}
+    </group>
+  );
+}
+
+function CarPark() {
+  const { minX, maxX, minZ, maxZ } = CAR_PARK;
+  const bays: number[] = [];
+  for (let x = minX + 0.5; x <= maxX; x += 3) bays.push(x);
+  return (
+    <group>
+      <Box p={[(minX + maxX) / 2, 0.07, (minZ + maxZ) / 2]} s={[maxX - minX, 0.06, maxZ - minZ]} c={C.asphalt} shadow={false} />
+      {bays.map((x) => (
+        <Box key={x} p={[x, 0.12, minZ + 2.6]} s={[0.12, 0.02, 4.6]} c={C.marking} shadow={false} />
+      ))}
+      {CARS.map((car, i) => (
+        <Car key={i} x={car.x} z={car.z - 1} c={C.car[car.c % C.car.length]} />
+      ))}
+    </group>
+  );
+}
+
+const AERATION_Z = [-25.6, -30.4];
+
+/** Air bubbles rising in the aeration tanks while the wash line (and so the ETP) runs. */
+function Bubbles() {
+  const ref = useRef<THREE.InstancedMesh>(null);
+  const pts = useMemo(() => Array.from({ length: 36 }, (_, i) => ({ x: 33.5 + (i % 9) * 1.1, z: AERATION_Z[i < 18 ? 0 : 1] + ((i * 7) % 3) - 1, ph: i * 0.37 })), []);
+  const tmp = useMemo(() => ({ m: new THREE.Matrix4(), q: new THREE.Quaternion(), p: new THREE.Vector3(), sc: new THREE.Vector3() }), []);
+  const t = useRef(0);
+  useFrame((_, dt) => {
+    const { sim, playing, speed } = useSimStore.getState();
+    if (!sim || !ref.current) return;
+    const on = sim.state.units.wash.status === "running";
+    t.current += animDt(Math.min(dt, 0.1), playing, speed);
+    pts.forEach((b, i) => {
+      const k = (t.current * 0.8 + b.ph) % 1;
+      tmp.p.set(b.x, 1.5 + k * 0.25, b.z);
+      tmp.sc.setScalar(on ? 0.12 + 0.1 * Math.sin(k * Math.PI) : 0);
+      tmp.m.compose(tmp.p, tmp.q, tmp.sc);
+      ref.current!.setMatrixAt(i, tmp.m);
+    });
+    ref.current.instanceMatrix.needsUpdate = true;
+  });
+  return <instancedMesh ref={ref} args={[GEO.sphere, mat("#f4fbfa"), pts.length]} frustumCulled={false} />;
+}
+
+/** Effluent treatment: wash water is equalised, aerated, settled and sent back to the line. */
+function Etp() {
+  const { minX, maxX, minZ, maxZ } = ETP;
+  const arm = useSpin("wash", "y", 0.35);
+  return (
+    <Pick id="etp">
+      <Box p={[(minX + maxX) / 2, 0.06, (minZ + maxZ) / 2]} s={[maxX - minX, 0.1, maxZ - minZ]} c={C.concreteDark} shadow={false} />
+      {/* Equalisation tank */}
+      <Blob p={[27, -27]} w={9} d={9} o={0.4} />
+      <Block p={[27, -27]} s={[6, 1.8, 6]} c={C.teal} />
+      <Box p={[27, 1.79, -27]} s={[5.3, 0.05, 5.3]} c={C.sludge} shadow={false} />
+      {/* Aeration tanks */}
+      {AERATION_Z.map((z) => (
+        <group key={z}>
+          <Blob p={[38, z]} w={13} d={6} o={0.35} />
+          <Block p={[38, z]} s={[10, 1.5, 4]} c={C.sand} />
+          <Box p={[38, 1.49, z]} s={[9.3, 0.05, 3.3]} c="#a6d9cf" shadow={false} />
+        </group>
+      ))}
+      <Bubbles />
+      {/* Clarifier with its slowly turning bridge */}
+      <Blob p={[28, -36.5]} w={11} d={11} o={0.4} />
+      <Cyl p={[28, 0.8, -36.5]} rad={4} h={1.6} c={C.paper} />
+      <Cyl p={[28, 1.6, -36.5]} rad={3.65} h={0.05} c={C.water} shadow={false} />
+      <Cyl p={[28, 1.4, -36.5]} rad={0.45} h={2.8} c={C.steelDark} />
+      <group ref={arm} position={[28, 2.2, -36.5]}>
+        <Box p={[1.9, 0, 0]} s={[4.1, 0.22, 0.6]} c={C.forklift} />
+        <Box p={[3.8, 0.35, 0]} s={[0.6, 0.6, 0.9]} c={C.teal} bevel={0.08} />
+      </group>
+      {/* Pump house */}
+      <Block p={[39, -37.5]} s={[3.4, 2.4, 2.4]} c={C.wall} />
+      <Block p={[39, -37.5]} s={[3.9, 0.3, 2.9]} base={2.4} c={C.teal} />
+      <Windows p={[39, 1.4, -36.25]} w={2} h={0.8} />
+      <Beacon unit="wash" p={[40.2, 2.7, -37.5]} />
+      {/* Pipe from the wash line, along the hall's east end */}
+      <Box p={[21.5, 3.2, -23]} s={[5, 0.3, 0.3]} c={C.steelDark} />
+      <Box p={[24, 2.5, -23]} s={[0.3, 1.6, 0.3]} c={C.steelDark} />
+      <Box p={[22, 2.7, -31.5]} s={[0.24, 0.24, 15]} c={C.mint} />
+      {[19.5, 22.5].map((x) => (
+        <Box key={x} p={[x, 1.55, -23]} s={[0.16, 3.1, 0.16]} c={C.steelDark} shadow={false} />
+      ))}
+      {[-26, -31, -36].map((z) => (
+        <Box key={z} p={[22, 1.3, z]} s={[0.14, 2.6, 0.14]} c={C.steelDark} shadow={false} />
+      ))}
+    </Pick>
+  );
+}
+
 /** Everything that never moves (apart from spinning parts and lights). */
 export function StaticPlant() {
   return (
     <group>
       <Ground />
       <Hall />
+      <Etp />
       <Office />
       <Weighbridge />
       <BaleYardZone />

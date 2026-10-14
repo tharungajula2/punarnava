@@ -7,6 +7,7 @@ import { KpiCards } from "./kpi-cards";
 import { LotTimeline } from "./lot-timeline";
 import { NetworkMap } from "./network-map";
 import { Schematic, nodeDetails, nodeLabel } from "./schematic";
+import { Details, DetailBlock } from "@/components/os-shell/page";
 import { Sim3DView, ViewToggle, useCan3D } from "./sim-3d";
 import { SimCharts } from "./sim-charts";
 import { useSim, useSimStore } from "./sim-store";
@@ -70,47 +71,81 @@ export function SimDashboard({
   const can3d = useCan3D();
   const show3d = can3d && view === "3d";
   useEffect(() => {
-    init(params);
+    init(params, initialScenario);
     if (initialScenario) setScenario(initialScenario);
   }, [init, setScenario, params, initialScenario]);
   useSimLoop();
 
-  if (!ready) return <div className="h-96 animate-pulse rounded-2xl bg-muted/50" aria-label="Loading simulation" />;
+  if (!ready) return <div className="h-[620px] animate-pulse rounded-2xl bg-muted/50" aria-label="Loading simulation" />;
+
+  const footnote = (
+    <p className="text-xs leading-relaxed text-muted-foreground">
+      Every input comes from <code>src/data/assumptions.ts</code>. {placeholderCount} simulation parameters (truck sizes, breakdown rates, energy split,
+      event sizes and so on) are still placeholders — modelling choices, not research. The plant opens on day 8 at 09:00 after the engine has run its first week
+      from empty. Collection points and buyers are sample locations: Punarnava has no suppliers or customers yet. The site layout is stylised, not an
+      engineering drawing. Outputs are model results, not forecasts.
+    </p>
+  );
+
+  if (show3d) {
+    return (
+      <div>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 os-detail">
+          <p className="text-xs text-muted-foreground">
+            Drag to pan · right-drag to rotate · scroll to zoom · click any truck, machine or zone · <kbd className="font-mono">T</kbd> tour ·{" "}
+            <kbd className="font-mono">C</kbd> cinematic · <kbd className="font-mono">F</kbd> full screen
+          </p>
+          <ViewToggle />
+        </div>
+        <Sim3DView params={params} statuses={statuses} />
+        <Details title="Show details: all KPIs, feedstock network, charts, lot log">
+          <DetailBlock title="All twelve KPIs">
+            <KpiCards />
+          </DetailBlock>
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-2">
+            <DetailBlock title="Feedstock network" note="Stylised Bengaluru; collection points and buyers are samples.">
+              <NetworkMap />
+            </DetailBlock>
+            <DetailBlock title="Lots and events">
+              <LotTimeline />
+              <h4 className="mt-6 mb-2 font-sans text-sm font-medium">Event log</h4>
+              <EventLog />
+            </DetailBlock>
+          </div>
+          <Charts />
+          {footnote}
+        </Details>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className={`glass z-30 p-3 sm:p-4 ${show3d ? "" : "md:sticky md:top-16"}`}>
+      <div className="glass z-30 p-3 sm:p-4 md:sticky md:top-16">
         <PlaybackControls />
       </div>
 
       <section aria-labelledby="plant-title" className="min-w-0 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 id="plant-title" className="font-sans text-base font-medium">
-            {show3d ? "The plant — live 3D" : "Plant flow — live"}
+            Plant flow — live
           </h2>
           <div className="flex flex-wrap items-center gap-3">
-            <p className="text-xs text-muted-foreground">Status lights: green running · grey idle · amber planned stop · red down.</p>
+            <p className="text-xs text-muted-foreground">Status lights: green running · amber idle or planned stop · red down.</p>
             {can3d ? <ViewToggle /> : <p className="text-xs text-muted-foreground">3D view needs a larger screen.</p>}
           </div>
         </div>
-        {show3d && <Sim3DView />}
       </section>
 
-      {!show3d && <KpiCards />}
+      <KpiCards />
 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        {show3d ? (
-          <Panel title="Feedstock network (stylised Bengaluru)">
-            <NetworkMap />
-          </Panel>
-        ) : (
-          <section aria-label="Plant schematic" className="min-w-0 space-y-3">
-            <div className="overflow-x-auto rounded-2xl">
-              <Schematic />
-            </div>
-            <Details />
-          </section>
-        )}
+        <section aria-label="Plant schematic" className="min-w-0 space-y-3">
+          <div className="overflow-x-auto rounded-2xl">
+            <Schematic />
+          </div>
+          <SelectedDetails />
+        </section>
 
         <aside className="space-y-6">
           <Panel title="Scenario">
@@ -123,12 +158,10 @@ export function SimDashboard({
       </div>
 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-        {!show3d && (
-          <Panel title="Feedstock network (stylised Bengaluru)">
-            <NetworkMap />
-          </Panel>
-        )}
-        <Panel title="Batch tracking" className={show3d ? "xl:col-span-2" : undefined}>
+        <Panel title="Feedstock network (stylised Bengaluru)">
+          <NetworkMap />
+        </Panel>
+        <Panel title="Batch tracking">
           <LotTimeline />
           <h3 className="mt-6 mb-2 font-sans text-sm font-medium">Event log</h3>
           <EventLog />
@@ -136,12 +169,7 @@ export function SimDashboard({
       </div>
 
       <Charts />
-
-      <p className="text-xs leading-relaxed text-muted-foreground">
-        Every input comes from <code>src/data/assumptions.ts</code>. {placeholderCount} simulation parameters (truck sizes, breakdown rates, energy split,
-        event sizes and so on) are still placeholders — modelling choices, not research. Collection points and buyers are sample locations: Punarnava has no
-        suppliers or customers yet. Outputs are model results, not forecasts.
-      </p>
+      {footnote}
     </div>
   );
 }
@@ -155,7 +183,7 @@ function Panel({ title, children, className }: { title: string; children: React.
   );
 }
 
-function Details() {
+function SelectedDetails() {
   const sim = useSim();
   const selected = useSimStore((s) => s.selected);
   const select = useSimStore((s) => s.select);

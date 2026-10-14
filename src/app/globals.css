@@ -290,3 +290,20 @@ html {
 :root[data-present="on"] .os-insight {
   font-size: 3rem;
 }
+
+/* Factory stage: a soft gradient sky (colour set live by the 3D day/night rig), glass HUD that fades in
+   cinematic mode; the guided tour keeps only the KPIs and controls. */
+.sim-stage {
+  background: radial-gradient(120% 95% at 50% 38%, var(--sky-hi, #f6f9f8) 0%, var(--sky, #e6eeeb) 55%, var(--sky-lo, #d3dcd9) 100%);
+}
+.sim-stage .hud {
+  transition: opacity 0.6s ease;
+}
+.sim-stage[data-mode="cinematic"] .hud,
+.sim-stage[data-mode="tour"] .hud-explore {
+  opacity: 0;
+  pointer-events: none;
+}
+.sim-stage[data-mode="cinematic"] .hud * {
+  pointer-events: none !important;
+}

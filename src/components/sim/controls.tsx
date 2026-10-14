@@ -54,7 +54,7 @@ export function StatusBadge({ status }: { status: Status }) {
   return <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium capitalize ${STATUS_STYLE[status]}`}>{status}</span>;
 }
 
-export function ScenarioSliders({ params, statuses }: { params: SimParams; statuses: Record<keyof Scenario, Status> }) {
+export function ScenarioSliders({ params, statuses, compact }: { params: SimParams; statuses: Record<keyof Scenario, Status>; compact?: boolean }) {
   const sim = useSim();
   const setScenario = useSimStore((s) => s.setScenario);
   if (!sim) return null;
@@ -76,12 +76,12 @@ export function ScenarioSliders({ params, statuses }: { params: SimParams; statu
     <div className="space-y-4">
       {sliders.map((s) => (
         <label key={s.key} className="block">
-          <span className="flex items-baseline justify-between gap-2 text-sm">
-            <span className="flex items-center gap-1.5">
-              {s.label} <StatusBadge status={statuses[s.key]} />
+          <span className={`flex items-baseline justify-between gap-2 ${compact ? "text-[13px]" : "text-sm"}`}>
+            <span className="flex min-w-0 items-center gap-1.5">
+              <span className="truncate">{s.label}</span> <StatusBadge status={statuses[s.key]} />
             </span>
-            <span className="font-mono tabular-nums">
-              {s.format(sc[s.key])} <span className="text-xs text-muted-foreground">{s.unit}</span>
+            <span className="shrink-0 font-mono tabular-nums">
+              {s.format(sc[s.key])} {compact ? null : <span className="text-xs text-muted-foreground">{s.unit}</span>}
             </span>
           </span>
           <input
@@ -93,7 +93,10 @@ export function ScenarioSliders({ params, statuses }: { params: SimParams; statu
             onChange={(e) => setScenario({ [s.key]: Number(e.target.value) })}
             className="mt-1.5 w-full accent-primary"
           />
-          <span className="text-[11px] text-muted-foreground">Base case {s.format(params[s.key])}</span>
+          <span className="text-[11px] text-muted-foreground">
+            Base case {s.format(params[s.key])}
+            {compact ? ` · ${s.unit}` : ""}
+          </span>
         </label>
       ))}
       <Button variant="outline" size="sm" disabled={!changed} onClick={() => setScenario(Object.fromEntries(sliders.map((s) => [s.key, params[s.key]])))}>

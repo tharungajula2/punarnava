@@ -46,6 +46,7 @@ export const NODE_LABELS: Record<string, string> = {
   silo: "Dry-flake silo",
   melt: "Strand buffer",
   "out-1": "Outbound truck",
+  etp: "Effluent treatment",
 };
 
 export function nodeLabel(id: string) {
@@ -282,6 +283,14 @@ export function nodeDetails(s: SimState, id: string): [string, string][] {
       ["Weighings", String(s.weighbridge.weighings)],
       ["Weighed in", fmt.t(s.mass.weighedIn)],
       ["Trucks waiting", String(s.trucks.filter((t) => t.phase === "queued").length)],
+    ];
+  }
+  if (id === "etp") {
+    const w = s.units.wash;
+    return [
+      ["Status", w.status === "running" ? "Treating wash water" : "Standby — wash line not running"],
+      ["Fresh water used", `${fmt.n(s.waterM3)} m³`],
+      ["Wash line processed", fmt.t(w.processedKg)],
     ];
   }
   if (id === "dock") {

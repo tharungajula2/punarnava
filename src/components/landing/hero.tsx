@@ -50,7 +50,7 @@ export function Hero() {
             ))}
           </dl>
         </div>
-        <div className="mx-auto w-full max-w-md animate-in duration-1000 fade-in zoom-in-95 lg:max-w-none">
+        <div className="mx-auto w-full max-w-md hero-in lg:max-w-none">
           <LoopGraphic stages={hero.loopStages} />
         </div>
       </Container>

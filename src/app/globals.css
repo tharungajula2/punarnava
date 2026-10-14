@@ -222,6 +222,16 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Landing hero graphic entrance: fade + zoom from 95%. Same look as tw-animate's
+   `animate-in fade-in zoom-in-95`, but opacity/transform only so it runs on the GPU
+   (tw-animate's keyframe also animates `filter`, which ran on the main thread during load). */
+@keyframes hero-in {
+  from { opacity: 0; transform: scale(0.95); }
+}
+.hero-in {
+  animation: hero-in 1s ease;
+}
+
 /* Landing "How it works" flow track — moves exactly one 28px pellet spacing per loop × 10 */
 @keyframes flow {
   from { transform: translateX(-280px); }

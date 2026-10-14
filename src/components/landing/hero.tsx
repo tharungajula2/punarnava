@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { LoopGraphic } from "@/components/landing/loop-graphic";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
 import { hero } from "@/data/landing";
 import { cn } from "@/lib/utils";
 

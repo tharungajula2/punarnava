@@ -2,15 +2,17 @@
 
 import { Mail } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 
 const roles = ["Investor", "Waste supplier / collector", "Pellet buyer / converter", "Brand (EPR)", "Other"];
 
 const fieldClass =
   "w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-base outline-none transition-colors placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40";
 
-/** Builds a pre-filled email in the visitor's own mail app. Nothing is sent or stored by the site. */
-export function ContactForm({ email }: { email?: string }) {
+/**
+ * Builds a pre-filled email in the visitor's own mail app. Nothing is sent or stored by the site.
+ * `submitClassName` comes from the server (contact.tsx) so this file stays free of the Button primitive.
+ */
+export function ContactForm({ email, submitClassName }: { email?: string; submitClassName: string }) {
   const [error, setError] = useState<string | null>(null);
 
   if (!email) {
@@ -68,9 +70,9 @@ export function ContactForm({ email }: { email?: string }) {
         </p>
       )}
       <div className="flex flex-wrap items-center gap-4">
-        <Button type="submit" size="lg" className="h-11 rounded-xl px-5 text-base">
+        <button type="submit" data-slot="button" className={submitClassName}>
           <Mail data-icon="inline-start" /> Open in my email app
-        </Button>
+        </button>
         <a href={`mailto:${email}`} className="text-sm text-muted-foreground underline-offset-4 hover:underline">
           or write to {email}
         </a>

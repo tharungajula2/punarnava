@@ -1,22 +1,9 @@
-"use client";
+import { ThemeToggleButton } from "@/components/layout/theme-toggle-button";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { cn } from "@/lib/utils";
 
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
-import { Button } from "@/components/ui/button";
-
+// Server component: works out the Button classes here so only a tiny client button
+// ships (keeps ~30 KB of Base UI + class-merging JS off the landing page).
 export function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
-
-  return (
-    <Button
-      variant="ghost"
-      size="icon"
-      aria-label="Toggle light and dark theme"
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-    >
-      {/* Both icons render; CSS shows the right one, so no hydration mismatch */}
-      <Sun className="hidden dark:block" />
-      <Moon className="block dark:hidden" />
-    </Button>
-  );
+  return <ThemeToggleButton className={cn(buttonVariants({ variant: "ghost", size: "icon" }))} />;
 }

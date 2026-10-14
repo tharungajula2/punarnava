@@ -2,7 +2,10 @@
  * Landing page content. Copy lives here; every number is read from assumptions.ts.
  * Edit wording here — components only handle layout.
  */
-import { money, num, v } from "@/data/assumptions";
+import { money, num, v, type AssumptionId } from "@/data/assumptions";
+
+/** Assumption ids behind a figure (its footnote reads their sources and status). */
+const figIds = (...ids: AssumptionId[]) => ids;
 
 const lakhToCrore = (lakh: number) => lakh / 100;
 
@@ -55,7 +58,23 @@ export const problem = {
       label: "of consumer packaging is flexible, which is harder to collect and recycle — we start with rigid plastic",
     },
   ],
-};
+  figure: {
+    karnatakaPct: v("karnataka_share_national_waste"),
+    cityLow: v("bengaluru_plastic_waste_low"),
+    cityHigh: v("bengaluru_plastic_waste_high"),
+    plantTpd: v("plant_input_tpd"),
+    plantNote: `Our first plant needs ${num(v("plant_input_tpd"))} t/day — a small slice, though only part of the city's waste is rigid HDPE.`,
+    flexiblePct: v("flexible_share_consumer_packaging"),
+    ids: [
+      "india_plastic_waste_fy23",
+      "karnataka_share_national_waste",
+      "bengaluru_plastic_waste_low",
+      "bengaluru_plastic_waste_high",
+      "plant_input_tpd",
+      "flexible_share_consumer_packaging",
+    ],
+  },
+} as const;
 
 export const whyNow = {
   kicker: "Why now",
@@ -82,23 +101,76 @@ export const whyNow = {
       body: `In FY2026-27 at least ${num(v("epr_cat1_min_recycling_fy27"))}% of a brand's rigid (Category I) EPR target must be met through recycling — a separate rule from the recycled-content share above.`,
     },
   ],
-};
+  // Where each point sits on the timeline: financial-year column + fraction through it.
+  // FY runs April–March, so Mar 2026 ends FY26 and Jun/Aug 2026 fall early in FY27.
+  pins: [
+    { point: 0, col: 1, at: 0.42, when: "Aug 2026" },
+    { point: 1, col: 1, at: 0.02, when: "Mar–Jun 2026" },
+    { point: 2, col: 1, at: 0.8, when: "FY27" },
+  ],
+  ids: [
+    "epr_cat1_recycled_content_fy26",
+    "epr_cat1_recycled_content_fy27",
+    "epr_cat1_recycled_content_fy28",
+    "epr_cat1_recycled_content_fy29",
+    "registered_pibos",
+    "registered_pwps",
+    "epr_cat1_min_recycling_fy27",
+  ],
+} as const;
 
 export const how = {
   kicker: "How Punarnava works",
   title: "One loop, from kerbside to pellet.",
   body: "The plan: buy sorted plastic from the people already collecting it, process it in one plant with closed-loop water, and track every batch from supplier to buyer.",
   steps: [
-    { icon: "truck", title: "Collect", body: "Buy from waste-picker collectives, dry-waste centres, kabadiwalas and bulk generators — digital weighing, same-day pay." },
-    { icon: "scan", title: "Sort", body: "Weigh, inspect and separate rigid HDPE by colour; reject metal and foreign polymers." },
-    { icon: "scissors", title: "Shred", body: "Granulate bottles and containers into uniform flakes." },
-    { icon: "droplets", title: "Wash", body: `Friction, float-sink and hot wash, with a planned ${num(v("etp_capacity_kld"))} KLD treatment plant recycling the water.` },
-    { icon: "wind", title: "Dry", body: "Centrifugal dewatering and hot-air drying into buffer silos." },
-    { icon: "flame", title: "Extrude", body: "Melt, degas and filter for a clean, consistent melt." },
-    { icon: "circle-dot", title: "Pelletise", body: "Cut, cool, sieve, test and bag pellets to a technical data sheet." },
-    { icon: "badge-check", title: "Supply", body: "Sell pellets to converters and EPR certificates to brands — every batch traceable." },
+    { title: "Collect", body: "Buy from waste-picker collectives, dry-waste centres, kabadiwalas and bulk generators — digital weighing, same-day pay." },
+    { title: "Sort", body: "Weigh, inspect and separate rigid HDPE by colour; reject metal and foreign polymers." },
+    { title: "Shred", body: "Granulate bottles and containers into uniform flakes." },
+    { title: "Wash", body: `Friction, float-sink and hot wash, with a planned ${num(v("etp_capacity_kld"))} KLD treatment plant recycling the water.` },
+    { title: "Dry", body: "Centrifugal dewatering and hot-air drying into buffer silos." },
+    { title: "Extrude", body: "Melt, degas and filter for a clean, consistent melt." },
+    { title: "Pelletise", body: "Cut, cool, sieve, test and bag pellets to a technical data sheet." },
+    { title: "Supply", body: "Sell pellets to converters and EPR certificates to brands — every batch traceable." },
   ],
+  massIn: 1000,
+  massOut: 1000 * (v("yield") / 100),
+  yieldPct: v("yield"),
+  ids: ["yield", "etp_capacity_kld"],
 } as const;
+
+export const plant = {
+  kicker: "Inside the plant",
+  title: "One shed. One line. Every batch tracked.",
+  body: `An illustration of the planned plant: one ${num(v("line_rate"))} kg/h wash-and-pelletise line taking ${num(v("plant_input_tpd"))} tonnes a day, about ${num(v("yield"))}% of it leaving as pellets, and a ${num(v("etp_capacity_kld"))} KLD treatment plant recycling the wash water.`,
+  note: "Illustration only — the plant is not built yet; the site is chosen in Phase 2.",
+  stats: [
+    { value: `${num(v("plant_input_tpd"))} t`, label: "plastic in per day" },
+    { value: `${num(v("yield"))}%`, label: "leaves as pellets" },
+    { value: `~${num(v("output_t_month"))} t`, label: "pellets a month" },
+  ],
+  stops: [
+    "Weighbridge",
+    "Bale yard",
+    "Sorting",
+    "Shred & wash",
+    "Dry & store",
+    "Extrude & pelletise",
+    "Water recycling",
+    "Packed & dispatched",
+  ],
+  ids: ["line_rate", "plant_input_tpd", "yield", "etp_capacity_kld", "output_t_month"],
+} as const;
+
+const costIds = [
+  "cost_feedstock_kg",
+  "cost_inbound_kg",
+  "cost_labour_kg",
+  "cost_power_kg",
+  "cost_overhead_kg",
+  "cost_rent_kg",
+  "cost_other_kg",
+] as const;
 
 export const model = {
   kicker: "Business model",
@@ -119,6 +191,11 @@ export const model = {
       body: "Once registered as a plastic waste processor and audited, eligible packaging plastic we process and document can earn certificates that brands buy to meet their obligations. Certificates cannot exceed our registered capacity.",
     },
   ],
+  flow: {
+    pellet: v("pellet_price"),
+    epr: v("epr_credit_price"),
+  },
+  ids: figIds("pellet_price", "epr_credit_price", "epr_market_low", "epr_market_high", ...costIds),
   principle: {
     title: "Our rule: the plant must pay its way without EPR.",
     body: `Certificate prices are opaque and volatile, so we model them at the bottom of the range. Even at zero EPR income, base-case EBITDA stays at ₹${money(v("pellet_price") - totalCostPerKg())}/kg.`,
@@ -163,6 +240,30 @@ export const economics = {
     ],
     margin: revenuePerKg - totalCostPerKg(),
   },
+  stressChart: [
+    { label: "Base case", value: revenuePerKg - totalCostPerKg() },
+    { label: `Feedstock +${num(v("stress_feed_pct"))}%`, value: v("stress_single_feed_kg") },
+    { label: `Yield −${num(v("stress_yield_pp"))} pts`, value: v("stress_single_yield_kg") },
+    { label: `Price −${num(v("stress_price_pct"))}%`, value: v("stress_single_price_kg") },
+    { label: "All three at once", value: v("stress_ebitda_kg") },
+  ],
+  ids: figIds(
+    "line_rate",
+    "plant_input_tpd",
+    "operating_days_month",
+    "yield",
+    "output_t_month",
+    "annual_revenue",
+    "annual_ebitda",
+    "breakeven_utilisation",
+    "pellet_price",
+    "epr_credit_price",
+    ...costIds,
+    "stress_single_feed_kg",
+    "stress_single_yield_kg",
+    "stress_single_price_kg",
+    "stress_ebitda_kg",
+  ),
   stress: {
     title: "We plan for the downside",
     body: `Hit one at a time, margin stays positive: feedstock +${num(v("stress_feed_pct"))}% leaves ₹${money(v("stress_single_feed_kg"))}/kg, yield −${num(v("stress_yield_pp"))} points ₹${money(v("stress_single_yield_kg"))}/kg, pellet price −${num(v("stress_price_pct"))}% ₹${money(v("stress_single_price_kg"))}/kg. All three at once turn it to −₹${money(Math.abs(v("stress_ebitda_kg")))}/kg. That is why we lock in supply and buyers before buying machines, and plan on roughly a ${num(v("payback_practical"))}-year practical payback (a rule of thumb from the research) rather than the ${num(v("payback_steady_state"))}-year steady-state figure.`,
@@ -202,7 +303,20 @@ export const roadmap = {
       gate: "Gate: proven supply and offtake for the larger volume.",
     },
   ],
-};
+  ids: [
+    "prove_phase_months_high",
+    "procurement_trial_weeks",
+    "sample_converters",
+    "gate_feedstock_contracted",
+    "gate_offtake_contracted",
+    "time_to_production_months",
+    "ramp_year1",
+    "ramp_year2",
+    "ramp_year3",
+    "expansion_yield_gate",
+    "expansion_input_tpd",
+  ],
+} as const;
 
 export const team = {
   kicker: "Why us",
@@ -239,7 +353,19 @@ export const ask = {
     crore: money(lakhToCrore(f.lakh)),
     pct: (f.lakh / fundsTotal) * 100,
   })),
-};
+  ids: [
+    "raise_amount",
+    "capex_accuracy_pct",
+    "capex_machinery",
+    "working_capital",
+    "capex_civil",
+    "capex_etp",
+    "capex_electrical",
+    "capex_safety_permits",
+    "lease_deposit",
+    "capex_handling",
+  ],
+} as const;
 
 export const contact = {
   kicker: "Contact",

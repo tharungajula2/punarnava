@@ -12,7 +12,7 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className={cn("scroll-mt-16 py-20 sm:py-28", className)}>
+    <section id={id} aria-labelledby={`${id}-title`} className={cn("scroll-mt-16 py-20 [contain-intrinsic-size:auto_1800px] [content-visibility:auto] sm:py-28 lg:[contain-intrinsic-size:auto_1100px]", className)}>
       <Container>{children}</Container>
     </section>
   );

@@ -1,61 +1,101 @@
-import {
-  BadgeCheck,
-  CircleDot,
-  Droplets,
-  Flame,
-  ScanLine,
-  Scissors,
-  Truck,
-  Wind,
-  type LucideIcon,
-} from "lucide-react";
+import { FigureNote } from "@/components/landing/figures/figure-note";
+import { Glyph, type GlyphKind } from "@/components/landing/figures/material-glyphs";
 import { Reveal } from "@/components/landing/reveal";
 import { Section, SectionHeader } from "@/components/landing/section";
+import { num } from "@/data/assumptions";
 import { how } from "@/data/landing";
 
-const icons: Record<(typeof how.steps)[number]["icon"], LucideIcon> = {
-  truck: Truck,
-  scan: ScanLine,
-  scissors: Scissors,
-  droplets: Droplets,
-  wind: Wind,
-  flame: Flame,
-  "circle-dot": CircleDot,
-  "badge-check": BadgeCheck,
-};
+// Material form after each step, in step order: bale → bottles → flakes → … → bagged pellets
+const glyphs: GlyphKind[] = ["collect", "sort", "shred", "wash", "dry", "extrude", "pellet", "supply"];
+
+const massNote = `${num(how.massIn)} kg in → ${num(how.massOut)} kg of pellets (${num(how.yieldPct)}% yield)`;
+
+const d = (s: number) => ({ "--d": `${s}s` }) as React.CSSProperties;
+
+/** Desktop: one conveyor across the page, a station per step, material moving along it. */
+function FlowDiagram() {
+  const X = (i: number) => 75 + i * 150;
+  return (
+    <svg viewBox="0 0 1200 250" className="hidden h-auto w-full lg:block" aria-hidden>
+      <defs>
+        <clipPath id="how-belt">
+          <rect x={X(0)} y="80" width={X(7) - X(0)} height="20" />
+        </clipPath>
+      </defs>
+      <line x1={X(0)} x2={X(7)} y1="90" y2="90" pathLength={1} className="ig ig-draw stroke-muted" strokeWidth="12" strokeLinecap="round" />
+      <g clipPath="url(#how-belt)">
+        <g className="ig-loop animate-[ig-move_1.4s_linear_infinite]" style={{ "--tx": "30px" } as React.CSSProperties}>
+          {Array.from({ length: 37 }, (_, i) => (
+            <circle key={i} cx={X(0) - 30 + i * 30} cy="90" r="3" className={i % 3 === 0 ? "fill-primary" : "fill-[oklch(0.74_0.12_165)] dark:fill-mint"} />
+          ))}
+        </g>
+      </g>
+
+      {glyphs.map((g, i) => (
+        <g key={g} className="ig ig-pop" style={d(0.3 + i * 0.12)}>
+          <circle cx={X(i)} cy="90" r="50" className="fill-card stroke-border" strokeWidth="1.5" />
+          <g transform={`translate(${X(i) - 32} 58)`}>
+            <Glyph kind={g} />
+          </g>
+        </g>
+      ))}
+      {how.steps.map((s, i) => (
+        <g key={s.title} className="ig ig-fade" style={d(0.5 + i * 0.12)}>
+          <text x={X(i)} y="172" textAnchor="middle" className="fill-muted-foreground font-mono text-[13px]">
+            {String(i + 1).padStart(2, "0")}
+          </text>
+          <text x={X(i)} y="198" textAnchor="middle" className="fill-foreground font-display text-[22px]">
+            {s.title}
+          </text>
+        </g>
+      ))}
+
+      {/* Mass balance along the whole line */}
+      <g className="ig ig-fade" style={d(1.6)}>
+        <path d={`M${X(0)} 222 V230 H${X(7)} V222`} fill="none" className="stroke-primary/50" strokeWidth="1.5" />
+        <rect x={600 - 175} y="218" width="350" height="24" rx="12" className="fill-background" />
+        <text x="600" y="235" textAnchor="middle" className="fill-primary text-[14px] font-medium">
+          {massNote}
+        </text>
+      </g>
+    </svg>
+  );
+}
 
 export function HowItWorks() {
   return (
     <Section id="how">
       <SectionHeader id="how" kicker={how.kicker} title={how.title} body={how.body} />
 
-      {/* Flow track: pellets moving left → right along the value chain */}
-      <div aria-hidden className="relative mt-14 h-2 overflow-hidden rounded-full bg-muted">
-        <div className="absolute inset-y-0 left-0 w-[200%] animate-[flow_6s_linear_infinite] bg-[radial-gradient(circle,var(--primary)_2.5px,transparent_3px)] bg-[length:28px_8px] bg-repeat-x bg-center" />
-      </div>
+      <Reveal className="mt-14">
+        <FlowDiagram />
 
-      <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {how.steps.map((step, i) => {
-          const Icon = icons[step.icon];
-          return (
-            <li key={step.title}>
-              <Reveal
-                delay={(i % 4) * 0.08}
-                className="group h-full rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] transition-colors hover:border-primary/40"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-                    <Icon className="size-5" aria-hidden />
-                  </span>
-                  <span className="font-mono text-sm text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
-                </div>
-                <h3 className="mt-5 text-xl font-normal">{step.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{step.body}</p>
-              </Reveal>
+        <ol className="relative grid gap-5 lg:mt-10 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-6">
+          {/* Phones/tablets: a vertical belt behind the glyph tiles, material moving down it */}
+          <span aria-hidden className="absolute top-7 bottom-7 left-[27px] w-1.5 overflow-hidden rounded-full bg-muted lg:hidden">
+            <span
+              className="ig-loop absolute inset-x-0 -top-7 h-[200%] animate-[ig-move_1.4s_linear_infinite] bg-[radial-gradient(circle,var(--primary)_2px,transparent_2.5px)] bg-[length:6px_28px] bg-repeat-y"
+              style={{ "--ty": "28px" } as React.CSSProperties}
+            />
+          </span>
+          {how.steps.map((step, i) => (
+            <li key={step.title} className="relative grid grid-cols-[56px_1fr] items-start gap-4 lg:block">
+              <svg viewBox="0 0 64 64" aria-hidden className="ig ig-pop size-14 rounded-full border border-border bg-card lg:hidden" style={d(i * 0.06)}>
+                <Glyph kind={glyphs[i]} />
+              </svg>
+              <div>
+                <h3 className="flex items-baseline gap-2 text-lg font-normal lg:text-base lg:font-medium lg:font-sans">
+                  <span className="font-mono text-sm text-muted-foreground lg:hidden">{String(i + 1).padStart(2, "0")}</span>
+                  {step.title}
+                </h3>
+                <p className="mt-1 text-sm text-muted-foreground">{step.body}</p>
+              </div>
             </li>
-          );
-        })}
-      </ol>
+          ))}
+        </ol>
+        <p className="mt-6 text-sm font-medium text-primary lg:hidden">{massNote}</p>
+        <FigureNote ids={how.ids} />
+      </Reveal>
     </Section>
   );
 }

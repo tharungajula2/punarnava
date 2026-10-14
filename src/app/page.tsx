@@ -6,6 +6,7 @@ import { Economics } from "@/components/landing/economics";
 import { Hero } from "@/components/landing/hero";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { RevealObserver } from "@/components/landing/reveal-observer";
+import { PlantTeaser } from "@/components/landing/plant-teaser";
 import { Problem } from "@/components/landing/problem";
 import { Roadmap } from "@/components/landing/roadmap";
 import { Sources } from "@/components/landing/sources";
@@ -25,6 +26,7 @@ export default function Home() {
         <Problem />
         <WhyNow />
         <HowItWorks />
+        <PlantTeaser />
         <BusinessModel />
         <Economics />
         <Roadmap />

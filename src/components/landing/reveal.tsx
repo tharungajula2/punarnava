@@ -1,8 +1,10 @@
-"use client";
+import { cn } from "@/lib/utils";
 
-import { LazyMotion, domAnimation, m } from "motion/react";
-
-/** Fades content up once when it scrolls into view. Respects reduced motion via MotionConfig. */
+/**
+ * Fades content up once when it scrolls into view. Pure CSS (`.reveal` in
+ * globals.css) driven by <RevealObserver/>; content stays visible without JS
+ * and for visitors who prefer reduced motion.
+ */
 export function Reveal({
   children,
   delay = 0,
@@ -13,16 +15,8 @@ export function Reveal({
   className?: string;
 }) {
   return (
-    <LazyMotion features={domAnimation} strict>
-      <m.div
-        className={className}
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-64px" }}
-        transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
-      >
-        {children}
-      </m.div>
-    </LazyMotion>
+    <div className={cn("reveal", className)} style={delay ? { transitionDelay: `${delay}s` } : undefined}>
+      {children}
+    </div>
   );
 }

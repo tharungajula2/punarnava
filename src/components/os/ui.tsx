@@ -50,8 +50,9 @@ export function Stat({
   tone?: "bad" | "good";
 }) {
   return (
-    <div className="flex min-w-0 flex-col rounded-2xl border border-border bg-card p-4 shadow-xs">
-      <dt className="flex items-start justify-between gap-2 text-xs text-muted-foreground">
+    <div className="@container flex min-w-0 flex-col rounded-2xl border border-border bg-card p-4 shadow-xs">
+      {/* Narrow tiles (phones): badge above the label so the label keeps its width */}
+      <dt className="flex flex-col-reverse items-start gap-1.5 text-xs text-muted-foreground @[13rem]:flex-row @[13rem]:justify-between @[13rem]:gap-2">
         <span>{label}</span>
         {status === "sample" ? <Pill tone="info" className="px-1.5 text-[10px] uppercase">Sample</Pill> : status ? <StatusBadge status={status} /> : null}
       </dt>

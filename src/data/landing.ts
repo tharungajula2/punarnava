@@ -7,11 +7,11 @@ import { money, num, v } from "@/data/assumptions";
 const lakhToCrore = (lakh: number) => lakh / 100;
 
 export const nav = [
-  { href: "#problem", label: "Problem" },
-  { href: "#why-now", label: "Why now" },
-  { href: "#how", label: "How it works" },
-  { href: "#economics", label: "Economics" },
-  { href: "#roadmap", label: "Roadmap" },
+  { href: "/#problem", label: "Problem" },
+  { href: "/#why-now", label: "Why now" },
+  { href: "/#how", label: "How it works" },
+  { href: "/#economics", label: "Economics" },
+  { href: "/#roadmap", label: "Roadmap" },
 ] as const;
 
 export const hero = {

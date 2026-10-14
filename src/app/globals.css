@@ -5,6 +5,19 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
+ * ₹ from the device's system font. The rupee sign sits in the "latin-ext"
+ * subset of every web font, so without this each page with prices downloads
+ * ~180 KB of extra font files for one glyph. If no local font has it, the
+ * browser falls through to the brand font as before.
+ */
+@font-face {
+  font-family: "Rupee";
+  src: local("Segoe UI"), local("SegoeUI"), local("Roboto"), local("SF Pro Text"), local(".SF NS"), local("Helvetica Neue"), local("Noto Sans"), local("Arial");
+  unicode-range: U+20B9;
+  font-display: swap;
+}
+
+/*
  * Punarnava design tokens.
  * Brand palette: deep teal (primary) · mint (accent) · warm sand (secondary)
  * · near-black ink (text) · off-white paper (background).
@@ -14,10 +27,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-fraunces);
-  --font-display: var(--font-fraunces);
+  --font-sans: "Rupee", var(--font-inter);
+  --font-mono: "Rupee", var(--font-geist-mono);
+  --font-heading: "Rupee", var(--font-fraunces);
+  --font-display: "Rupee", var(--font-fraunces);
 
   /* Raw brand colours (bg-teal, text-mint, …) */
   --color-teal: var(--brand-teal);
@@ -222,4 +235,13 @@ html {
 .sim-flow {
   stroke-dasharray: 6 6;
   animation: sim-dash 0.8s linear infinite;
+}
+
+/* Landing scroll reveal (components/landing/reveal.tsx). Only hides once JS has armed it. */
+.reveal {
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+:root[data-reveal="armed"] .reveal:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(16px);
 }

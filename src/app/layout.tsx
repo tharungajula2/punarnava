@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Geist_Mono, Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -11,26 +12,38 @@ const inter = Inter({
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
-  axes: ["opsz", "SOFT"],
+  axes: ["opsz"],
 });
 
+// Small numeric details only — not worth a preload on the critical path.
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  preload: false,
 });
 
+const TITLE = "Punarnava — plastic that becomes new again";
+const DESCRIPTION =
+  "Punarnava is a pre-revenue plastic recycling venture planning a Bengaluru plant that turns post-consumer rigid plastic into traceable recycled HDPE pellets.";
+
 export const metadata: Metadata = {
-  title: {
-    default: "Punarnava — plastic that becomes new again",
-    template: "%s · Punarnava",
-  },
-  description:
-    "Punarnava is a pre-revenue plastic recycling venture planning a Bengaluru plant for traceable recycled HDPE pellets.",
+  metadataBase: new URL(SITE_URL),
+  title: { default: TITLE, template: "%s · Punarnava" },
+  description: DESCRIPTION,
+  applicationName: "Punarnava",
+  keywords: ["plastic recycling", "recycled HDPE", "rHDPE pellets", "EPR", "Bengaluru", "circular economy"],
   openGraph: {
-    title: "Punarnava — plastic that becomes new again",
+    title: TITLE,
     description: "A planned Bengaluru plant for traceable recycled HDPE pellets.",
+    url: "/",
+    siteName: "Punarnava",
     type: "website",
     locale: "en_IN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: "A planned Bengaluru plant for traceable recycled HDPE pellets.",
   },
 };
 

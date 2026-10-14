@@ -60,7 +60,7 @@ export function UnitModelTool({ base, sliders, checks }: { base: UnitInputs; sli
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,22rem)_1fr]">
       {/* Inputs */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 shadow-xs">
+      <div className="flex flex-col gap-4 rounded-2xl border border-border/70 bg-card/70 p-5 shadow-soft backdrop-blur-sm">
         <div className="flex items-center justify-between gap-2">
           <p className="font-medium">Inputs</p>
           <button
@@ -126,7 +126,7 @@ export function UnitModelTool({ base, sliders, checks }: { base: UnitInputs; sli
           <Out label="All-in payback" value={r.paybackYears !== null ? `${r.paybackYears.toFixed(1)} yrs` : "Never"} bad={r.paybackYears === null} hint={`on ${lakh(r.funding, 1)} funding`} />
         </dl>
 
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-xs">
+        <div className="rounded-2xl border border-border/70 bg-card/70 p-5 shadow-soft backdrop-blur-sm">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <p className="font-medium">Where each ₹ of revenue goes, per kg</p>
             <p className="text-xs text-muted-foreground">
@@ -154,7 +154,7 @@ export function UnitModelTool({ base, sliders, checks }: { base: UnitInputs; sli
           </ul>
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-xs">
+        <div className="rounded-2xl border border-border/70 bg-card/70 p-5 shadow-soft backdrop-blur-sm">
           <p className="font-medium">What moves the margin most</p>
           <p className="text-xs text-muted-foreground">R2&apos;s one-factor shocks applied to the inputs on the left. Bar = change in EBITDA per kg.</p>
           <ul className="mt-4 flex flex-col gap-3">
@@ -188,7 +188,7 @@ export function UnitModelTool({ base, sliders, checks }: { base: UnitInputs; sli
 
 function Out({ label, value, hint, bad }: { label: string; value: string; hint?: string; bad?: boolean }) {
   return (
-    <div className="flex min-w-0 flex-col rounded-2xl border border-border bg-card p-4 shadow-xs">
+    <div className="flex min-w-0 flex-col rounded-2xl border border-border/70 bg-card/70 p-4 shadow-soft backdrop-blur-sm">
       <dt className="text-xs text-muted-foreground">{label}</dt>
       <dd className={cn("mt-1.5 truncate font-display text-2xl tabular-nums", bad && "text-destructive")}>{value}</dd>
       {hint ? <dd className="mt-1 text-xs text-muted-foreground">{hint}</dd> : null}

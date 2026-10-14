@@ -27,7 +27,7 @@ export function decisions(): Decision[] {
       reason: `The model shows a funding envelope of ₹${v("funding_total")} L (capex + deposit + working capital); the ask must be set by the founder, not inferred.`,
       status: "Open",
       source: "assumptions.ts (raise_amount, funding_total)",
-      href: "/os/finance",
+      href: "/os/money/finance",
     },
     {
       id: "D-009",
@@ -45,7 +45,7 @@ export function decisions(): Decision[] {
       reason: "All three reports say feedstock and buyers, not machinery, decide survival. Investors fund offtake, not capacity.",
       status: "Proposed",
       source: "R2, R3; assumptions gate_feedstock_contracted, gate_offtake_contracted",
-      href: "/os/roadmap",
+      href: "/os/execution",
     },
     {
       id: "D-007",
@@ -54,7 +54,7 @@ export function decisions(): Decision[] {
       reason: `EPR prices are opaque and can collapse; R2 margin is ₹${v("ebitda_kg_no_epr")}/kg even with no EPR income.`,
       status: "Decided",
       source: "R1, R2, R3",
-      href: "/lab/pricing",
+      href: "/os/market/pricing",
     },
     {
       id: "D-006",
@@ -63,7 +63,7 @@ export function decisions(): Decision[] {
       reason: "MarketsandMarkets' stated growth rate does not match its own endpoints; IMARC is internally consistent.",
       status: "Decided",
       source: "R1",
-      href: "/lab/market",
+      href: "/os/market",
     },
     {
       id: "D-005",
@@ -89,7 +89,7 @@ export function decisions(): Decision[] {
       reason: "Washing creates effluent; the lease must allow an own ETP and a legal discharge route.",
       status: "Proposed",
       source: "R2",
-      href: "/os/compliance",
+      href: "/os/execution/licences",
     },
     {
       id: "D-002",
@@ -106,7 +106,7 @@ export function decisions(): Decision[] {
       reason: "R2's economics are best at this scale; R3 says feedstock control is the moat. The three reports disagree, so the founder must confirm.",
       status: "Proposed",
       source: "R1, R2, R3",
-      href: "/lab/scenarios",
+      href: "/os/money/scenarios",
     },
   ];
 }

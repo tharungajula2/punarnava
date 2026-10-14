@@ -97,7 +97,7 @@ export function Chart({ data, xKey, series, unit, kind = "bar", height = 260, re
 
 export function ChartCard({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
-    <figure className="rounded-2xl border border-border bg-card p-4 shadow-xs sm:p-5">
+    <figure className="rounded-2xl border border-border/70 bg-card/70 p-4 shadow-soft backdrop-blur-sm sm:p-5">
       <figcaption className="mb-3">
         <span className="font-medium">{title}</span>
         {subtitle ? <span className="block text-xs text-muted-foreground">{subtitle}</span> : null}

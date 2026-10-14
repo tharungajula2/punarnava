@@ -92,7 +92,7 @@ function build() {
         funding: m.funding,
       },
       sim: runSim(key),
-      simHref: `/sim?scenario=${key}`,
+      simHref: `/os/factory?scenario=${key}`,
     };
   });
   const days = cases[0].sim.cumulative.length;

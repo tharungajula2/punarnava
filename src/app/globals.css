@@ -255,3 +255,38 @@ html {
   opacity: 0;
   transform: translateY(16px);
 }
+
+/* ── Punarnava OS (/os, local only) ─────────────────────────────────────── */
+
+/* Page transition: (private)/template.tsx remounts on every navigation. */
+@keyframes os-page-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+.os-page {
+  animation: os-page-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes os-pop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+}
+.os-pop {
+  animation: os-pop-in 0.16s ease-out;
+}
+
+/* Presentation mode (P): hide chrome and fine print, scale all type up. */
+:root[data-present="on"] {
+  font-size: 118%;
+}
+@media (min-width: 1800px) {
+  :root[data-present="on"] { font-size: 128%; }
+}
+:root[data-present="on"] .os-chrome,
+:root[data-present="on"] .os-detail {
+  display: none !important;
+}
+:root[data-present="on"] .os-present-main {
+  padding-top: 3rem;
+  padding-bottom: 9rem;
+}
+:root[data-present="on"] .os-insight {
+  font-size: 3rem;
+}

@@ -1,10 +1,5 @@
-import { OsSubnav } from "@/components/os/os-subnav";
+import { OsShell } from "@/components/os-shell/os-shell";
 
 export default function OsLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <OsSubnav />
-      {children}
-    </>
-  );
+  return <OsShell>{children}</OsShell>;
 }

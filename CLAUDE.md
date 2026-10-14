@@ -15,20 +15,19 @@ Value chain: collect waste plastic → sort by type → shred → wash → dry �
 Starting focus is not final; research files in /research decide it. Never assume — read /research first.
 
 ## 3. What we're building
-One web app = investor pitch + founder's private operating system. Four tracks:
+One web app = investor pitch + **Punarnava OS**, the founder's private operating system.
 
 | Track | Route | Access |
 |---|---|---|
 | Landing page (investor pitch) | `/` | Public (Vercel) |
-| OS (operating system) | `/os/*` | Local only |
-| Simulation (factory digital twin) | `/sim` | Local only |
-| R&D wing (business research only — no science/patents) | `/lab/*` | Local only |
-| Admin | `/admin` | Local only |
 | Sources | `/sources` | Public (Vercel) |
+| Punarnava OS (everything private: simulation, research, admin) | `/os/*` | Local only |
+
+Old private routes (`/sim`, `/lab/*`, `/admin/*`, old `/os/<module>` pages) redirect to their new home via `next.config.ts` (local only; no redirects on Vercel).
 
 ## 4. Public vs private (NO login system — do not add one)
 - **Public (deployed on Vercel):** only `/` (landing) and `/sources`. Nothing else is built or shipped there.
-- **Private (local only):** `/os/*`, `/sim`, `/lab/*`, `/admin` live in the route group `src/app/(private)`. They run only on the founder's machine via `npm run dev` (or double-click `start-os.bat`, which opens http://localhost:3000/os). No password, no roles, no investor view — local means owner access.
+- **Private (local only):** `/os/*` lives in the route group `src/app/(private)/os`. They run only on the founder's machine via `npm run dev` (or double-click `start-os.bat`, which opens http://localhost:3000/os). No password, no roles, no investor view — local means owner access.
 - **How Vercel is kept public-only:** `npm run build` runs `scripts/prune-private.mjs` first. When the `VERCEL` env var is set it deletes `src/app/(private)` before `next build`, so those routes are not built, not reachable and not in the build output. Locally (no `VERCEL`) it does nothing. Check with `VERCEL=1 npm run build` in a throwaway copy or reset afterwards (`git checkout -- "src/app/(private)"`).
 - **Rules for every future session:**
   - Do NOT add login, passwords, sessions, cookies, middleware/proxy guards, roles, "investor view" or auth env vars. Privacy comes from the private routes not being deployed, not from a login.
@@ -50,7 +49,7 @@ One web app = investor pitch + founder's private operating system. Four tracks:
 ```
 /research        ← market research markdown files (from ChatGPT deep research). Source of truth for numbers.
 /src/app         ← routes
-/src/components  ← UI (ui/, landing/, os/, sim/, lab/)
+/src/components  ← UI (ui/, landing/, os-shell/ = OS frame + page kit, os/ = shared tiles/charts/tables, sim/, lab/ = research visuals)
 /src/sim         ← simulation engine (pure TypeScript, no React)
 /src/data        ← assumptions.ts and other typed data
 /src/lib         ← auth, utils, data layer
@@ -77,9 +76,30 @@ One web app = investor pitch + founder's private operating system. Four tracks:
 Hero (one-line promise + subtle animated loop/3D teaser) → The problem (plastic waste, India/Bangalore) → Why now (regulation tailwind, EPR) → How Punarnava works (animated value chain) → Business model (pellets + EPR credits) → Unit economics snapshot (from assumptions) → Phased roadmap → Why us / team → The ask (investment use of funds) → Contact (mailto + form that opens email; no backend) → Footer.
 All copy crisp, investor-grade. Section content driven by `src/data/landing.ts`.
 
-## 10. OS modules (`/os`)
-Dashboard (KPIs, roadmap progress) · Feedstock & suppliers · Inbound logistics · Plant operations · Quality · Inventory · Sales & buyers · EPR credits · Compliance & licences tracker · Finance (capex, opex, P&L, cash flow from assumptions) · Hiring plan · Roadmap & tasks.
-For now: driven by typed data files + assumptions; realistic structure, clearly marked sample data where real data doesn't exist.
+## 10. Punarnava OS (`/os`) — structure
+Seven sections in a glass sidebar (keys **1–7**), tabs inside. Config: `src/components/os-shell/nav.ts` (one source for sidebar, tabs, palette, shortcuts, presentation story).
+
+| # | Section | Route | Tabs |
+|---|---|---|---|
+| 1 | Command | `/os` | one screen: 5 key numbers, plant status, phase progress, top 3 risks, next 5 actions |
+| 2 | Factory | `/os/factory` | the simulation (`?scenario=best` or `worst` preloads a case) |
+| 3 | Money | `/os/money` | Unit economics · Finance (`/finance`) · Scenarios (`/scenarios`) |
+| 4 | Operations | `/os/operations` | Supply · Plant (`/plant`) · Stock & Sales (`/stock-sales`) · EPR credits (`/epr`) |
+| 5 | Market | `/os/market` | Overview · Competitors (`/competitors`) · Pricing (`/pricing`) |
+| 6 | Execution | `/os/execution` | Roadmap · Licences · Hiring · Risks · Decisions |
+| 7 | Vault | `/os/vault` | Data room · Assumptions · Sources · Research gaps |
+
+Shell (`components/os-shell/`): `os-shell.tsx` (sidebar, top bar, shortcuts, presentation controller), `command-palette.tsx` (Ctrl/Cmd+K), `present.ts`, `ui-store.ts` (Zustand), `section-tabs.tsx`, `page.tsx` (page kit: `PageHeader`, `Panel`, `Details`, `DetailBlock`, `Flow`, `GateBar`, `Takeaways`). Section tab bars come from each section's `layout.tsx`; `os/template.tsx` gives the page fade-in.
+Theme: the OS defaults to **dark** with its own stored choice (`punarnava-os-theme`); the public site follows the system theme (`components/providers.tsx`).
+**Presentation mode:** Present button or **P** → fullscreen, chrome and "Show details" drawers hidden (`.os-chrome`, `.os-detail`), type scaled up (`html[data-present]` in `globals.css`). **→ / ← / Space** step through `story` in `nav.ts` (Command → Factory → Money → Market → Execution), **H** hides the caption bar, **Esc** or **P** exits.
+Data: pages call only the async getters in `src/lib/data/index.ts` and `src/lib/data/lab.ts`; typed files in `src/data/os/*` and `src/data/lab/*`. Sample data is clearly marked.
+
+### OS content rules (every page, every session)
+- **One question per page**, defined in `nav.ts`. The page opens with `PageHeader`: the question in small type, then the **answer as a headline insight** (one sentence, numbers computed from assumptions, never typed in) and the key number's status badge.
+- **3–5 visuals max** per page. Prefer KPI tiles, charts, diagrams, timelines and gate bars. Tables, long lists, notes and fine print go in a collapsible **"Show details"** drawer (`Details`).
+- **Never paste raw research text.** Summarise to what a founder or investor must grasp; raw research stays in `/research`.
+- Every number comes from `assumptions.ts` and shows its badge (Placeholder / Researched / Verified, or Sample for simulated records).
+- Laptop-first (1280–1920 px), still usable on phones. New page = add the tab to `nav.ts`, use the page kit, put `os-detail` on anything that should disappear in presentation mode.
 
 ## 11. Simulation (`/sim`) — the showpiece
 **Engine** (`/src/sim`, pure TS): discrete-time simulation, deterministic + seedable, independent of rendering, unit-tested.
@@ -96,9 +116,8 @@ Controls: play/pause, speed 1x→1000x, day/night cycle, scenario sliders (feeds
 - Performance: instanced meshes, 60fps on a normal laptop, graceful fallback on mobile (2D schematic view).
 - Build order: engine + 2D schematic first (numbers correct), then 3D.
 
-## 12. R&D wing (`/lab`) — business only
-Market overview · Competitor map · Pricing intelligence · Unit-economics model (interactive) · Scenario planner (best/base/worst) · Risk register · Investor data room (documents list, owner-only notes) · Decision log.
-Content comes from `/research/*.md` and `assumptions.ts`. Show sources.
+## 12. Research content (business only — no science/patents)
+The former R&D wing now lives inside the OS: Market (overview, competitors, pricing), Money (unit-economics model, scenarios), Execution (risks, decisions), Vault (data room, sources, research gaps). Content comes from `/research/*.md` and `assumptions.ts`. Show sources.
 
 ## 13. Build phases (update the checklist as you go)
 - [x] Phase 1 — Setup: Next.js app, design system, layout, logo, Git + GitHub connected
@@ -110,6 +129,8 @@ Content comes from `/research/*.md` and `assumptions.ts`. Show sources.
 - [x] Phase 7 — OS modules
 - [x] Phase 8 — R&D wing (import /research)
 - [x] Phase 9 — Polish, performance, security review, investor demo script
+- [x] Punarnava OS — one private OS at `/os` (7 sections, tabs, Ctrl+K, shortcuts 1–7, presentation mode, one-question pages)
+- [ ] Phase C — Simulation upgrade (Factory)
 
 ## 14. Rules for every session
 - Start: read this file + `## Progress log`, state the phase and plan, wait for "go" (plan mode).
@@ -129,3 +150,4 @@ Content comes from `/research/*.md` and `assumptions.ts`. Show sources.
 - 2026-10-14 · Phase 9 · **Visual QA**: all 28 routes checked at 360/768/1440 px (no horizontal overflow) and contrast-scanned in light + dark (no WCAG AA failures). Stat tiles (`components/os/ui.tsx`) use a container query so the badge sits above the label on narrow tiles. **Performance** (Lighthouse, local prod build): mobile 78 → 91, desktop 100; a11y / best-practices / SEO 100. **Live Vercel URL, mobile: 77–82** (was 82–86): LCP improved 3.4–4.2 s → 2.7–2.9 s, but Total Blocking Time is ~470–720 ms. The same React hydration work (~250 ms tasks) now lands after the earlier first paint, so it counts as blocking. Tried per-section Suspense boundaries to split hydration: no clear gain, reverted. Next lever if needed: fewer client components / smaller RSC payload on `/`, then re-check with PageSpeed Insights (pagespeed.web.dev). Fixes: `motion` removed from the public bundle (`Reveal` is now CSS + a tiny `RevealObserver`; the package stays installed); hero loop pellets moved to their own composited SVG layer (an SVG-internal transform repainted the whole graphic every frame); Fraunces `SOFT` axis dropped; Geist Mono not preloaded; a `"Rupee"` @font-face draws ₹ from a system font, because ₹ pulled ~180 KB of latin-ext web fonts onto every page; the 100-row sources table moved off the landing page to a new public `/sources` page (cards on phones). Header section links are now `/#…` plain anchors so they work from `/sources`. three.js / Recharts / Zustand confirmed absent from the landing bundle; 3D stays lazy-loaded (fps not re-measured: the preview pane was hidden, Phase 6 measured 84 fps). **Security**: git history and tree scanned, no secrets ever committed (only `.env.example`). Locked mode tested with throwaway passwords: logged-out redirects on every private route incl. RSC/prefetch requests and forged cookies, generic error, investor badge, no /admin, owner notes absent from investor HTML, httpOnly cookie, sign-out; owner sees /admin + notes. Open mode: no login, noindex meta + `X-Robots-Tag`. Added security headers in `next.config.ts` (nosniff, X-Frame-Options DENY, Referrer-Policy, Permissions-Policy, HSTS, no `X-Powered-By`). **SEO/sharing**: `metadataBase` from `src/lib/site.ts` (`NEXT_PUBLIC_SITE_URL` → Vercel production URL → localhost), Twitter card, canonical on `/` and `/sources`, `robots.ts` (disallows private paths), `sitemap.ts`, `opengraph-image.tsx` (1200×630, brand fonts fetched from Google Fonts at build, falls back to the bundled sans), `apple-icon.tsx`. **DEMO.md**: 7-minute click-by-click script + pre-sharing checklist. Remaining placeholders: raise amount, subsidy %, signed feedstock/offtake %, KSPCB consent days, 2 hiring lead times, 23 sim modelling choices; 0 figures verified; no source URLs. Open-mode prerendered private pages contain owner data, so switching to `locked` needs a redeploy (already documented).
 - 2026-10-14 · Perf follow-up · Landing mobile performance. (1) `experimental.inlineCss` in `next.config.ts`: the render-blocking stylesheet is gone (PSI estimated 1.5 s saved; compressed HTML grows ~17 KB). (2) The hero graphic's entrance is now a GPU-only `.hero-in` keyframe in `globals.css`. tw-animate's version also animated `filter`, which ran on the main thread. (3) Base UI and class-merging JS are off public pages: `buttonVariants` now lives in `components/ui/button-variants.ts`; the theme toggle (`theme-toggle.tsx` server + `theme-toggle-button.tsx` client), contact form and root `error.tsx` use plain `<button>`s with identical classes. Landing JS is down about 15 KB (brotli). Results: Lighthouse CLI against the live URL scores 91–95. PageSpeed Insights mobile varies a lot because of Google's machine load: runs on the new code gave 98, 86 and 76. Its main-thread time ranged from 0.7 s to 3.4 s between runs, so three ≥90 runs in a row is not guaranteed yet. Remaining cost is mostly layout: about 0.9 s at 4× CPU, about half in the hero, plus relayouts as web fonts arrive. The next things to try (each changes the look slightly): drop or preload Geist Mono, trim the `Rupee` local() font list, use `content-visibility` on lower sections.
 - 2026-10-14 · Restructure · **Login system removed completely** (`/login`, `src/lib/auth`, `src/proxy.ts`, role checks, investor badge, `jose`, all auth env vars). **Vercel ships only `/` and `/sources`**: `npm run build` runs `scripts/prune-private.mjs`, which deletes `src/app/(private)` when `VERCEL` is set (proved with a `VERCEL=1` build: route list has no /os, /sim, /lab, /admin). Locally `npm run dev` shows everything; `start-os.bat` starts the server and opens `/os`. Section 4 rewritten; do not re-add auth. Earlier log entries mentioning login/AUTH_MODE are historical.
+- 2026-10-14 · Punarnava OS · **Private area rebuilt as one OS at `/os`**: 7 sections (Command, Factory, Money, Operations, Market, Execution, Vault) with tabs. The old 13 OS pages, 10 lab pages, `/admin` and `/sim` were merged into 21 pages; old routes redirect (local only, `next.config.ts`). Shell in `src/components/os-shell/`: glass sidebar with icons and 1–7 shortcuts, top bar (breadcrumb, Search, Present, theme), Ctrl/Cmd+K command palette (ranked search over every tab plus actions), page fade-in via `os/template.tsx`. OS defaults to dark with its own theme key; landing unchanged. **Presentation mode** (P / Present): fullscreen, chrome and detail drawers hidden, larger type, arrow keys step a 9-slide story with a caption bar (H hides it). **Content rules** (now in §10): one question per page, computed headline insight + status badge, 3–5 visuals, tables and notes in "Show details" drawers, no raw research text. Links in `risks.ts`, `decisions.ts`, `data-room.ts` and the scenario sim links point to the new routes. New: `getCommand()` getter, `components/lab/waterfall.tsx` (pellet price → EBITDA per kg, now on Money · Unit economics), Vault · Sources page (figures per research report, confidence by source). Removed: `private-nav`, `page-shell`, OS/lab module lists and sub-navs. Checked in a prod build: all 21 routes render, redirects work, palette, P / → / Esc, light + dark, 1280 px and 375 px with no horizontal overflow. `DEMO.md` updated for the new routes and presentation mode. Next: Phase C (simulation upgrade).

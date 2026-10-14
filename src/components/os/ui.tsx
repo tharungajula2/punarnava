@@ -31,8 +31,8 @@ export function StatusBadge({ status }: { status: Status }) {
   );
 }
 
-export function StatGrid({ children, cols = 4 }: { children: React.ReactNode; cols?: 3 | 4 | 6 }) {
-  const c = { 3: "lg:grid-cols-3", 4: "lg:grid-cols-4", 6: "lg:grid-cols-3 xl:grid-cols-6" }[cols];
+export function StatGrid({ children, cols = 4 }: { children: React.ReactNode; cols?: 3 | 4 | 5 | 6 }) {
+  const c = { 3: "lg:grid-cols-3", 4: "lg:grid-cols-4", 5: "lg:grid-cols-5", 6: "lg:grid-cols-3 xl:grid-cols-6" }[cols];
   return <dl className={cn("grid grid-cols-2 gap-3", c)}>{children}</dl>;
 }
 
@@ -42,21 +42,24 @@ export function Stat({
   hint,
   status,
   tone,
+  big,
 }: {
   label: string;
   value: React.ReactNode;
   hint?: React.ReactNode;
   status?: Status | "sample";
   tone?: "bad" | "good";
+  /** Larger value for headline KPI rows. */
+  big?: boolean;
 }) {
   return (
-    <div className="@container flex min-w-0 flex-col rounded-2xl border border-border bg-card p-4 shadow-xs">
+    <div className={cn("@container flex min-w-0 flex-col rounded-2xl border border-border/70 bg-card/70 shadow-soft backdrop-blur-sm", big ? "p-5" : "p-4")}>
       {/* Narrow tiles (phones): badge above the label so the label keeps its width */}
       <dt className="flex flex-col-reverse items-start gap-1.5 text-xs text-muted-foreground @[13rem]:flex-row @[13rem]:justify-between @[13rem]:gap-2">
         <span>{label}</span>
         {status === "sample" ? <Pill tone="info" className="px-1.5 text-[10px] uppercase">Sample</Pill> : status ? <StatusBadge status={status} /> : null}
       </dt>
-      <dd className={cn("mt-1.5 truncate font-display text-2xl", tone === "bad" && "text-destructive", tone === "good" && "text-status-verified")}>{value}</dd>
+      <dd className={cn("mt-1.5 truncate font-display", big ? "text-[2rem] leading-tight xl:text-4xl" : "text-2xl", tone === "bad" && "text-destructive", tone === "good" && "text-status-verified")}>{value}</dd>
       {hint ? <dd className="mt-1 text-xs text-muted-foreground">{hint}</dd> : null}
     </div>
   );
@@ -93,7 +96,7 @@ export function Section({
 }
 
 export function Card({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn("rounded-2xl border border-border bg-card p-5 shadow-xs", className)}>{children}</div>;
+  return <div className={cn("rounded-2xl border border-border/70 bg-card/70 p-5 shadow-soft backdrop-blur-sm", className)}>{children}</div>;
 }
 
 /** Banner for anything that is not real company data. */

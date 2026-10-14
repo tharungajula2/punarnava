@@ -114,3 +114,36 @@ export async function getRoadmap() {
 export async function getRisks() {
   return [...risks].sort((a, b) => riskScore(b) - riskScore(a));
 }
+
+/** Command screen: the 5 numbers, plant status, phase progress, top 3 risks, next 5 actions. */
+export async function getCommand() {
+  const f = financeData();
+  const lic = licenceRows();
+  const s = simSample();
+  const byId = new Map(s.units.map((u) => [u.id, u]));
+  return {
+    finance: {
+      envelope: f.capex.envelope,
+      raise: f.capex.raise,
+      raiseStatus: f.capex.raiseStatus,
+      ebitdaKg: f.pnl.years[3].ebitdaPerKg,
+      breakevenUtil: f.breakeven.util,
+      minCash: f.cashFlow.minCash,
+      minCashMonth: f.cashFlow.minCashMonth,
+      cashStatus: f.cashFlow.status,
+    },
+    gates: gates(),
+    progress: phaseProgress(true),
+    nextActions: nextActions(true, 5),
+    risks: topRisks(3).map((r) => ({ ...r, likelihood: levelLabel[r.likelihood], impact: levelLabel[r.impact], score: riskScore(r) })),
+    licences: { granted: lic.filter((l) => l.status === "Granted").length, total: lic.length },
+    stats: assumptionStats(),
+    plant: {
+      days: s.days,
+      yieldPct: s.kpis.yieldPct,
+      uptimePct: s.kpis.uptimePct,
+      machines: machines.map((m) => ({ id: m.id, name: m.name, utilisationPct: byId.get(m.id)?.utilisationPct ?? null })),
+    },
+    plan: shiftPlan(),
+  };
+}

@@ -24,17 +24,20 @@ const geistMono = Geist_Mono({
 
 const TITLE = "Punarnava — plastic that becomes new again";
 const DESCRIPTION =
-  "A proposed Bengaluru recycling plant, shown through a clear investor story and an interactive factory walkthrough.";
+  "A recycling concept by Tharun Gajula. A proposed Bengaluru plant that turns used hard plastic into clean recycled pellets manufacturers can use again — with a full interactive factory walkthrough.";
+const OG_DESCRIPTION =
+  "Concept by Tharun Gajula · A proposed Bengaluru plant turning used hard plastic into recycled pellets. Explore the investor story and interactive factory walkthrough.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: TITLE, template: "%s · Punarnava" },
   description: DESCRIPTION,
+  authors: [{ name: "Tharun Gajula" }],
   applicationName: "Punarnava",
-  keywords: ["plastic recycling", "recycled HDPE", "rHDPE pellets", "EPR", "Bengaluru", "circular economy"],
+  keywords: ["plastic recycling", "recycled HDPE", "rHDPE pellets", "EPR", "Bengaluru", "circular economy", "Tharun Gajula"],
   openGraph: {
     title: TITLE,
-    description: "A planned Bengaluru plant for traceable recycled HDPE pellets.",
+    description: OG_DESCRIPTION,
     url: "/",
     siteName: "Punarnava",
     type: "website",
@@ -43,7 +46,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: TITLE,
-    description: "A planned Bengaluru plant for traceable recycled HDPE pellets.",
+    description: OG_DESCRIPTION,
+    creator: "@tharungajula",
   },
 };
 

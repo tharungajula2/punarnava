@@ -17,7 +17,7 @@ export const nav = [
 ] as const;
 
 export const hero = {
-  eyebrow: "A proposed recycling plant · Bengaluru",
+  eyebrow: "A concept by Tharun Gajula · Proposed recycling plant, Bengaluru",
   title: "Plastic that becomes",
   titleEmphasis: "new again.",
   promise: "We want to turn used hard plastic containers into small, reusable plastic grains that manufacturers can make into new products. This is the opportunity, the proposed plant and the proof needed before building it.",

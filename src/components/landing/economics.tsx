@@ -75,11 +75,11 @@ function Waterfall() {
 
   return (
     <ol className="mt-6 flex flex-col gap-2">
-      <Row total={perKg.revenue} label="Revenue (pellets + EPR)" value={`₹${money(perKg.revenue)}`} from={0} width={perKg.revenue} colour="bg-primary/80" delay={0.1} strong origin="ig-x" />
+      <Row total={perKg.revenue} label="Sale + possible certificates" value={`₹${money(perKg.revenue)}`} from={0} width={perKg.revenue} colour="bg-primary/80" delay={0.1} strong origin="ig-x" />
       {rows.map((r, i) => (
         <Row total={perKg.revenue} key={r.label} label={r.label} value={`−₹${money(r.value)}`} from={r.from} width={r.value} colour={r.colour} delay={0.5 + i * 0.12} />
       ))}
-      <Row total={perKg.revenue} label="EBITDA margin" value={`₹${money(perKg.margin)}`} from={0} width={perKg.margin} colour="bg-chart-5" delay={0.5 + rows.length * 0.12 + 0.1} strong origin="ig-x" />
+      <Row total={perKg.revenue} label="Operating margin" value={`₹${money(perKg.margin)}`} from={0} width={perKg.margin} colour="bg-chart-5" delay={0.5 + rows.length * 0.12 + 0.1} strong origin="ig-x" />
     </ol>
   );
 }
@@ -92,7 +92,7 @@ function StressChart() {
   const span = hi - lo;
   const zero = (-lo / span) * 100;
   return (
-    <ol className="flex flex-col gap-2.5" aria-label="EBITDA per kg under each stress case">
+    <ol className="flex flex-col gap-2.5" aria-label="Modelled operating margin per kilogram under each stress case">
       {rows.map((r, i) => {
         const neg = r.value < 0;
         const w = (Math.abs(r.value) / span) * 100;
@@ -123,7 +123,7 @@ export function Economics() {
     <Section id="economics">
       <SectionHeader id="economics" kicker={economics.kicker} title={economics.title} body={economics.body} />
 
-      <dl className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="mt-12 grid gap-4 sm:grid-cols-2">
         {economics.kpis.map((k, i) => (
           <Reveal key={k.label} delay={i * 0.08} className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
             <dt className="sr-only">{k.label}</dt>
@@ -136,7 +136,7 @@ export function Economics() {
       <Reveal className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] sm:p-8">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h3 className="text-2xl font-normal">{perKg.title}</h3>
-          <p className="text-sm text-muted-foreground">₹ per kg of pellets: price → costs → margin</p>
+          <p className="text-sm text-muted-foreground">Illustrative rupees per kilogram sold</p>
         </div>
         <Waterfall />
       </Reveal>
@@ -150,7 +150,7 @@ export function Economics() {
           </div>
         </div>
         <div>
-          <p className="mb-4 text-sm text-muted-foreground">EBITDA per kg</p>
+          <p className="mb-4 text-sm text-muted-foreground">Modelled operating margin per kilogram</p>
           <StressChart />
         </div>
       </Reveal>

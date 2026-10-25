@@ -1,14 +1,12 @@
-import { FigureNote } from "@/components/landing/figures/figure-note";
 import { Glyph, type GlyphKind } from "@/components/landing/figures/material-glyphs";
 import { Reveal } from "@/components/landing/reveal";
 import { Section, SectionHeader } from "@/components/landing/section";
-import { num } from "@/data/assumptions";
 import { how } from "@/data/landing";
 
 // Material form after each step, in step order: bale → bottles → flakes → … → bagged pellets
 const glyphs: GlyphKind[] = ["collect", "sort", "shred", "wash", "dry", "extrude", "pellet", "supply"];
 
-const massNote = `${num(how.massIn)} kg in → ${num(how.massOut)} kg of pellets (${num(how.yieldPct)}% yield)`;
+const massNote = "Check the material at every handoff";
 
 const d = (s: number) => ({ "--d": `${s}s` }) as React.CSSProperties;
 
@@ -94,7 +92,6 @@ export function HowItWorks() {
           ))}
         </ol>
         <p className="mt-6 text-sm font-medium text-primary lg:hidden">{massNote}</p>
-        <FigureNote ids={how.ids} />
       </Reveal>
     </Section>
   );

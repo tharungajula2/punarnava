@@ -19,34 +19,12 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Old routes → Punarnava OS.
-  async redirects() {
-    const map: [string, string][] = [
-      ["/sim", "/os/factory"],
-      ["/admin", "/os/vault/assumptions"],
-      ["/admin/assumptions", "/os/vault/assumptions"],
-      ["/lab", "/os"],
-      ["/lab/market", "/os/market"],
-      ["/lab/competitors", "/os/market/competitors"],
-      ["/lab/pricing", "/os/market/pricing"],
-      ["/lab/unit-economics", "/os/money"],
-      ["/lab/scenarios", "/os/money/scenarios"],
-      ["/lab/risks", "/os/execution/risks"],
-      ["/lab/data-room", "/os/vault"],
-      ["/lab/decisions", "/os/execution/decisions"],
-      ["/lab/research-gaps", "/os/vault/research-gaps"],
-      ["/os/feedstock", "/os/operations"],
-      ["/os/logistics", "/os/operations"],
-      ["/os/quality", "/os/operations/plant"],
-      ["/os/inventory", "/os/operations/stock-sales"],
-      ["/os/sales", "/os/operations/stock-sales"],
-      ["/os/epr", "/os/operations/epr"],
-      ["/os/finance", "/os/money/finance"],
-      ["/os/compliance", "/os/execution/licences"],
-      ["/os/hiring", "/os/execution/hiring"],
-      ["/os/roadmap", "/os/execution"],
+  redirects() {
+    return [
+      { source: "/os", destination: "/factory", permanent: false },
+      { source: "/os/factory", destination: "/factory", permanent: false },
+      { source: "/sim", destination: "/factory", permanent: false },
     ];
-    return map.map(([source, destination]) => ({ source, destination, permanent: false }));
   },
   partialPrefetching: true,
   experimental: {

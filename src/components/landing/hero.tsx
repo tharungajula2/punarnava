@@ -29,6 +29,8 @@ export function Hero() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href={hero.primaryCta.href}
+              target="_blank"
+              rel="noopener noreferrer"
               className={cn(buttonVariants({ size: "lg" }), "h-11 rounded-xl px-5 text-base")}
             >
               {hero.primaryCta.label} <ArrowRight data-icon="inline-end" />

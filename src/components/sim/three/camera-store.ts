@@ -25,6 +25,7 @@ export type ShowMode = "explore" | "tour" | "cinematic";
 
 interface SceneStore {
   hovered: string | null;
+  selected: string | null;
   /** Highlighted by the guided tour (ring only, no detail panel). */
   spotlight: string | null;
   cmd: { kind: CameraCmd; n: number } | null;
@@ -36,6 +37,7 @@ interface SceneStore {
   /** True once the 3D scene has drawn its first frames (hides the loading screen). */
   ready: boolean;
   setHovered: (id: string | null) => void;
+  setSelected: (id: string | null) => void;
   command: (kind: CameraCmd) => void;
   focusOn: (x: number, z: number) => void;
   frame: (shot: Shot) => void;
@@ -48,6 +50,7 @@ interface SceneStore {
 
 export const useSceneStore = create<SceneStore>((set, get) => ({
   hovered: null,
+  selected: null,
   spotlight: null,
   cmd: null,
   focus: null,
@@ -57,6 +60,7 @@ export const useSceneStore = create<SceneStore>((set, get) => ({
   tourPaused: false,
   ready: false,
   setHovered: (hovered) => set({ hovered }),
+  setSelected: (selected) => set({ selected }),
   command: (kind) => set({ cmd: { kind, n: (get().cmd?.n ?? 0) + 1 } }),
   focusOn: (x, z) => set({ focus: { x, z, n: (get().focus?.n ?? 0) + 1 } }),
   frame: (shot) => set({ shot: { ...shot, n: (get().shot?.n ?? 0) + 1 } }),

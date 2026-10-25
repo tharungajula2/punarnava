@@ -321,7 +321,7 @@ const LOOK = {
   pellet: { size: [0.3, 0.26, 0.3] as const, colors: [C.pellet, "#4ea79e"] },
 };
 
-export function Conveyors() {
+export function Conveyors({ showItems = true }: { showItems?: boolean }) {
   const segs = useMemo(
     () =>
       CONVEYORS.map((c) => {
@@ -337,6 +337,7 @@ export function Conveyors() {
   const offsets = useRef(segs.map(() => 0));
 
   useLayoutEffect(() => {
+    if (!items.current) return;
     const col = new THREE.Color();
     let k = 0;
     for (const s of segs) {
@@ -381,7 +382,7 @@ export function Conveyors() {
       {segs.map((s, i) => (
         <Belt key={i} from={s.v0} to={s.v1} len={s.len} />
       ))}
-      <instancedMesh ref={items} args={[GEO.box, mat("#ffffff"), total]} castShadow frustumCulled={false} />
+      {showItems && <instancedMesh ref={items} args={[GEO.box, mat("#ffffff"), total]} castShadow frustumCulled={false} />}
     </group>
   );
 }
@@ -574,7 +575,9 @@ function HoverLabel({ id }: { id: string }) {
 }
 
 export function Selection() {
-  const selected = useSimStore((s) => s.selected);
+  const simSelected = useSimStore((s) => s.selected);
+  const conceptSelected = useSceneStore((s) => s.selected);
+  const selected = useSimStore((s) => s.sim) ? simSelected : conceptSelected;
   const hovered = useSceneStore((s) => s.hovered);
   const spotlight = useSceneStore((s) => s.spotlight);
   return (

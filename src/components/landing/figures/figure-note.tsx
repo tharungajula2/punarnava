@@ -1,38 +1,25 @@
-import Link from "next/link";
-import { getAssumption, type AssumptionId } from "@/data/assumptions";
+import type { AssumptionId } from "@/data/assumptions";
 import { cn } from "@/lib/utils";
 
-const reportNames: Record<string, string> = {
-  "research/01-market.md": "market research (R1)",
-  "research/02-unit-economics.md": "unit-economics research (R2)",
-  "research/03-competitors-investors.md": "competitor research (R3)",
-};
-
-/** Research reports named in a source line, or else its lead phrase ("CPCB / MoEFCC reported data"). */
-function sourceNames(a: { source: string }): string[] {
-  const found = Object.entries(reportNames).filter(([path]) => a.source.includes(path)).map(([, name]) => name);
-  return found.length ? found : [a.source.split(/[,(;]| — /)[0].trim()];
-}
-
-/**
- * Footnote under each landing infographic: which research the figures come from,
- * how far they have been checked, and a link to the full list on /sources.
- */
+/** A short confidence note beside a figure, without a second page to read. */
 export function FigureNote({ ids, className }: { ids: readonly AssumptionId[]; className?: string }) {
-  const rows = ids.map(getAssumption);
-  const reports = [...new Set(rows.flatMap(sourceNames))];
-  const counts = (["verified", "researched", "placeholder"] as const)
-    .map((s) => ({ s, n: rows.filter((a) => a.status === s).length }))
-    .filter((c) => c.n > 0);
-  const status =
-    counts.length === 1 ? `all ${counts[0].s}` : counts.map((c) => `${c.n} ${c.s}`).join(", ");
+  const isRegulation = ids.some((id) => id.startsWith("epr_cat1_recycled_content"));
+  const isWasteEstimate = ids.includes("bengaluru_plastic_waste_low");
+
+  if (isRegulation) {
+    return (
+      <p className={cn("mt-4 text-xs text-muted-foreground", className)}>
+        Target shares:{" "}
+        <a href="https://egazette.gov.in/WriteReadData/2025/263615.pdf" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-foreground">
+          Government of India, Plastic Waste Management (Second Amendment) Rules, 2025
+        </a>.
+      </p>
+    );
+  }
 
   return (
     <p className={cn("mt-4 text-xs text-muted-foreground", className)}>
-      Figures: {reports.join(", ")} · {status} ·{" "}
-      <Link href="/sources" className="font-medium underline-offset-4 hover:underline">
-        Sources &amp; assumptions →
-      </Link>
+      {isWasteEstimate ? "Waste volumes are reported estimates; the proposed plant would need its own supply contracts." : "Illustrative planning model, not results from an operating plant."}
     </p>
   );
 }

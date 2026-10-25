@@ -7,10 +7,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { nav } from "@/data/landing";
 import { cn } from "@/lib/utils";
 
-// Section links are plain <a href="/#…">: on the landing page that is a native
-// in-page jump, and from other pages (e.g. /sources) a full load of the static
-// page lands on the section. next/link doesn't scroll to a hash across pages.
-/* eslint-disable @next/next/no-html-link-for-pages */
+// Section links are native in-page jumps.
 
 export function SiteHeader() {
   return (
@@ -34,8 +31,8 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-1">
           <ThemeToggle />
-          <Link href="/os" className={cn(buttonVariants(), "ml-1 hidden h-9 rounded-xl px-4 sm:inline-flex")}>
-            Explore the OS
+          <Link href="/factory" target="_blank" rel="noopener noreferrer" className={cn(buttonVariants(), "ml-1 hidden h-9 rounded-xl px-4 sm:inline-flex")}>
+            Explore the factory
           </Link>
           {/* Mobile menu — native <details>, no JavaScript needed */}
           <details className="group relative md:hidden">
@@ -49,8 +46,8 @@ export function SiteHeader() {
               aria-label="Sections"
               className="glass absolute top-11 right-0 flex w-56 flex-col p-2"
             >
-              {[...nav, { href: "/os", label: "Explore the OS" }, { href: "/#contact", label: "About" }].map((item) => (
-                <a key={item.href} href={item.href} className="rounded-lg px-3 py-2.5 text-sm hover:bg-muted">
+              {[...nav, { href: "/factory", label: "Explore the factory" }].map((item) => (
+                <a key={item.href} href={item.href} target={item.href === "/factory" ? "_blank" : undefined} rel={item.href === "/factory" ? "noopener noreferrer" : undefined} className="rounded-lg px-3 py-2.5 text-sm hover:bg-muted">
                   {item.label}
                 </a>
               ))}

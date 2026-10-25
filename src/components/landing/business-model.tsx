@@ -68,7 +68,7 @@ export function BusinessModel() {
       <SectionHeader id="model" kicker={model.kicker} title={model.title} />
       <Reveal className="mt-14 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] sm:p-8">
         <h3 className="font-sans text-sm font-medium text-muted-foreground">
-          Base-case revenue per kg of pellets, drawn to scale
+          An illustrative sale: the pellet is the main product
         </h3>
         <div className="mt-6">
           <Streams />
@@ -86,9 +86,7 @@ export function BusinessModel() {
               {s.tag}
             </span>
             <h3 className="mt-5 text-2xl font-normal">{s.name}</h3>
-            <p className="mt-4 font-display text-4xl text-primary">{s.price}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{s.priceNote}</p>
-            <p className="mt-5 text-muted-foreground">{s.body}</p>
+            <p className="mt-3 text-muted-foreground">{s.body}</p>
           </Reveal>
         ))}
       </div>

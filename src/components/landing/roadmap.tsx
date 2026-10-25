@@ -1,4 +1,3 @@
-import { FigureNote } from "@/components/landing/figures/figure-note";
 import { Reveal } from "@/components/landing/reveal";
 import { Section, SectionHeader } from "@/components/landing/section";
 import { roadmap } from "@/data/landing";
@@ -59,7 +58,6 @@ export function Roadmap() {
             <span aria-hidden className="size-2.5 rounded-full bg-primary" /> We are here.
           </span>
         </p>
-        <FigureNote ids={roadmap.ids} />
       </Reveal>
     </Section>
   );

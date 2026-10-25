@@ -17,8 +17,10 @@ export function Pick({ id, children }: { id: string; children: ReactNode }) {
     <group
       onClick={(e) => {
         e.stopPropagation();
+        const scene = useSceneStore.getState();
+        scene.setSelected(scene.selected === id ? null : id);
         const { selected, select } = useSimStore.getState();
-        select(selected === id ? null : id);
+        if (useSimStore.getState().sim) select(selected === id ? null : id);
       }}
       onPointerOver={(e) => {
         e.stopPropagation();

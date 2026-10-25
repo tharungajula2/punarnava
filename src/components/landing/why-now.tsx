@@ -54,20 +54,6 @@ function Staircase() {
       <line x1={L} x2={R} y1={BASE} y2={BASE} className="stroke-border" strokeWidth="1.5" />
       <path d={line} pathLength={1} fill="none" className="ig ig-draw stroke-primary" strokeWidth="3.5" strokeLinejoin="round" />
 
-      {/* Numbered pins on the timeline, matching the cards */}
-      {whyNow.pins.map((p, i) => {
-        const x = L + (p.col + p.at) * colW;
-        const y = BASE - 22;
-        return (
-          <g key={p.point} className="ig ig-pop" style={{ "--d": `${1.2 + i * 0.15}s` } as React.CSSProperties}>
-            <line x1={x} x2={x} y1={y + 10} y2={BASE} className="stroke-primary/50" strokeWidth="1.5" />
-            <circle cx={x} cy={y} r="11" className="fill-primary" />
-            <text x={x} y={y} dy="0.35em" textAnchor="middle" className="fill-primary-foreground text-[12px] font-semibold">
-              {p.point + 1}
-            </text>
-          </g>
-        );
-      })}
     </svg>
   );
 }
@@ -86,7 +72,6 @@ export function WhyNow() {
         </Reveal>
         <ol className="flex flex-col gap-4">
           {whyNow.points.map((p, i) => {
-            const pin = whyNow.pins.find((x) => x.point === i);
             return (
               <li key={p.title}>
                 <Reveal delay={i * 0.08} className="flex gap-4 rounded-2xl border border-border bg-card/70 p-6">
@@ -98,7 +83,6 @@ export function WhyNow() {
                   </span>
                   <div>
                     <h3 className="text-xl font-normal">{p.title}</h3>
-                    {pin && <p className="mt-0.5 text-xs font-medium tracking-wide text-primary uppercase">{pin.when}</p>}
                     <p className="mt-2 text-muted-foreground">{p.body}</p>
                   </div>
                 </Reveal>

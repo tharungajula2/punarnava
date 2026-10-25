@@ -1,4 +1,5 @@
-import { FigureNote } from "@/components/landing/figures/figure-note";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/landing/reveal";
 import { Section } from "@/components/landing/section";
 import { plant } from "@/data/landing";
@@ -254,15 +255,14 @@ export function PlantTeaser() {
             {plant.title}
           </h2>
           <p className="mt-5 text-lg text-pretty text-paper/75 dark:text-muted-foreground">{plant.body}</p>
-          <dl className="mt-8 grid grid-cols-3 gap-4 border-t border-paper/20 pt-6 dark:border-border">
-            {plant.stats.map((s) => (
-              <div key={s.label}>
-                <dt className="sr-only">{s.label}</dt>
-                <dd className="font-display text-2xl sm:text-3xl">{s.value}</dd>
-                <dd className="mt-1 text-xs text-paper/70 sm:text-sm dark:text-muted-foreground">{s.label}</dd>
-              </div>
-            ))}
-          </dl>
+          <ul className="mt-8 space-y-2 border-t border-paper/20 pt-6 text-sm text-paper/80 dark:border-border dark:text-muted-foreground">
+            <li>Dirty and clean material have separate places.</li>
+            <li>Each handoff follows the processing line.</li>
+            <li>Water treatment has its own service area.</li>
+          </ul>
+          <Link href="/factory" target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-mint px-5 py-3 font-medium text-teal-deep transition-transform hover:-translate-y-0.5">
+            Walk through the design <ArrowRight className="size-4" aria-hidden />
+          </Link>
         </Reveal>
 
         <Reveal delay={0.1}>
@@ -295,7 +295,6 @@ export function PlantTeaser() {
           </figure>
         </Reveal>
       </div>
-      <FigureNote ids={plant.ids} className="text-paper/60 dark:text-muted-foreground" />
     </Section>
   );
 }

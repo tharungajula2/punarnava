@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
 import { LogoMark } from "@/components/brand/logo";
 import { Container } from "@/components/layout/container";
 
@@ -8,12 +7,11 @@ export function SiteFooter() {
       <Container className="flex flex-col items-start gap-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <LogoMark className="size-6" />
-          <span>Punarnava · concept case study</span>
+          <span>Punarnava · proposed plant concept</span>
         </div>
         <div className="flex items-center gap-4">
-          <a href="/case-study" className="hover:text-foreground">Case study</a>
-          <a href="/os" className="hover:text-foreground">Explore the OS</a>
-          <p>Projections based on stated assumptions.</p>
+          <a href="/factory" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">Factory walkthrough</a>
+          <p>Concept only · Plant not built · Figures are illustrative</p>
         </div>
       </Container>
     </footer>

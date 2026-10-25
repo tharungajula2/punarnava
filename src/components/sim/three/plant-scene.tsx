@@ -8,7 +8,8 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { useSimStore } from "../sim-store";
 import { useSceneStore, type CameraCmd, type Shot } from "./camera-store";
 import { Bales, Bins, Conveyors, DayNight, FinishedBags, Forklifts, Selection, Trucks } from "./live";
-import { StaticPlant } from "./models";
+import { Pick, StaticPlant } from "./models";
+import { Box, C } from "./prims";
 
 // True isometric view: 45° around, ~35° down.
 const HOME_TARGET = new THREE.Vector3(-8, 0, 2);
@@ -181,8 +182,35 @@ function ReadySignal() {
   return null;
 }
 
+/** Fixed sample loads make the proposed layout legible without running the archived simulation. */
+function ConceptFixtures() {
+  return (
+    <group>
+      <Pick id="baleYard">
+        {Array.from({ length: 18 }, (_, i) => {
+          const col = i % 6;
+          const row = Math.floor(i / 6);
+          return <Box key={i} p={[17 + col * 2, 0.75, 3 + row * 4]} s={[1.5, 1.4, 2.2]} c={C.bale[(i + row) % C.bale.length]} />;
+        })}
+      </Pick>
+      <Pick id="finishedGoods">
+        {Array.from({ length: 12 }, (_, i) => {
+          const col = i % 4;
+          const row = Math.floor(i / 4);
+          return (
+            <group key={i}>
+              <Box p={[-29 + col * 4.5, 0.2, 1 + row * 4]} s={[2.3, 0.25, 2.3]} c={C.trunk} />
+              <Box p={[-29 + col * 4.5, 0.88, 1 + row * 4]} s={[1.9, 1.1, 1.9]} c={C.paper} />
+            </group>
+          );
+        })}
+      </Pick>
+    </group>
+  );
+}
+
 /** The whole 3D plant. Loaded lazily (client only) so three.js never touches the server or 2D users. */
-export default function PlantScene() {
+export default function PlantScene({ conceptOnly = false }: { conceptOnly?: boolean }) {
   const select = useSimStore((s) => s.select);
   // Pixel ratio is the main cost on integrated GPUs: cap it, and drop to 1 if the frame rate sags.
   const maxDpr = typeof window === "undefined" ? 1.25 : Math.min(1.5, window.devicePixelRatio || 1);
@@ -194,7 +222,10 @@ export default function PlantScene() {
       dpr={dpr}
       camera={{ position: HOME_TARGET.clone().add(new THREE.Vector3(1, 1, 1).multiplyScalar(DIST / Math.sqrt(3))).toArray(), zoom: 6, near: 1, far: 1000 }}
       gl={{ antialias: true, alpha: true, toneMapping: THREE.NeutralToneMapping, powerPreference: "high-performance" }}
-      onPointerMissed={() => select(null)}
+      onPointerMissed={() => {
+        if (conceptOnly) useSceneStore.getState().setSelected(null);
+        else select(null);
+      }}
       onCreated={(state) => {
         // Dev-only handle for measuring draw calls / render time from the console.
         if (process.env.NODE_ENV === "development") (window as unknown as { __r3f: typeof state }).__r3f = state;
@@ -204,12 +235,17 @@ export default function PlantScene() {
       <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(maxDpr)} />
       <DayNight />
       <StaticPlant />
-      <Conveyors />
+      {conceptOnly && <ConceptFixtures />}
+      <Conveyors showItems={!conceptOnly} />
       <Bins />
-      <Bales />
-      <FinishedBags />
-      <Forklifts />
-      <Trucks />
+      {!conceptOnly && (
+        <>
+          <Bales />
+          <FinishedBags />
+          <Forklifts />
+          <Trucks />
+        </>
+      )}
       <Selection />
       <OrbitControls
         makeDefault

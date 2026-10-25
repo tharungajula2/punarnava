@@ -103,7 +103,7 @@ export default function FactoryPage() {
 
       <footer className="border-t border-border py-8">
         <Container className="flex flex-wrap items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>Punarnava · proposed first-plant design</p>
+          <p>Punarnava · Concept by Tharun Gajula</p>
           <Link href="/" className="inline-flex items-center gap-1 font-medium text-primary hover:underline">Return to the presentation <ArrowUpRight className="size-4" aria-hidden /></Link>
         </Container>
       </footer>

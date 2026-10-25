@@ -5,7 +5,7 @@ A proposed Bengaluru plant for turning post-consumer rigid HDPE into recycled pe
 ## What's inside
 
 - **Investor presentation** (`/`): a concise visual story of the problem, opportunity, process, proposed business, risks and phased plan.
-- **Factory walkthrough** (`/factory`): a proposed 3D layout with a beginner-friendly guided tour, the reason for each area, and the evidence gates for building it.
+- **Factory walkthrough** (`/factory`): an interactive plant plan with a beginner-friendly guided tour, the reason for each area, and the evidence gates for building it.
 - **Archive** (`archive/`): the former OS, case study, sources and contact pages. Their routes were removed; the source remains in Git for later use.
 - **Research model** (`research/`, `src/data/assumptions.ts`): planning inputs behind the illustrative figures. It is not presented as operating data.
 
@@ -28,4 +28,4 @@ Optional env vars are documented in `.env.example`.
 
 ## Honesty note
 
-Figures are based on desk research and modelling, not audited results. The 3D scene is a design proposal, not an engineering drawing. A real site, tested feedstock, buyer specifications, engineering, approvals and vendor quotations must shape the buildable plan.
+Figures are based on desk research and modelling, not audited results. The plant plan is a design proposal, not an engineering drawing. A real site, tested feedstock, buyer specifications, engineering, approvals and vendor quotations must shape the buildable plan.

@@ -310,6 +310,14 @@ html {
   100% { transform: translate(var(--t1x), var(--t1y)); opacity: 0; }
 }
 
+@keyframes factory-flow {
+  to { stroke-dashoffset: -38; }
+}
+.factory-flow { animation: factory-flow 2.4s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .factory-flow { animation: none; }
+}
+
 /* Factory teaser materials (light / dark) */
 .plant-iso {
   --pi-ground: oklch(0.955 0.012 85);

@@ -31,7 +31,7 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-1">
           <ThemeToggle />
-          <Link href="/factory" target="_blank" rel="noopener noreferrer" className={cn(buttonVariants(), "ml-1 hidden h-9 rounded-xl px-4 sm:inline-flex")}>
+          <Link href="/factory" className={cn(buttonVariants(), "ml-1 hidden h-9 rounded-xl px-4 sm:inline-flex")}>
             Explore the factory
           </Link>
           {/* Mobile menu — native <details>, no JavaScript needed */}
@@ -47,7 +47,7 @@ export function SiteHeader() {
               className="glass absolute top-11 right-0 flex w-56 flex-col p-2"
             >
               {[...nav, { href: "/factory", label: "Explore the factory" }].map((item) => (
-                <a key={item.href} href={item.href} target={item.href === "/factory" ? "_blank" : undefined} rel={item.href === "/factory" ? "noopener noreferrer" : undefined} className="rounded-lg px-3 py-2.5 text-sm hover:bg-muted">
+                <a key={item.href} href={item.href} className="rounded-lg px-3 py-2.5 text-sm hover:bg-muted">
                   {item.label}
                 </a>
               ))}

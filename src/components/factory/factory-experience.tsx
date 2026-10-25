@@ -1,96 +1,26 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { ArrowLeft, ArrowRight, Maximize2, Pause, Play, RotateCcw, X } from "lucide-react";
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FACTORY_STOPS } from "@/data/factory-story";
-import { useSceneStore } from "@/components/sim/three/camera-store";
+import { FactoryPlan } from "@/components/factory/factory-plan";
 import { cn } from "@/lib/utils";
 
-const PlantScene = dynamic(() => import("@/components/sim/three/plant-scene"), { ssr: false });
 const STOP_MS = 10500;
 
-let webglSupport: boolean | null = null;
-function getWebglSupport() {
-  if (webglSupport !== null) return webglSupport;
-  try {
-    const canvas = document.createElement("canvas");
-    webglSupport = Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
-  } catch {
-    webglSupport = false;
-  }
-  return webglSupport;
-}
-
-const subscribeToWebglSupport = () => () => {};
-function useSceneSupport() {
-  return useSyncExternalStore(subscribeToWebglSupport, getWebglSupport, () => false);
-}
-
-function PlanFallback({ active }: { active: number }) {
-  const group = active <= 3 ? 0 : active <= 6 ? 1 : active <= 9 ? 2 : 3;
-  return (
-    <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_65%_20%,#e2f4ec,#d7e9e4_55%,#c3d9d2)] p-6">
-      <ol className="grid w-full max-w-3xl gap-3 sm:grid-cols-4">
-        {[
-          ["01", "Receive", "Record and sort incoming plastic"],
-          ["02", "Clean", "Shred, wash and treat the water"],
-          ["03", "Convert", "Dry, melt and make pellets"],
-          ["04", "Release", "Test, pack and dispatch"],
-        ].map(([n, title, body], index) => (
-          <li key={n} className={cn("rounded-2xl border bg-white/85 p-5 shadow-lg backdrop-blur transition-colors", index === group && active > 0 ? "border-teal-700 ring-2 ring-teal-700/35" : "border-white/70")}>
-            <span className="font-mono text-xs text-teal-700">{n}</span>
-            <h3 className="mt-3 font-display text-2xl text-slate-900">{title}</h3>
-            <p className="mt-2 text-sm text-slate-600">{body}</p>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-}
-
 export function FactoryExperience() {
-  const supported = useSceneSupport();
-  const ready = useSceneStore((s) => s.ready);
-  const active = useSceneStore((s) => s.tourStep);
+  const [active, setActive] = useState(0);
   const [touring, setTouring] = useState(false);
   const [playing, setPlaying] = useState(false);
   const stop = FACTORY_STOPS[active];
 
   const goTo = useCallback((index: number) => {
-    const next = Math.max(0, Math.min(FACTORY_STOPS.length - 1, index));
-    const item = FACTORY_STOPS[next];
-    const scene = useSceneStore.getState();
-    scene.setTourStep(next);
-    scene.setSelected(item.spot ?? null);
-    scene.setSpotlight(item.spot ?? null);
-    scene.frame(item.shot);
+    setActive(Math.max(0, Math.min(FACTORY_STOPS.length - 1, index)));
   }, []);
 
-  useEffect(() => {
-    const scene = useSceneStore.getState();
-    scene.setSelected(null);
-    scene.setSpotlight(null);
-    return () => {
-      scene.setSelected(null);
-      scene.setSpotlight(null);
-      scene.setMode("explore");
-    };
-  }, []);
-
-  useEffect(() => {
-    if (ready && supported) useSceneStore.getState().frame(FACTORY_STOPS[0].shot);
-  }, [ready, supported]);
-
-  useEffect(() => {
-    return useSceneStore.subscribe((scene, previous) => {
-      if (!scene.selected || scene.selected === previous.selected) return;
-      const index = FACTORY_STOPS.findIndex((item) => item.spot === scene.selected);
-      if (index < 0 || index === scene.tourStep) return;
-      scene.setTourStep(index);
-      scene.frame(FACTORY_STOPS[index].shot);
-      setPlaying(false);
-    });
+  const exitTour = useCallback(() => {
+    setTouring(false);
+    setPlaying(false);
   }, []);
 
   useEffect(() => {
@@ -101,13 +31,6 @@ export function FactoryExperience() {
     }, STOP_MS);
     return () => window.clearTimeout(timer);
   }, [touring, playing, active, goTo]);
-
-  const exitTour = useCallback(() => {
-    setTouring(false);
-    setPlaying(false);
-    useSceneStore.getState().setMode("explore");
-    useSceneStore.getState().command("reset");
-  }, []);
 
   useEffect(() => {
     if (!touring) return;
@@ -135,40 +58,40 @@ export function FactoryExperience() {
     };
   }, [touring, active, exitTour, goTo]);
 
+  const selectArea = (index: number) => {
+    goTo(index);
+    if (touring) setPlaying(false);
+  };
+
   const startTour = () => {
+    goTo(0);
     setTouring(true);
     setPlaying(true);
-    useSceneStore.getState().setMode("tour");
-    goTo(0);
   };
 
   return (
-    <div className={cn("sim-stage factory-stage", touring ? "fixed inset-0 z-[70] h-dvh w-screen rounded-none" : "relative h-[min(820px,calc(100svh-4rem))] min-h-[620px] overflow-hidden rounded-3xl border border-border shadow-[var(--shadow-float)]")} data-mode={touring ? "tour" : "explore"}>
-      {supported ? <PlantScene conceptOnly /> : <PlanFallback active={active} />}
-      {supported && !ready && (
-        <div className="pointer-events-none absolute inset-0 grid place-items-center bg-background/30 text-sm text-foreground">
-          Opening the proposed plant…
-        </div>
-      )}
-
-      <div className="pointer-events-none absolute inset-x-4 top-4 flex flex-wrap items-start justify-between gap-3 sm:inset-x-6 sm:top-6">
-        <div className="rounded-xl border border-white/60 bg-background/90 px-4 py-2.5 shadow-lg backdrop-blur">
-          <p className="text-xs font-semibold tracking-[0.16em] text-primary uppercase">Punarnava · factory concept</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">{supported ? "Click a part or follow the guided story" : "Follow the guided story, step by step"}</p>
+    <div className={cn("relative isolate", touring && "fixed inset-0 z-[70] h-dvh w-screen bg-[#062f32]")} data-mode={touring ? "tour" : "explore"}>
+      <div className={cn("relative overflow-hidden bg-[#062f32]", touring ? "absolute inset-0" : "rounded-3xl border border-border shadow-[var(--shadow-float)]")} style={{ height: touring ? "100dvh" : "640px" }}>
+        <FactoryPlan active={active} onSelect={selectArea} />
+        <div className="pointer-events-none absolute inset-x-4 top-4 flex flex-wrap items-start justify-between gap-3 sm:inset-x-6 sm:top-6">
+        <div className="rounded-xl border border-white/15 bg-[#073a3b]/95 px-4 py-2.5 text-white shadow-xl backdrop-blur">
+          <p className="text-xs font-semibold tracking-[0.16em] text-[#9de0c3] uppercase">Punarnava · factory concept</p>
+          <p className="mt-0.5 text-xs text-white/75"><span className="hidden md:inline">Select a station or follow the guided story</span><span className="md:hidden">Follow the guided story, step by step</span></p>
         </div>
         {touring ? (
-          <button type="button" onClick={exitTour} className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-background px-4 py-2.5 text-sm font-medium text-foreground shadow-lg">
+          <button type="button" onClick={exitTour} className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-[#073a3b] shadow-xl">
             <X className="size-4" aria-hidden /> Exit tour
           </button>
         ) : (
-          <button type="button" onClick={startTour} className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-teal-deep px-4 py-2.5 text-sm font-medium text-paper shadow-lg transition-transform hover:-translate-y-0.5">
+          <button type="button" onClick={startTour} className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-[#a9e8c9] px-4 py-2.5 text-sm font-semibold text-[#073a3b] shadow-xl transition-transform hover:-translate-y-0.5">
             <Maximize2 className="size-4" aria-hidden /> Start cinematic tour
           </button>
         )}
+        </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-4 bottom-4 flex justify-center sm:inset-x-6 sm:bottom-6">
-        <div className="pointer-events-auto w-full max-w-3xl rounded-2xl border border-white/70 bg-background/95 p-4 shadow-2xl backdrop-blur-xl sm:p-6">
+      <div className={cn("z-10 mx-auto w-full max-w-3xl", touring ? "absolute inset-x-4 bottom-4 max-h-[70dvh] sm:inset-x-6" : "relative -mt-6 px-4 sm:px-0")}>
+        <div className={cn("w-full rounded-2xl border border-white/70 bg-background/95 p-4 shadow-2xl backdrop-blur-xl sm:p-6", touring && "max-h-[70dvh] overflow-y-auto")}>
           <div className="flex items-center justify-between gap-3">
             <span className="text-xs font-semibold tracking-[0.16em] text-primary uppercase">{stop.zone} · {String(active + 1).padStart(2, "0")} / {FACTORY_STOPS.length}</span>
             <span className="text-xs text-muted-foreground">{touring ? playing ? "Guided tour playing" : "Tour paused" : "Proposed layout"}</span>
@@ -199,7 +122,7 @@ export function FactoryExperience() {
               <button type="button" onClick={() => goTo(active - 1)} disabled={active === 0} aria-label="Previous factory stop" className="grid size-9 place-items-center rounded-lg hover:bg-muted disabled:opacity-30"><ArrowLeft className="size-4" /></button>
               <div className="h-1.5 w-16 overflow-hidden rounded-full bg-muted sm:w-28"><div className="h-full rounded-full bg-primary transition-[width]" style={{ width: `${((active + 1) / FACTORY_STOPS.length) * 100}%` }} /></div>
               <button type="button" onClick={() => goTo(active + 1)} disabled={active === FACTORY_STOPS.length - 1} aria-label="Next factory stop" className="grid size-9 place-items-center rounded-lg hover:bg-muted disabled:opacity-30"><ArrowRight className="size-4" /></button>
-              {!touring && <button type="button" onClick={() => { goTo(0); useSceneStore.getState().command("reset"); }} aria-label="Show whole plant" className="ml-1 grid size-9 place-items-center rounded-lg hover:bg-muted"><RotateCcw className="size-4" /></button>}
+              {!touring && <button type="button" onClick={() => goTo(0)} aria-label="Show whole plant" className="ml-1 grid size-9 place-items-center rounded-lg hover:bg-muted"><RotateCcw className="size-4" /></button>}
             </div>
           </div>
         </div>

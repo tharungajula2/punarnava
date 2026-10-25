@@ -8,7 +8,6 @@ import { RevealObserver } from "@/components/landing/reveal-observer";
 import { PlantTeaser } from "@/components/landing/plant-teaser";
 import { Problem } from "@/components/landing/problem";
 import { Roadmap } from "@/components/landing/roadmap";
-import { Team } from "@/components/landing/team";
 import { WhyNow } from "@/components/landing/why-now";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -28,7 +27,6 @@ export default function Home() {
         <BusinessModel />
         <Economics />
         <Roadmap />
-        <Team />
         <Ask />
       </main>
       <SiteFooter />

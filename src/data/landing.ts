@@ -304,22 +304,6 @@ export const roadmap = {
   ],
 } as const;
 
-export const team = {
-  kicker: "The founding team",
-  title: "Three founders. One focused first step.",
-  principles: [
-    { title: "Prove the supply", body: "Start with the collectors already doing the work and test what material is available." },
-    { title: "Design for quality", body: "Build batch records and product checks into the flow from the first day." },
-    { title: "Spend in stages", body: "Commit to equipment only after samples, buyers and the site are real." },
-  ],
-  // First names and order supplied by the founders; no invented biographies.
-  people: [
-    { name: "Goutham", role: "Lead founder" },
-    { name: "Manoj", role: "Co-founder" },
-    { name: "Tharun", role: "Co-founder" },
-  ],
-};
-
 const funds = [
   { label: "Processing equipment", lakh: v("capex_machinery") + v("capex_electrical") + v("capex_handling") },
   { label: "Working capital", lakh: v("working_capital") },

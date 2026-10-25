@@ -10,6 +10,7 @@ import { useSceneStore, type CameraCmd, type Shot } from "./camera-store";
 import { Bales, Bins, Conveyors, DayNight, FinishedBags, Forklifts, Selection, Trucks } from "./live";
 import { Pick, StaticPlant } from "./models";
 import { Box, C } from "./prims";
+import { ZoneLabels } from "./zone-labels";
 
 // True isometric view: 45° around, ~35° down.
 const HOME_TARGET = new THREE.Vector3(-8, 0, 2);
@@ -210,7 +211,7 @@ function ConceptFixtures() {
 }
 
 /** The whole 3D plant. Loaded lazily (client only) so three.js never touches the server or 2D users. */
-export default function PlantScene({ conceptOnly = false }: { conceptOnly?: boolean }) {
+export default function PlantScene({ conceptOnly = false, showLabels = false, onContextLost }: { conceptOnly?: boolean; showLabels?: boolean; onContextLost?: () => void }) {
   const select = useSimStore((s) => s.select);
   // Pixel ratio is the main cost on integrated GPUs: cap it, and drop to 1 if the frame rate sags.
   const maxDpr = typeof window === "undefined" ? 1.25 : Math.min(1.5, window.devicePixelRatio || 1);
@@ -227,6 +228,10 @@ export default function PlantScene({ conceptOnly = false }: { conceptOnly?: bool
         else select(null);
       }}
       onCreated={(state) => {
+        state.gl.domElement.addEventListener("webglcontextlost", (event) => {
+          event.preventDefault();
+          onContextLost?.();
+        });
         // Dev-only handle for measuring draw calls / render time from the console.
         if (process.env.NODE_ENV === "development") (window as unknown as { __r3f: typeof state }).__r3f = state;
       }}
@@ -247,6 +252,7 @@ export default function PlantScene({ conceptOnly = false }: { conceptOnly?: bool
         </>
       )}
       <Selection />
+      {showLabels && <ZoneLabels />}
       <OrbitControls
         makeDefault
         target={HOME_TARGET.toArray()}

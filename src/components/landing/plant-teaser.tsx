@@ -1,6 +1,7 @@
 import { ArrowRight, CircleCheck, Droplets, Route } from "lucide-react";
 import Link from "next/link";
-import { FactoryPlan } from "@/components/factory/factory-plan";
+import type { CSSProperties } from "react";
+import { IsoPlantScene, isoPinPositions } from "@/components/landing/plant-iso-scene";
 import { Reveal } from "@/components/landing/reveal";
 import { Section } from "@/components/landing/section";
 import { plant } from "@/data/landing";
@@ -39,17 +40,22 @@ export function PlantTeaser() {
           <figure className="rounded-[1.75rem] border border-white/20 bg-[#073336] p-3 shadow-[0_28px_80px_rgba(0,0,0,.25)] sm:p-4">
             <div className="flex flex-wrap items-center justify-between gap-3 px-2 pb-3 sm:px-3 sm:pb-4">
               <div>
-                <p className="text-[11px] font-semibold tracking-[0.2em] text-mint uppercase">Plant 01 / Process design</p>
-                <p className="mt-1 font-display text-xl text-white sm:text-2xl">The route from scrap to specification.</p>
+                <p className="text-[11px] font-semibold tracking-[0.2em] text-mint uppercase">Plant 01 / Animated design</p>
+                <p className="mt-1 font-display text-xl text-white sm:text-2xl">A workday, from arrival to dispatch.</p>
               </div>
-              <span className="rounded-full border border-mint/25 px-3 py-1 text-xs text-mint">Proposed layout</span>
+              <span className="rounded-full border border-mint/25 px-3 py-1 text-xs text-mint">Illustrative motion</span>
             </div>
-            <div className="h-[390px] overflow-hidden rounded-2xl border border-white/15 sm:h-[440px] lg:h-[470px]">
-              <FactoryPlan compact />
+            <div className="relative aspect-[840/570] overflow-hidden rounded-2xl border border-white/15 bg-[#e5efe8]">
+              <IsoPlantScene />
+              {plant.stops.map((label, index) => (
+                <span key={label} aria-hidden className="ig ig-pop absolute grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-mint bg-white text-[10px] font-bold text-teal-deep shadow-lg" style={{ ...isoPinPositions[index], "--d": `${0.4 + index * 0.1}s` } as CSSProperties}>{index + 1}</span>
+              ))}
             </div>
-            <figcaption className="flex flex-wrap items-center justify-between gap-2 px-2 pt-3 text-xs text-paper/60 sm:px-3">
-              <span>Receiving → processing → tested product → dispatch</span>
-              <span>Concept plan · not to scale</span>
+            <figcaption className="px-2 pt-3 sm:px-3">
+              <ol className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-paper/80 sm:grid-cols-4">
+                {plant.stops.map((label, index) => <li key={label}><span className="mr-1 font-mono text-mint">{index + 1}</span> {label}</li>)}
+              </ol>
+              <p className="mt-3 text-xs text-paper/55">Illustration of the proposed flow · not a live plant</p>
             </figcaption>
           </figure>
         </Reveal>

@@ -2,25 +2,85 @@
 
 import { ArrowLeft, ArrowRight, Maximize2, Pause, Play, RotateCcw, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import type { SimParams } from "@/sim";
+import { FactoryLiveScene, WorkdayCaption } from "@/components/factory/factory-live-scene";
 import { FACTORY_STOPS } from "@/data/factory-story";
 import { FactoryPlan } from "@/components/factory/factory-plan";
+import { useSimStore } from "@/components/sim/sim-store";
+import { useSceneStore } from "@/components/sim/three/camera-store";
 import { cn } from "@/lib/utils";
 
 const STOP_MS = 10500;
 
-export function FactoryExperience() {
+export function FactoryExperience({ params }: { params: SimParams }) {
   const [active, setActive] = useState(0);
   const [touring, setTouring] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [view, setView] = useState<"live" | "plan">("plan");
+  const [webgl, setWebgl] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const ready = useSceneStore((state) => state.ready);
   const stop = FACTORY_STOPS[active];
 
-  const goTo = useCallback((index: number) => {
-    setActive(Math.max(0, Math.min(FACTORY_STOPS.length - 1, index)));
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      let supported = false;
+      try {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
+        supported = Boolean(context);
+        context?.getExtension("WEBGL_lose_context")?.loseContext();
+      } catch {
+        supported = false;
+      }
+      setWebgl(supported);
+      if (supported && window.matchMedia("(min-width: 768px)").matches) setView("live");
+    });
+    return () => cancelAnimationFrame(frame);
   }, []);
+
+  const onUnavailable = useCallback(() => {
+    setFailed(true);
+    setView("plan");
+  }, []);
+
+  const goTo = useCallback((index: number) => {
+    const next = Math.max(0, Math.min(FACTORY_STOPS.length - 1, index));
+    setActive(next);
+    if (view === "live" && useSceneStore.getState().ready) {
+      const item = FACTORY_STOPS[next];
+      const scene = useSceneStore.getState();
+      scene.setTourStep(next);
+      scene.setSelected(item.spot ?? null);
+      scene.setSpotlight(item.spot ?? null);
+      useSimStore.getState().select(item.spot ?? null);
+      scene.frame(item.shot);
+    }
+  }, [view]);
+
+  useEffect(() => {
+    if (view !== "live" || !ready) return;
+    useSceneStore.getState().frame(FACTORY_STOPS[active].shot);
+  }, [view, ready, active]);
+
+  useEffect(() => {
+    if (view !== "live") return;
+    return useSceneStore.subscribe((scene, previous) => {
+      if (!scene.selected || scene.selected === previous.selected) return;
+      const index = FACTORY_STOPS.findIndex((item) => item.spot === scene.selected);
+      if (index < 0 || index === scene.tourStep) return;
+      scene.setTourStep(index);
+      scene.frame(FACTORY_STOPS[index].shot);
+      setActive(index);
+      if (touring) setPlaying(false);
+    });
+  }, [view, touring]);
 
   const exitTour = useCallback(() => {
     setTouring(false);
     setPlaying(false);
+    useSceneStore.getState().setMode("explore");
+    useSceneStore.getState().command("reset");
   }, []);
 
   useEffect(() => {
@@ -64,6 +124,7 @@ export function FactoryExperience() {
   };
 
   const startTour = () => {
+    if (view === "live") useSceneStore.getState().setMode("tour");
     goTo(0);
     setTouring(true);
     setPlaying(true);
@@ -73,20 +134,37 @@ export function FactoryExperience() {
     <div className={cn("relative isolate", touring && "fixed inset-0 z-[70] h-dvh w-screen bg-[#062f32]")} data-mode={touring ? "tour" : "explore"}>
       <div className={cn("relative overflow-hidden bg-[#062f32]", touring ? "absolute inset-0" : "rounded-3xl border border-border shadow-[var(--shadow-float)]")} style={{ height: touring ? "100dvh" : "640px" }}>
         <FactoryPlan active={active} onSelect={selectArea} />
+        {view === "live" && (
+          <div className={cn("absolute inset-0 transition-opacity duration-700", ready ? "opacity-100" : "pointer-events-none opacity-0")} style={{ backgroundColor: "#e8f0eb" }}>
+            <FactoryLiveScene params={params} onUnavailable={onUnavailable} />
+            {ready && <WorkdayCaption />}
+          </div>
+        )}
+        {view === "live" && !ready && (
+          <p className="pointer-events-none rounded-lg border border-white/15 bg-[#073a3b]/85 px-3 py-2 text-xs text-white/85" style={{ position: "absolute", right: 20, bottom: 20 }}>Opening the animated plant…</p>
+        )}
         <div className="pointer-events-none absolute inset-x-4 top-4 flex flex-wrap items-start justify-between gap-3 sm:inset-x-6 sm:top-6">
         <div className="rounded-xl border border-white/15 bg-[#073a3b]/95 px-4 py-2.5 text-white shadow-xl backdrop-blur">
           <p className="text-xs font-semibold tracking-[0.16em] text-[#9de0c3] uppercase">Punarnava · factory concept</p>
-          <p className="mt-0.5 text-xs text-white/75"><span className="hidden md:inline">Select a station or follow the guided story</span><span className="md:hidden">Follow the guided story, step by step</span></p>
+          <p className="mt-0.5 text-xs text-white/75">{view === "live" ? "Watch a modelled workday, then explore each design choice" : "Select a station or follow the guided story"}</p>
         </div>
-        {touring ? (
-          <button type="button" onClick={exitTour} className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-[#073a3b] shadow-xl">
-            <X className="size-4" aria-hidden /> Exit tour
-          </button>
-        ) : (
-          <button type="button" onClick={startTour} className="pointer-events-auto inline-flex items-center gap-2 rounded-xl bg-[#a9e8c9] px-4 py-2.5 text-sm font-semibold text-[#073a3b] shadow-xl transition-transform hover:-translate-y-0.5">
-            <Maximize2 className="size-4" aria-hidden /> Start cinematic tour
-          </button>
-        )}
+        <div className="pointer-events-auto flex flex-wrap items-center gap-2">
+          {webgl && !touring && (
+            <div role="group" aria-label="Factory view" className="flex rounded-xl border border-white/20 bg-[#073a3b]/95 p-1 text-xs font-semibold text-white shadow-xl">
+              <button type="button" aria-pressed={view === "live"} onClick={() => { setFailed(false); setView("live"); }} className={cn("rounded-lg px-3 py-2", view === "live" && "bg-[#a9e8c9] text-[#073a3b]")}>{failed ? "Retry animation" : "Animated factory"}</button>
+              <button type="button" aria-pressed={view === "plan"} onClick={() => setView("plan")} className={cn("rounded-lg px-3 py-2", view === "plan" && "bg-[#a9e8c9] text-[#073a3b]")}>Layout plan</button>
+            </div>
+          )}
+          {touring ? (
+            <button type="button" onClick={exitTour} className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-[#073a3b] shadow-xl">
+              <X className="size-4" aria-hidden /> Exit tour
+            </button>
+          ) : (
+            <button type="button" onClick={startTour} className="inline-flex items-center gap-2 rounded-xl bg-[#a9e8c9] px-4 py-2.5 text-sm font-semibold text-[#073a3b] shadow-xl transition-transform hover:-translate-y-0.5">
+              <Maximize2 className="size-4" aria-hidden /> Start cinematic tour
+            </button>
+          )}
+        </div>
         </div>
       </div>
 

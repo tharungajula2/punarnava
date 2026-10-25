@@ -5,6 +5,7 @@ import { Logo } from "@/components/brand/logo";
 import { FactoryExperience } from "@/components/factory/factory-experience";
 import { Container } from "@/components/layout/container";
 import { FACTORY_GATES } from "@/data/factory-story";
+import { defaultParams } from "@/sim/params";
 
 export const metadata: Metadata = {
   title: "The proposed factory",
@@ -55,7 +56,7 @@ export default function FactoryPage() {
             Follow used rigid plastic from the gate to a tested, packed product. Select any area, or play the guided tour for the complete story.
           </p>
         </div>
-        <FactoryExperience />
+        <FactoryExperience params={defaultParams()} />
         <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
           This is a proposed layout, not a construction drawing or a live plant. The final design depends on a real site, equipment selection, engineering review and permits.
         </p>

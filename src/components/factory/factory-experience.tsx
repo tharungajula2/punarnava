@@ -237,7 +237,7 @@ export function FactoryExperience({ params }: { params: SimParams }) {
                     <button
                       type="button"
                       onClick={startExplore}
-                      className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white shadow-xl backdrop-blur transition-all hover:bg-white/20 hover:-translate-y-0.5"
+                      className="inline-flex items-center gap-2 rounded-xl bg-[#073a3b] border border-[#a9e8c9]/40 px-4 py-2.5 text-sm font-semibold text-[#a9e8c9] shadow-xl transition-all hover:bg-[#0a4f50] hover:-translate-y-0.5"
                     >
                       <Compass className="size-4" aria-hidden /> Explore in 3D
                     </button>

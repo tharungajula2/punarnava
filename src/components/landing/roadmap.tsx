@@ -52,7 +52,7 @@ export function Roadmap() {
         </ol>
         <p className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted-foreground lg:mt-6">
           <span className="flex items-center gap-2">
-            <span aria-hidden className="size-2 rotate-45 bg-primary" /> Gate — the next phase starts only when it is met.
+            <span aria-hidden className="size-2 rotate-45 bg-primary" /> Diamond: the proof needed before the next step.
           </span>
           <span className="flex items-center gap-2">
             <span aria-hidden className="size-2.5 rounded-full bg-primary" /> We are here.

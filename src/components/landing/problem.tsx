@@ -73,7 +73,7 @@ function CityRange() {
         <circle cx={x(f.plantTpd) + 3} cy="55" r="5" className="fill-[oklch(0.74_0.12_165)] stroke-card dark:fill-mint" strokeWidth="2" />
         <path d={`M${x(f.plantTpd) + 3} 66 V108 H48`} fill="none" className="stroke-muted-foreground/60" strokeWidth="1" />
         <text x="52" y="111" className="fill-foreground text-[11px] font-medium">
-          our plant: {num(f.plantTpd)} t/day
+          proposed plant: {num(f.plantTpd)} tonnes/day
         </text>
       </g>
     </svg>
@@ -102,10 +102,10 @@ function PackSplit() {
         style={{ "--d": "0.5s" } as React.CSSProperties}
       />
       <text x={10 + flexW / 2} y="64" textAnchor="middle" className="fill-muted-foreground text-[12px]">
-        flexible ~{num(f.flexiblePct)}%
+        soft ~{num(f.flexiblePct)}%
       </text>
       <text x={10 + flexW + (280 - flexW) / 2 + 1.5} y="64" textAnchor="middle" className="fill-primary-foreground text-[12px] font-medium">
-        rigid
+        hard
       </text>
       <g className="ig ig-fade" style={{ "--d": "1s" } as React.CSSProperties}>
         <path d={`M${10 + flexW + (280 - flexW) / 2} 80 v14`} className="stroke-primary" strokeWidth="2" />
@@ -129,7 +129,7 @@ export function Problem() {
             <div className="flex items-center gap-5">
               <DotGrid />
               <p className="text-xs text-muted-foreground">
-                Each dot is 1% of India&apos;s reported plastic waste.{" "}
+                Each dot stands for 1% of India&apos;s reported plastic waste.{" "}
                 <span className="font-medium text-primary">Teal dots: Karnataka.</span>
               </p>
             </div>

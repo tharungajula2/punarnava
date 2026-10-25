@@ -6,14 +6,14 @@ import { useSceneStore } from "./camera-store";
 import { SPOTS } from "./site";
 
 const labels = [
-  { id: "weighbridge", name: "Arrivals", y: 4.5 },
-  { id: "baleYard", name: "Bale yard", y: 4.5 },
+  { id: "weighbridge", name: "Truck weighing", y: 4.5 },
+  { id: "baleYard", name: "Incoming plastic", y: 4.5 },
   { id: "sorting", name: "Sorting", y: 8 },
   { id: "wash", name: "Wash line", y: 8 },
-  { id: "pelletizer", name: "Pellets", y: 7 },
-  { id: "etp", name: "Water loop", y: 5 },
-  { id: "finishedGoods", name: "Finished goods", y: 8 },
-  { id: "dock", name: "Dispatch", y: 4 },
+  { id: "pelletizer", name: "Pellet making", y: 7 },
+  { id: "etp", name: "Water cleaning", y: 5 },
+  { id: "finishedGoods", name: "Finished bags", y: 8 },
+  { id: "dock", name: "Shipping", y: 4 },
 ] as const;
 
 function Label({ name, x, y, z, active }: { name: string; x: number; y: number; z: number; active: boolean }) {

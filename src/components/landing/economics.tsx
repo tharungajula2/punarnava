@@ -75,11 +75,11 @@ function Waterfall() {
 
   return (
     <ol className="mt-6 flex flex-col gap-2">
-      <Row total={perKg.revenue} label="Sale + possible certificates" value={`₹${money(perKg.revenue)}`} from={0} width={perKg.revenue} colour="bg-primary/80" delay={0.1} strong origin="ig-x" />
+      <Row total={perKg.revenue} label="Pellet sale + possible certificate" value={`₹${money(perKg.revenue)}`} from={0} width={perKg.revenue} colour="bg-primary/80" delay={0.1} strong origin="ig-x" />
       {rows.map((r, i) => (
         <Row total={perKg.revenue} key={r.label} label={r.label} value={`−₹${money(r.value)}`} from={r.from} width={r.value} colour={r.colour} delay={0.5 + i * 0.12} />
       ))}
-      <Row total={perKg.revenue} label="Operating margin" value={`₹${money(perKg.margin)}`} from={0} width={perKg.margin} colour="bg-chart-5" delay={0.5 + rows.length * 0.12 + 0.1} strong origin="ig-x" />
+      <Row total={perKg.revenue} label="Left after running costs" value={`₹${money(perKg.margin)}`} from={0} width={perKg.margin} colour="bg-chart-5" delay={0.5 + rows.length * 0.12 + 0.1} strong origin="ig-x" />
     </ol>
   );
 }
@@ -92,7 +92,7 @@ function StressChart() {
   const span = hi - lo;
   const zero = (-lo / span) * 100;
   return (
-    <ol className="flex flex-col gap-2.5" aria-label="Modelled operating margin per kilogram under each stress case">
+    <ol className="flex flex-col gap-2.5" aria-label="Example amount left per kilogram under different setbacks">
       {rows.map((r, i) => {
         const neg = r.value < 0;
         const w = (Math.abs(r.value) / span) * 100;
@@ -136,9 +136,10 @@ export function Economics() {
       <Reveal className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] sm:p-8">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h3 className="text-2xl font-normal">{perKg.title}</h3>
-          <p className="text-sm text-muted-foreground">Illustrative rupees per kilogram sold</p>
+          <p className="text-sm text-muted-foreground">Example Indian rupees for one kilogram of pellets</p>
         </div>
         <Waterfall />
+        <p className="mt-5 text-sm text-muted-foreground">Read from top to bottom: start with the sale, subtract each day-to-day cost, then see what remains before loan payments and tax. The possible certificate is included here and is uncertain.</p>
       </Reveal>
 
       <Reveal className="mt-6 grid gap-8 rounded-2xl border border-dashed border-border p-6 sm:p-8 lg:grid-cols-[1fr_1.1fr]">
@@ -150,7 +151,7 @@ export function Economics() {
           </div>
         </div>
         <div>
-          <p className="mb-4 text-sm text-muted-foreground">Modelled operating margin per kilogram</p>
+          <p className="mb-4 text-sm text-muted-foreground">Amount left for each kilogram sold. A bar to the left of the line means a loss.</p>
           <StressChart />
         </div>
       </Reveal>

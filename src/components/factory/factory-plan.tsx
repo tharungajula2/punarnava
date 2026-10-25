@@ -5,11 +5,11 @@ import { cn } from "@/lib/utils";
 
 const stations = [
   { stop: 3, x: 814, y: 271, label: "SORT", sub: "check input", color: "#7bc6ab" },
-  { stop: 4, x: 694, y: 271, label: "SHRED", sub: "size the flakes", color: "#87cbbb" },
+  { stop: 4, x: 694, y: 271, label: "CUT", sub: "small pieces", color: "#87cbbb" },
   { stop: 5, x: 574, y: 271, label: "WASH", sub: "remove dirt", color: "#8bd0d2" },
   { stop: 7, x: 454, y: 271, label: "DRY", sub: "remove water", color: "#a6d8ca" },
-  { stop: 8, x: 334, y: 271, label: "EXTRUDE", sub: "melt + filter", color: "#91bcb5" },
-  { stop: 9, x: 214, y: 271, label: "PELLET", sub: "cut + cool", color: "#5aa69b" },
+  { stop: 8, x: 334, y: 271, label: "MELT", sub: "melt + filter", color: "#91bcb5" },
+  { stop: 9, x: 214, y: 271, label: "PELLETS", sub: "small grains", color: "#5aa69b" },
 ] as const;
 
 const markers = [
@@ -30,9 +30,9 @@ const markers = [
 
 const mobileStages = [
   { title: "Receive", detail: "Weigh, inspect and hold incoming plastic", span: "01—03" },
-  { title: "Prepare", detail: "Sort, shred and wash only suitable material", span: "04—07" },
-  { title: "Convert", detail: "Dry, filter and form consistent pellets", span: "08—10" },
-  { title: "Release", detail: "Test, pack, store and trace each batch", span: "11—14" },
+  { title: "Clean", detail: "Sort, cut and wash only suitable plastic", span: "04—07" },
+  { title: "Make pellets", detail: "Dry and melt the pieces, then make small plastic grains", span: "08—10" },
+  { title: "Ship", detail: "Test, bag, store and ship each recorded production lot", span: "11—14" },
 ] as const;
 
 function stageFor(stop: number) {
@@ -55,11 +55,11 @@ export function FactoryPlan({ active = 0, onSelect, compact = false }: { active?
           <rect x="35" y="42" width="1130" height="592" rx="26" fill="url(#factory-grid)" />
           <path d="M 49 529 H 1149" stroke="#7f9991" strokeWidth="62" opacity=".52" />
           <path d="M 49 529 H 1149" stroke="#fffdf4" strokeWidth="2" strokeDasharray="15 14" opacity=".8" />
-          <text x="64" y="583" fill="#365f5b" fontSize="13" fontWeight="700" letterSpacing="2">ONE WAY MATERIAL ROUTE</text>
+          <text x="64" y="583" fill="#365f5b" fontSize="13" fontWeight="700" letterSpacing="2">PLASTIC MOVES FROM ARRIVAL TO SHIPPING</text>
           <rect x="128" y="133" width="798" height="268" rx="16" fill="#faf9f1" stroke="#94bdb0" strokeWidth="3" />
           <rect x="129" y="134" width="796" height="32" rx="14" fill="#d9eae2" />
-          <text x="154" y="157" fill="#225a56" fontSize="13" fontWeight="700" letterSpacing="2">COVERED PROCESS HALL</text>
-          <text x="902" y="157" textAnchor="end" fill="#6a9188" fontSize="12">dirty input → clean product</text>
+          <text x="154" y="157" fill="#225a56" fontSize="13" fontWeight="700" letterSpacing="2">COVERED WORK AREA</text>
+          <text x="902" y="157" textAnchor="end" fill="#6a9188" fontSize="12">used plastic → clean pellets</text>
           <path className="factory-flow" d="M 875 338 H 172" stroke="#0a6866" strokeWidth="4" strokeDasharray="11 8" markerEnd="url(#factory-arrow)" />
           {stations.map((station) => (
             <g key={station.label} opacity={active === 0 || active === station.stop || compact ? 1 : .72}>
@@ -75,14 +75,14 @@ export function FactoryPlan({ active = 0, onSelect, compact = false }: { active?
           <path className="factory-flow" d="M 205 452 H 365" stroke="#0a6866" strokeWidth="3.5" strokeDasharray="10 7" markerEnd="url(#factory-arrow)" />
           <path className="factory-flow" d="M 493 488 V 523" stroke="#0a6866" strokeWidth="3.5" strokeDasharray="10 7" markerEnd="url(#factory-arrow)" />
           <path className="factory-flow" d="M 574 223 V 94 H 1012 V 187" fill="none" stroke="#52bac1" strokeWidth="3" strokeDasharray="8 7" markerEnd="url(#water-arrow)" />
-          <text x="747" y="87" fill="#338c94" fontSize="12" fontWeight="700" letterSpacing="1.5">WATER LOOP</text>
+          <text x="747" y="87" fill="#338c94" fontSize="12" fontWeight="700" letterSpacing="1.5">CLEAN WATER RETURNS TO WASHING</text>
           <rect x="950" y="183" width="127" height="136" rx="13" fill="#c2e6e0" stroke="#72bcb6" strokeWidth="2" />
           <circle cx="989" cy="237" r="20" fill="#74c2c7" stroke="#e8f6ef" strokeWidth="5" />
           <circle cx="1037" cy="237" r="20" fill="#74c2c7" stroke="#e8f6ef" strokeWidth="5" />
-          <text x="1013" y="290" textAnchor="middle" fill="#1a5f64" fontSize="12" fontWeight="800" letterSpacing="1">WATER TREATMENT</text>
+          <text x="1013" y="290" textAnchor="middle" fill="#1a5f64" fontSize="12" fontWeight="800" letterSpacing="1">CLEAN WATER</text>
           <rect x="784" y="405" width="123" height="94" rx="13" fill="#dfc9a8" stroke="#b99e7c" strokeWidth="2" />
           {[0, 1, 2].map((i) => <rect key={i} x={802 + i * 28} y="419" width="21" height="40" rx="3" fill="#b89368" />)}
-          <text x="845" y="480" textAnchor="middle" fill="#554c40" fontSize="12" fontWeight="800" letterSpacing="1">BALE YARD</text>
+          <text x="845" y="480" textAnchor="middle" fill="#554c40" fontSize="12" fontWeight="800" letterSpacing="1">INPUT STORE</text>
           <rect x="958" y="407" width="113" height="92" rx="12" fill="#eaf4ec" stroke="#8faea2" strokeWidth="2" />
           <path d="M 975 435 H 1054 M 975 446 H 1054" stroke="#8da79d" strokeWidth="5" />
           <text x="1015" y="483" textAnchor="middle" fill="#345b55" fontSize="12" fontWeight="800" letterSpacing="1">WEIGH</text>
@@ -94,9 +94,9 @@ export function FactoryPlan({ active = 0, onSelect, compact = false }: { active?
           {[0, 1, 2, 3].map((i) => <rect key={i} x={369 + i * 39} y="426" width="23" height="23" rx="3" fill="#f8f7ef" stroke="#91b6a4" />)}
           <text x="447" y="476" textAnchor="middle" fill="#265c53" fontSize="12" fontWeight="800" letterSpacing="1">FINISHED STORAGE</text>
           <rect x="438" y="537" width="110" height="65" rx="11" fill="#0b6463" />
-          <text x="493" y="575" textAnchor="middle" fill="#f2fbf7" fontSize="13" fontWeight="800" letterSpacing="1">DISPATCH</text>
+          <text x="493" y="575" textAnchor="middle" fill="#f2fbf7" fontSize="13" fontWeight="800" letterSpacing="1">SHIP</text>
           <text x="73" y="112" fill="#47766a" fontSize="12" fontWeight="700" letterSpacing="1.4">CONCEPT PLAN · NOT TO SCALE</text>
-          <text x="1126" y="606" textAnchor="end" fill="#4d786e" fontSize="12">separate receiving and finished-goods routes</text>
+          <text x="1126" y="606" textAnchor="end" fill="#4d786e" fontSize="12">incoming plastic and finished bags use separate routes</text>
         </svg>
         {onSelect && markers.map(({ stop, x, y }) => (
           <button

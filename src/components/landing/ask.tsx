@@ -47,10 +47,10 @@ function Donut() {
         })}
       </g>
       <text x="110" y="104" textAnchor="middle" className="fill-current font-display text-[26px]">
-        ₹{ask.totalCrore} cr
+        ₹{ask.totalCrore} crore
       </text>
       <text x="110" y="126" textAnchor="middle" className="fill-current text-[11px] opacity-70">
-        use of funds
+        estimated start cost
       </text>
     </svg>
   );
@@ -78,12 +78,13 @@ export function Ask() {
                 >
                   <span aria-hidden className="size-3 rounded-sm" style={{ background: slice[i] }} />
                   <span>{f.label}</span>
-                  <span className="font-mono tabular-nums opacity-80">₹{f.crore} cr</span>
+                  <span className="font-mono tabular-nums opacity-80">₹{f.crore} crore</span>
                   <span className="text-right font-mono text-xs tabular-nums opacity-60">{num(f.pct, 0)}%</span>
                 </li>
               ))}
             </ul>
           </div>
+          <p className="mt-5 text-xs text-paper/70 dark:text-muted-foreground">One crore rupees is ten million rupees. Each slice shows one part of the estimated starting cost.</p>
           <FigureNote ids={ask.ids} className="mt-8 text-paper/70 dark:text-muted-foreground" />
         </Reveal>
       </div>

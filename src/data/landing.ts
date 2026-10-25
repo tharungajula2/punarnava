@@ -20,31 +20,31 @@ export const hero = {
   eyebrow: "A proposed recycling plant · Bengaluru",
   title: "Plastic that becomes",
   titleEmphasis: "new again.",
-  promise: "We want to turn used rigid plastic into reliable material that manufacturers can use again. Here is the opportunity, the proposed plant, and what we need to prove before building it.",
+  promise: "We want to turn used hard plastic containers into small, reusable plastic grains that manufacturers can make into new products. This is the opportunity, the proposed plant and the proof needed before building it.",
   primaryCta: { href: "/factory", label: "Tour the proposed factory" },
   secondaryCta: { href: "#roadmap", label: "See the plan" },
   facts: [
-    { value: "One material", label: "rigid HDPE to start" },
+    { value: "One material", label: "hard plastic bottles and containers" },
     { value: "One line", label: "a focused first plant" },
-    { value: "Full trace", label: "from arrival to dispatch" },
+    { value: "Clear records", label: "from arrival to shipping" },
   ],
-  loopStages: ["Collect", "Sort", "Wash", "Extrude", "Pellet", "Supply"],
+  loopStages: ["Collect", "Sort", "Wash", "Melt", "Pellets", "Supply"],
 };
 
 export const problem = {
   kicker: "The problem",
-  title: "Good plastic gets lost in the mix.",
-  body: "Bengaluru already collects plastic. The missing step is turning uneven scrap into clean, consistent material that manufacturers can buy with confidence.",
+  title: "Usable plastic is lost in mixed waste.",
+  body: "Bengaluru already collects plastic. The harder job is turning mixed, dirty containers into clean plastic that a manufacturer can use again and again.",
   stats: [
     {
       value: `${num(v("bengaluru_plastic_waste_low"))}–${num(v("bengaluru_plastic_waste_high"))}`,
-      unit: "t/day",
-      label: "tonnes of plastic waste a day in Bengaluru, based on two estimates",
+      unit: "tonnes/day",
+      label: "estimated tonnes of plastic waste a day in Bengaluru (one tonne is 1,000 kg)",
     },
     {
       value: num(v("india_plastic_waste_fy23")),
-      unit: "million t",
-      label: "tonnes of plastic waste reported across India in FY2022-23",
+      unit: "million tonnes",
+      label: "plastic waste reported across India in the 2022–23 financial year",
     },
     {
       value: `~${num(v("karnataka_share_national_waste"), 0)}%`,
@@ -54,7 +54,7 @@ export const problem = {
     {
       value: `~${num(v("flexible_share_consumer_packaging"))}%`,
       unit: "",
-      label: "of consumer packaging is flexible; our first focus is rigid plastic",
+      label: "of consumer packaging is soft or flexible; we would start with hard containers",
     },
   ],
   figure: {
@@ -62,7 +62,7 @@ export const problem = {
     cityLow: v("bengaluru_plastic_waste_low"),
     cityHigh: v("bengaluru_plastic_waste_high"),
     plantTpd: v("plant_input_tpd"),
-    plantNote: "The proposed first plant would need only a small share of the city's supply. The challenge is securing the right plastic, consistently.",
+    plantNote: "The proposed plant would need only a small share of the city's plastic. The real challenge is getting the right kind, reliably.",
     flexiblePct: v("flexible_share_consumer_packaging"),
     ids: [
       "india_plastic_waste_fy23",
@@ -78,13 +78,13 @@ export const problem = {
 export const whyNow = {
   kicker: "The opportunity",
   title: "Manufacturers need recycled plastic they can trust.",
-  body: "India's rules call for more recycled material in rigid packaging. A rule creates a reason to buy; consistent quality and clear records are what could win the order.",
-  chartTitle: "Required recycled content in rigid plastic packaging",
+  body: "India's rules require a growing share of recycled plastic in new hard plastic packaging. That creates demand. Buyers would still choose a supplier on quality, reliability and clear records.",
+  chartTitle: "Recycled share required in new hard plastic packaging, by financial year",
   chart: [
-    { year: "FY26", value: v("epr_cat1_recycled_content_fy26") },
-    { year: "FY27", value: v("epr_cat1_recycled_content_fy27") },
-    { year: "FY28", value: v("epr_cat1_recycled_content_fy28") },
-    { year: "FY29+", value: v("epr_cat1_recycled_content_fy29") },
+    { year: "2025–26", value: v("epr_cat1_recycled_content_fy26") },
+    { year: "2026–27", value: v("epr_cat1_recycled_content_fy27") },
+    { year: "2027–28", value: v("epr_cat1_recycled_content_fy28") },
+    { year: "2028–29+", value: v("epr_cat1_recycled_content_fy29") },
   ],
   points: [
     {
@@ -93,7 +93,7 @@ export const whyNow = {
     },
     {
       title: "A reason to choose us",
-      body: "Each batch should come with a quality check and a clear record of where it came from.",
+      body: "Each production lot should come with a quality check and a record showing where its plastic came from.",
     },
     {
       title: "The test is commercial",
@@ -110,16 +110,16 @@ export const whyNow = {
 export const how = {
   kicker: "The process",
   title: "From used plastic to useful material.",
-  body: "Each step has one job. Follow the line below, then open the factory to see why we placed each area where it is.",
+  body: "Each step changes the material in a simple way. Follow the line, then open the factory to see why we placed each area where it is.",
   steps: [
-    { title: "Collect", body: "Buy rigid plastic from existing collectors." },
+    { title: "Collect", body: "Buy used hard plastic containers from existing collectors." },
     { title: "Sort", body: "Keep the right plastic and colours together." },
-    { title: "Shred", body: "Cut containers into small, even pieces." },
+    { title: "Cut", body: "Cut containers into small, even pieces called flakes." },
     { title: "Wash", body: "Clean the pieces and separate unwanted material." },
     { title: "Dry", body: "Remove moisture before melting." },
-    { title: "Extrude", body: "Melt and filter the clean plastic." },
-    { title: "Pelletise", body: "Cut it into reusable pellets." },
-    { title: "Supply", body: "Test, bag and trace each batch to a buyer." },
+    { title: "Melt", body: "Melt and filter the clean plastic." },
+    { title: "Make pellets", body: "Cut the melted plastic into small grains called pellets." },
+    { title: "Supply", body: "Test and bag each production lot, then send it to a buyer." },
   ],
   massIn: 1000,
   massOut: 1000 * (v("yield") / 100),
@@ -129,8 +129,8 @@ export const how = {
 
 export const plant = {
   kicker: "Inside the plant",
-  title: "A plant designed around the flow.",
-  body: "Arrival, sorting, cleaning, pellet making and dispatch each have a place. The walkthrough explains the job of every area and the decisions behind this proposed layout.",
+  title: "A place for every step.",
+  body: "The plant receives used containers, cleans them and makes pellets: small plastic grains manufacturers can melt into new products. The walkthrough explains every area and why we put it there.",
   note: "Proposed layout for discussion. Site, equipment, safety and permits need professional validation before construction.",
   stats: [
     { value: `${num(v("plant_input_tpd"))} t`, label: "plastic in per day" },
@@ -138,14 +138,14 @@ export const plant = {
     { value: `~${num(v("output_t_month"))} t`, label: "pellets a month" },
   ],
   stops: [
-    "Weighbridge",
-    "Bale yard",
+    "Weigh arrivals",
+    "Store incoming plastic",
     "Sorting",
-    "Shred & wash",
-    "Dry & store",
-    "Extrude & pelletise",
-    "Water recycling",
-    "Packed & dispatched",
+    "Cut & wash",
+    "Dry the flakes",
+    "Melt & make pellets",
+    "Clean used water",
+    "Test, pack & ship",
   ],
   ids: ["line_rate", "plant_input_tpd", "yield", "etp_capacity_kld", "output_t_month"],
 } as const;
@@ -165,18 +165,18 @@ export const model = {
   title: "The main product is recycled plastic.",
   streams: [
     {
-      name: "Recycled HDPE pellets",
+      name: "Recycled plastic pellets",
       tag: "Core revenue",
       price: `₹${num(v("pellet_price"))}/kg`,
       priceNote: "illustrative selling price in the current model",
-      body: "Manufacturers buy pellets they can use reliably. We would sell by a clear quality specification, with every batch recorded.",
+      body: "Pellets are small grains of plastic that manufacturers melt into new products. We would agree the required quality with each buyer and record every production lot.",
     },
     {
-      name: "EPR certificates",
+      name: "Recycling certificates",
       tag: "Possible extra income",
       price: `₹${money(v("epr_credit_price"))}/kg`,
       priceNote: "illustrative and uncertain; not needed for the core case",
-      body: "Eligible, documented recycling may also create certificates for brands. We would count this only after registration and verification.",
+      body: "A certificate can prove that an amount of plastic was recycled under India's producer responsibility rules (EPR). Brands may buy eligible certificates to meet their obligations. We would count this income only after registration and verification.",
     },
   ],
   flow: {
@@ -185,8 +185,8 @@ export const model = {
   },
   ids: figIds("pellet_price", "epr_credit_price", "epr_market_low", "epr_market_high", ...costIds),
   principle: {
-    title: "The pellets must carry the business.",
-    body: "Certificate income is uncertain. We would only build if contracted pellet sales can support the plant on their own.",
+    title: "Pellet sales must pay the bills.",
+    body: "Certificate income is uncertain. The plant must make sense from pellet sales alone, with real buyers committed before we buy machines.",
   },
 };
 
@@ -207,30 +207,30 @@ const revenuePerKg = v("pellet_price") + v("epr_credit_price");
 export const economics = {
   kicker: "The business case",
   title: "The plant has to work when conditions change.",
-  body: "This is an early model, not a forecast. The charts show what drives the result and where the idea becomes vulnerable.",
+  body: "These are example calculations, not sales already made or a promise of profit. They show what the plant must earn, what it must pay and what could go wrong.",
   kpis: [
-    { value: `₹${num(v("annual_revenue"))} cr`, label: "modelled yearly sales at full planned run rate" },
-    { value: `${num(v("breakeven_utilisation"))}%`, label: "of planned capacity needed to cover cash operating costs" },
+    { value: `₹${num(v("annual_revenue"))} crore`, label: "example yearly sales if the plant reaches its full planned output" },
+    { value: `${num(v("breakeven_utilisation"))}%`, label: "of full output needed to pay day-to-day running costs" },
   ],
   perKg: {
     title: "What happens to each sale",
     revenue: revenuePerKg,
     costs: [
-      { label: "Feedstock", value: v("cost_feedstock_kg") },
-      { label: "Inbound logistics", value: v("cost_inbound_kg") },
+      { label: "Used plastic", value: v("cost_feedstock_kg") },
+      { label: "Bringing plastic in", value: v("cost_inbound_kg") },
       { label: "Labour", value: v("cost_labour_kg") },
       { label: "Electricity", value: v("cost_power_kg") },
-      { label: "Admin, QC & compliance", value: v("cost_overhead_kg") },
+      { label: "Quality checks & records", value: v("cost_overhead_kg") },
       { label: "Rent", value: v("cost_rent_kg") },
       { label: "Water & other", value: v("cost_other_kg") },
     ],
     margin: revenuePerKg - totalCostPerKg(),
   },
   stressChart: [
-    { label: "Base case", value: revenuePerKg - totalCostPerKg() },
-    { label: `Feedstock +${num(v("stress_feed_pct"))}%`, value: v("stress_single_feed_kg") },
-    { label: `Yield −${num(v("stress_yield_pp"))} pts`, value: v("stress_single_yield_kg") },
-    { label: `Price −${num(v("stress_price_pct"))}%`, value: v("stress_single_price_kg") },
+    { label: "Starting estimate", value: revenuePerKg - totalCostPerKg() },
+    { label: `Plastic costs +${num(v("stress_feed_pct"))}%`, value: v("stress_single_feed_kg") },
+    { label: `Usable output −${num(v("stress_yield_pp"))} points`, value: v("stress_single_yield_kg") },
+    { label: `Selling price −${num(v("stress_price_pct"))}%`, value: v("stress_single_price_kg") },
     { label: "All three at once", value: v("stress_ebitda_kg") },
   ],
   ids: figIds(
@@ -252,33 +252,33 @@ export const economics = {
   ),
   stress: {
     title: "What could break the plan?",
-    body: "One setback at a time is manageable in the model. Higher input cost, lower usable output and a lower selling price together would make it lose money. That is why supply and buyers come before machines.",
+    body: "If used plastic costs more, less of it becomes saleable product, and buyers pay less—all together—the example plant loses money. That is why we would secure supply and buyers before buying machines.",
   },
 };
 
 export const roadmap = {
   kicker: "The path forward",
-  title: "Earn the right to build.",
+  title: "Prove it, build it, then grow.",
   phases: [
     {
       tag: "Phase 1",
       name: "Prove",
       when: "Before the plant",
-      body: "Test real plastic, make trial pellets with a partner and get buyer feedback.",
-      gate: "Move on when supply and buyer interest are documented.",
+      body: "Test real plastic, make sample pellets with an existing recycler and ask buyers whether they can use them.",
+      gate: "Next step only after we record reliable supply and written buyer feedback.",
     },
     {
       tag: "Phase 2",
       name: "Build",
       when: "After proof",
-      body: "Choose a workable site, complete engineering and permits, then install the line and water treatment.",
-      gate: "Move on after safe commissioning and required approvals.",
+      body: "Choose a site, have engineers turn the layout into buildable drawings, obtain official permissions and install the machines and water treatment.",
+      gate: "Next step only after the installed plant passes safe trial runs and receives required approvals.",
     },
     {
       tag: "Phase 3",
       name: "Run",
       when: "First operations",
-      body: "Increase output gradually while checking every batch, water loop and buyer response.",
+      body: "Increase output gradually while checking every production lot, cleaned water and buyer response.",
       gate: "Move on when quality and repeat orders hold steady.",
     },
     {
@@ -286,7 +286,7 @@ export const roadmap = {
       name: "Expand",
       when: "Only when ready",
       body: "Add capacity only if the first line proves its supply, quality and buyer economics.",
-      gate: "The next line must earn its own case.",
+      gate: "Add another line only when its costs, supply and buyers are proven too.",
     },
   ],
   ids: [
@@ -306,16 +306,16 @@ export const roadmap = {
 
 const funds = [
   { label: "Processing equipment", lakh: v("capex_machinery") + v("capex_electrical") + v("capex_handling") },
-  { label: "Working capital", lakh: v("working_capital") },
+  { label: "Cash to run the first months", lakh: v("working_capital") },
   { label: "Site, safety & permits", lakh: v("capex_civil") + v("capex_safety_permits") + v("lease_deposit") },
   { label: "Water treatment", lakh: v("capex_etp") },
 ];
 const fundsTotal = funds.reduce((s, f) => s + f.lakh, 0);
 
 export const ask = {
-  kicker: "What building takes",
-  title: "Fund the plant in stages, against proof.",
-  body: "Equipment is only part of the cost. The site, water treatment and cash to buy plastic before customers pay matter too. This is an early cost map, not vendor quotations or a funding request.",
+  kicker: "What building would take",
+  title: "What would it cost to start?",
+  body: "Machines are only part of the cost. We would also need a site, water treatment and cash to buy plastic and pay workers before buyers pay us. These are early estimates, not supplier quotes or a request for funding.",
   totalCrore: money(lakhToCrore(fundsTotal)),
   funds: funds.map((f) => ({
     label: f.label,

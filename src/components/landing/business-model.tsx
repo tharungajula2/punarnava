@@ -25,7 +25,7 @@ function Streams() {
   return (
     <div className="grid grid-cols-[auto_1fr_auto] items-stretch gap-3 sm:gap-5">
       <div className="flex flex-col justify-center">
-        <p className="text-xs text-muted-foreground sm:text-sm">Every kg sold</p>
+        <p className="text-xs text-muted-foreground sm:text-sm">For each kilogram sold</p>
         <p className="font-display text-2xl sm:text-3xl">₹{money(total)}</p>
       </div>
       <svg viewBox={`0 0 300 ${H + gap}`} preserveAspectRatio="none" className="h-40 w-full sm:h-48" aria-hidden>
@@ -51,11 +51,11 @@ function Streams() {
       <div className="flex flex-col justify-between py-1 text-right sm:text-left">
         <div className="ig ig-fade" style={{ "--d": "0.6s" } as React.CSSProperties}>
           <p className="font-display text-2xl text-primary sm:text-3xl">₹{num(pellet)}</p>
-          <p className="text-xs text-muted-foreground sm:text-sm">pellets · {share(pellet)}</p>
+          <p className="text-xs text-muted-foreground sm:text-sm">plastic pellets · {share(pellet)}</p>
         </div>
         <div className="ig ig-fade" style={{ "--d": "1s" } as React.CSSProperties}>
           <p className="font-display text-xl sm:text-2xl">₹{money(epr)}</p>
-          <p className="text-xs text-muted-foreground sm:text-sm">EPR · {share(epr)}</p>
+          <p className="text-xs text-muted-foreground sm:text-sm">possible certificate · {share(epr)}</p>
         </div>
       </div>
     </div>
@@ -68,7 +68,7 @@ export function BusinessModel() {
       <SectionHeader id="model" kicker={model.kicker} title={model.title} />
       <Reveal className="mt-14 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] sm:p-8">
         <h3 className="font-sans text-sm font-medium text-muted-foreground">
-          An illustrative sale: the pellet is the main product
+          Example income from one kilogram of pellets: the pellets bring almost all of it
         </h3>
         <div className="mt-6">
           <Streams />

@@ -34,7 +34,7 @@ export const hero = {
 export const problem = {
   kicker: "The problem",
   title: "Usable plastic is lost in mixed waste.",
-  body: "Bengaluru already collects plastic. The harder job is turning mixed, dirty containers into clean plastic that a manufacturer can use again and again.",
+  body: "Bengaluru already collects plastic. The harder job is turning mixed, dirty containers into clean plastic that a manufacturer can use again and again. We focus on rigid HDPE (hard plastic like bottles and containers — the kind that holds its shape).",
   stats: [
     {
       value: `${num(v("bengaluru_plastic_waste_low"))}–${num(v("bengaluru_plastic_waste_high"))}`,
@@ -78,8 +78,8 @@ export const problem = {
 export const whyNow = {
   kicker: "The opportunity",
   title: "Manufacturers need recycled plastic they can trust.",
-  body: "India's rules require a growing share of recycled plastic in new hard plastic packaging. That creates demand. Buyers would still choose a supplier on quality, reliability and clear records.",
-  chartTitle: "Recycled share required in new hard plastic packaging, by financial year",
+  body: "India's EPR (Extended Producer Responsibility) rules require a growing share of recycled plastic in new hard plastic packaging. EPR means manufacturers must account for the waste their products create. That creates demand for recyclers like us. Buyers would still choose a supplier on quality, reliability and clear records.",
+  chartTitle: "Recycled content (share of recycled plastic) required in new hard plastic packaging, by financial year (FY = April–March)",
   chart: [
     { year: "2025–26", value: v("epr_cat1_recycled_content_fy26") },
     { year: "2026–27", value: v("epr_cat1_recycled_content_fy27") },
@@ -110,15 +110,15 @@ export const whyNow = {
 export const how = {
   kicker: "The process",
   title: "From used plastic to useful material.",
-  body: "Each step changes the material in a simple way. Follow the line, then open the factory to see why we placed each area where it is.",
+  body: "Each step changes the material in a simple way. The raw material (feedstock) is used plastic. The end product is pellets — small plastic grains manufacturers can melt into new things. Follow the line, then open the factory to see why we placed each area where it is.",
   steps: [
     { title: "Collect", body: "Buy used hard plastic containers from existing collectors." },
     { title: "Sort", body: "Keep the right plastic and colours together." },
-    { title: "Cut", body: "Cut containers into small, even pieces called flakes." },
+    { title: "Shred", body: "Shred (cut) containers into small, even pieces called flakes — think of coarse plastic confetti." },
     { title: "Wash", body: "Clean the pieces and separate unwanted material." },
     { title: "Dry", body: "Remove moisture before melting." },
-    { title: "Melt", body: "Melt and filter the clean plastic." },
-    { title: "Make pellets", body: "Cut the melted plastic into small grains called pellets." },
+    { title: "Extrude", body: "Extrude (melt and push through a filter) the clean plastic to remove any remaining impurities." },
+    { title: "Pelletise", body: "Pelletise (cut the melted plastic strand into small grains) — the finished pellets are what manufacturers buy." },
     { title: "Supply", body: "Test and bag each production lot, then send it to a buyer." },
   ],
   massIn: 1000,
@@ -162,21 +162,21 @@ const costIds = [
 
 export const model = {
   kicker: "How it could earn",
-  title: "The main product is recycled plastic.",
+  title: "The main product is recycled plastic pellets.",
   streams: [
     {
       name: "Recycled plastic pellets",
       tag: "Core revenue",
       price: `₹${num(v("pellet_price"))}/kg`,
       priceNote: "illustrative selling price in the current model",
-      body: "Pellets are small grains of plastic that manufacturers melt into new products. We would agree the required quality with each buyer and record every production lot.",
+      body: "Pellets are small plastic grains that manufacturers melt into new products. Each production lot (a batch made together under one record) would have an agreed quality specification and a traceable record.",
     },
     {
-      name: "Recycling certificates",
+      name: "EPR Recycling certificates",
       tag: "Possible extra income",
       price: `₹${money(v("epr_credit_price"))}/kg`,
       priceNote: "illustrative and uncertain; not needed for the core case",
-      body: "A certificate can prove that an amount of plastic was recycled under India's producer responsibility rules (EPR). Brands may buy eligible certificates to meet their obligations. We would count this income only after registration and verification.",
+      body: "An EPR (Extended Producer Responsibility) certificate is an official proof that a certain amount of plastic was recycled. Brands that create plastic packaging are legally required to ensure it gets recycled — they can buy these certificates from registered recyclers to meet that obligation. We would count this income only after registration and verification.",
     },
   ],
   flow: {
@@ -216,11 +216,11 @@ export const economics = {
     title: "What happens to each sale",
     revenue: revenuePerKg,
     costs: [
-      { label: "Used plastic", value: v("cost_feedstock_kg") },
-      { label: "Bringing plastic in", value: v("cost_inbound_kg") },
+      { label: "Feedstock (used plastic we buy)", value: v("cost_feedstock_kg") },
+      { label: "Inbound logistics (bringing plastic in)", value: v("cost_inbound_kg") },
       { label: "Labour", value: v("cost_labour_kg") },
       { label: "Electricity", value: v("cost_power_kg") },
-      { label: "Quality checks & records", value: v("cost_overhead_kg") },
+      { label: "QC & compliance (quality checks & records)", value: v("cost_overhead_kg") },
       { label: "Rent", value: v("cost_rent_kg") },
       { label: "Water & other", value: v("cost_other_kg") },
     ],
@@ -228,8 +228,8 @@ export const economics = {
   },
   stressChart: [
     { label: "Starting estimate", value: revenuePerKg - totalCostPerKg() },
-    { label: `Plastic costs +${num(v("stress_feed_pct"))}%`, value: v("stress_single_feed_kg") },
-    { label: `Usable output −${num(v("stress_yield_pp"))} points`, value: v("stress_single_yield_kg") },
+    { label: `Feedstock (plastic) cost +${num(v("stress_feed_pct"))}%`, value: v("stress_single_feed_kg") },
+    { label: `Yield (usable output) −${num(v("stress_yield_pp"))} points`, value: v("stress_single_yield_kg") },
     { label: `Selling price −${num(v("stress_price_pct"))}%`, value: v("stress_single_price_kg") },
     { label: "All three at once", value: v("stress_ebitda_kg") },
   ],
@@ -305,10 +305,10 @@ export const roadmap = {
 } as const;
 
 const funds = [
-  { label: "Processing equipment", lakh: v("capex_machinery") + v("capex_electrical") + v("capex_handling") },
-  { label: "Cash to run the first months", lakh: v("working_capital") },
+  { label: "Capex — processing equipment (machines)", lakh: v("capex_machinery") + v("capex_electrical") + v("capex_handling") },
+  { label: "Working capital (cash to run the first months)", lakh: v("working_capital") },
   { label: "Site, safety & permits", lakh: v("capex_civil") + v("capex_safety_permits") + v("lease_deposit") },
-  { label: "Water treatment", lakh: v("capex_etp") },
+  { label: "ETP (Effluent Treatment Plant — water cleaning)", lakh: v("capex_etp") },
 ];
 const fundsTotal = funds.reduce((s, f) => s + f.lakh, 0);
 

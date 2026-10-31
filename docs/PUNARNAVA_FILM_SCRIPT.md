@@ -1,3 +1,42 @@
+# Punarnava — Current Concept Walkthrough
+
+Use this as a short local presentation. It describes the current application, not a live deployment. No market, regulatory, financial, or performance claim here has been independently verified for this script.
+
+## Before recording
+
+Run the app locally with `npm ci` and `npm run dev`. Open `http://localhost:3000/` and `http://localhost:3000/factory`. Check the current interface in your own browser before recording. Do not add an unverified hosted URL.
+
+## Three-minute narration outline
+
+### 0:00–0:35 — The concept
+
+“Punarnava is a concept-stage case study about a proposed rigid-plastic recycling plant. This is a design and software prototype, not an operating recycling company.”
+
+Show the home-page opening and the project purpose.
+
+### 0:35–1:15 — The process story
+
+Scroll through the sections on the proposed process and business model. Explain the intended flow from incoming plastic through sorting, washing, processing, and pellets. Describe market and financial figures only as research inputs or assumptions; do not imply customers, contracts, approvals, or operating results.
+
+### 1:15–2:35 — The factory walkthrough
+
+Open `/factory`. Show the 2D plan first, then the animated factory if WebGL is available. Select a process stop and use the guided tour or free 3D exploration. Explain that the model advances locally and the geometry is stylised code, not a surveyed plant or digital twin.
+
+### 2:35–3:00 — What would need proof
+
+Close by naming the next evidence gates: real feedstock samples, buyer requirements, a site, qualified engineering, required approvals, and measured trial performance. These are future work, not accomplishments of this repository.
+
+## Recording checklist
+
+- Keep the “concept / illustrative” distinction visible.
+- Avoid reusing figures or legal claims from the historical script without fresh source review.
+- Do not claim that any hosted URL works until you check it manually.
+- Do not show credentials or private browser content in a recording.
+
+<details>
+<summary>Historical film script — preserved, not approved for reuse</summary>
+
+The previous script refers to retired OS routes and includes claims, figures, and presentation directions that have not been verified for the current application. Preserve it as project history; do not treat it as current factual or investor copy.
 # PUNARNAVA — Film Script (read-aloud)
 
 Read the **[SAY]** lines word for word. Do what **[SCREEN]** says first, then speak. **[PAUSE]** = stop talking for 3–5 seconds and let the picture breathe.
@@ -215,3 +254,6 @@ Say these as "our planning estimate". They appear in the film.
 8. **Why would brands buy from you?** They must use recycled content (30% to 60% by FY2029) and need audited certificates. Our batches are traceable. We have not signed any brand yet.
 9. **Who are your competitors?** We mapped twelve. Mostly larger. We compete on rigid-plastic focus, traceability and local supply.
 10. **How long to start production?** Up to about 8 months from locking a site, plus up to 9 months of proving supply. Consents depend on the pollution board; our 90-day allowance is an estimate.
+
+
+</details>

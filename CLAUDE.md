@@ -1,3 +1,13 @@
+# Punarnava — Current Project Status
+
+Punarnava is a concept-stage portfolio case study, not an operating recycling business. The current application routes are `/` and `/factory`. The old `/os`, `/os/factory`, and `/sim` paths redirect to `/factory`; there is no private OS or active `/sources` route. There is no verified hosted deployment URL.
+
+The rest of this file is preserved historical project guidance and implementation notes. Routes, deployment statements, and workflows in that material may be obsolete. For current implementation details, use [README.md](README.md) and [PROJECT_BLUEPRINT.md](PROJECT_BLUEPRINT.md).
+
+**Current Git rule:** old notes that say to commit or push automatically are historical only. Do not stage, commit, or push without explicit approval from the project owner. Follow the portfolio workspace workflow in `portfolio/WORKFLOW.md` at the workspace root when making documentation changes.
+
+<details>
+<summary>Historical project blueprint and implementation log — not current instructions</summary>
 # PUNARNAVA — Project Blueprint (Claude Code reads this every session)
 
 > **STATUS: Archived portfolio case study. No further feature work.** Everything (landing, `/case-study`, `/os/*`, `/sources`) is public on Vercel. The sections below are historical. The private/local-only mechanism described in §4 was removed (`scripts/prune-private.mjs` deleted).
@@ -158,3 +168,6 @@ The former R&D wing now lives inside the OS: Market (overview, competitors, pric
 - 2026-10-14 · Final QA + docs · lint, 24 tests and npm run build clean; VERCEL=1 build lists only / and /sources (+ icons, robots, sitemap, OG image); no leftover auth code (jose only transitive in lockfile); all /os links resolve. Note: a stale .next/dev folder breaks a pruned build locally, so delete .next first. Added docs/PUNARNAVA_FILM_SCRIPT.md (12-scene read-aloud film, 3-min and 60-s cuts, recording checklist, placeholder list, 10 investor Q&A) and docs/OPERATING_MANUAL.md. Film numbers come from assumptions.ts.
 
 - 2026-10-14 · Portfolio conversion · Project archived as a public concept case study. Removed the Vercel prune step; all routes deploy and are indexable (robots/sitemap cover the OS). Added a top banner ("Concept study · Designed & built by Tharun Gajula with AI · Not an operating company"), `/case-study`, reframed hero stat / CTA / ask / contact (now "About the builder"), rewrote README. Secret scan of tree and git history: clean.
+
+
+</details>
